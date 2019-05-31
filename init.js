@@ -254,7 +254,11 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						(vars = ao.getVars())) {
 						
 						// Extra fileLabel variable
-						vars.put('fileLabel', vars.get('fileTitle') || vars.get('label').replace('_', ' '));
+						s = vars.get('label');
+						if (s.startsWith('img') || s.startsWith('vid')) {
+							s = s.substring(0,19);
+						} 
+						vars.put('fileLabel', vars.get('fileTitle') || s.replaceAll('_', ' '));
 						
 						dates = {};
 						
@@ -364,6 +368,8 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								s = s.replace(/\$\{resPath\}/g, resPath);
 								if (preFormat) {
 									s = preformatText(s);
+								} else {
+									s = s.replaceAll('_', ' ');
 								}
 								vars.put('thumbCaption', s);
 							}
@@ -460,9 +466,9 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								
 								// Image caption
 								if (imageCaptionTemplate && (s = processTemplate(ao, imageCaptionTemplate))) {
-									vars.put('imageCaption', s);
+									vars.put('imageCaption', s.replaceAll('_', ' '));
 								}
-								
+
 								if (cat === Category.image) {
 									
 									// Regions / faces
@@ -623,7 +629,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						if ((ao = getPreviousFolder(folder)) != null) {
 							v = ao.getVars();
 							vars.put('previousFolderPath', '../' + v.get('closeupPath'));
-							vars.put('previousFolderTitle', ao.getTitle() || ao.getName());
+							vars.put('previousFolderTitle', ao.getTitle() || ao.getName().replaceAll('_', ' '));
 							vars.put('previousFolderThumbPath', '../' + v.get('thumbPath'));
 							s = encodeAsJava(ao.getWebName());
 							
@@ -642,7 +648,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						if ((ao = getNextFolder(folder)) != null) {
 							v = ao.getVars();
 							vars.put('nextFolderPath', '../' + v.get('closeupPath'));
-							vars.put('nextFolderTitle', ao.getTitle() || ao.getName());
+							vars.put('nextFolderTitle', ao.getTitle() || ao.getName().replaceAll('_', ' '));
 							vars.put('nextFolderThumbPath', '../' + v.get('thumbPath'));
 							s = encodeAsJava(ao.getWebName());
 							
@@ -710,6 +716,8 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						//s = s.replace(/\$\{resPath\}/g, resPath);
 						if (preFormat) {
 							s = preformatText(s);
+						} else {
+							s = s.replaceAll('_', ' ');
 						}
 						vars.put('folderTitle', s);
 					} else {

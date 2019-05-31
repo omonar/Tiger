@@ -378,7 +378,7 @@
 					
 					// Download button
 					
-					if (item[J.ORIGINAL] && !settings.hideDownload && 
+					if ((album.getOriginalPath(item) !== null) && !settings.hideDownload && 
 						(item[J.CATEGORY] === 'image' || settings.allowDownloadOthers)) {
 						el = $('<a>', {
 								'class': 	settings.buttonClass + ' icon-download',
@@ -1412,8 +1412,10 @@
 			startAuto = function(keepMusic) {
 					
 					clearTimeout(slideshow);
-					lb_play.hide();
-					lb_pause.show();
+					if (lb_play) {
+						lb_play.hide();
+						lb_pause.show();
+					}
 					lightbox.addClass(settings.playingClass);
 					
 					if (settings.autohideControls) {
@@ -1455,9 +1457,11 @@
 					if (!(keepMusic === true) && settings.backgroundAudioSlideshowControl) {
 						backgroundAudioRoot.trigger('fadeOutPlayer');
 					}
-					
-					lb_play.show();
-					lb_pause.hide();
+
+					if (lb_play) {
+						lb_play.show();
+						lb_pause.hide();
+					}
 					slideshow = clearTimeout(slideshow);
 					caption.show().removeClass('slideshow');
 					lightbox.removeClass(settings.playingClass);

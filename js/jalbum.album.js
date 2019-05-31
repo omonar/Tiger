@@ -107,7 +107,7 @@ var Album = function($, options) {
 				// Relative path to the current folder (eg. "folder/subfolder") 
 				relPath: 				'',
 				// Loading the whole data tree
-				loadDeep:				true,
+				loadDeep:				false,
 				// Lazy load :: loads folder data only when requested or at the time of initialization
 				lazy: 					true,
 				// Possible object types
@@ -1074,6 +1074,9 @@ var Album = function($, options) {
 					
 					return p + o[J.ORIGINAL][J.PATH];
 				}
+				
+				if (o[J.CATEGORY] === 'image')
+					return settings.rootPath + '/s3/photos/' + getPath(o[J.PATHREF]) + '/' + o[J.NAME];
 				
 				return null;
 			},
