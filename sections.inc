@@ -122,7 +122,7 @@
 				
 					out.print('\n\t\t\t\t\t\t<section class="row thumb-cont">' +
 						'<div class="large-12 columns">' +
-						'<div class="thumbnails row ' + thumbGridClass + '">');
+						'<div class="thumbnails ' + (hoverEffectThumbs? 'hover-scale ' : '') + 'row ' + thumbGridClass + '">');
 					
 					for (var i = 0; i < images.length; i++) {
 						

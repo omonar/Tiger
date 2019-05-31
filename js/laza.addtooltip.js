@@ -266,7 +266,7 @@
 						
 						to = clearTimeout(to);
 						
-						if (whatInput.ask() !== 'mouse') {
+						if (whatInput.ask('intent') !== 'mouse') {
 						//if (events.indexOf(TOUCH.START) !== -1 || isFireFox) {
 							// touched
 							// Firefox by default emulates touch events with mouse events, 

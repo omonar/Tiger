@@ -1412,8 +1412,10 @@
 			startAuto = function(keepMusic) {
 					
 					clearTimeout(slideshow);
-					lb_play.hide();
-					lb_pause.show();
+					if (lb_play) {
+						lb_play.hide();
+						lb_pause.show();
+					}
 					lightbox.addClass(settings.playingClass);
 					
 					if (settings.autohideControls) {
@@ -1456,8 +1458,10 @@
 						backgroundAudioRoot.trigger('fadeOutPlayer');
 					}
 					
-					lb_play.show();
-					lb_pause.hide();
+					if (lb_play) {
+						lb_play.show();
+						lb_pause.hide();
+					}
 					slideshow = clearTimeout(slideshow);
 					caption.show().removeClass('slideshow');
 					lightbox.removeClass(settings.playingClass);
