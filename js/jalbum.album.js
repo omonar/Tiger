@@ -58,6 +58,7 @@ var J = {
 		DATERANGE:		'dateRange',
 		MOSTPHOTOS: 	'mostphotos',
 		SOUNDCLIP:		'soundClip',
+		FILTERDATA:		'filterData',
 		OBJ: 			'obj',
 		LOADCOUNTER:	'loadcounter',
 		TOTAL:			'total',

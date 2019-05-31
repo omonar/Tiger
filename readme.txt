@@ -2,6 +2,27 @@
 : Readme.txt
 :
 
+Version 2.6.2
+
+Fixed:
+- No tooltip on desktop on some browsers only after the user has clicked with the mouse
+- "Mark folders new" marks older folders too with "Added date" and "Modified date" setting  
+
+------------------------------------------------------
+
+Version 2.6.1
+
+Fixed:
+- Disabling the Play/Pause button in Lightbox results in JS error
+- When importing Turtle albums the hero height might get impossible to modify if the value was below 110px
+- The zoom-in effect on thumbnails doesn't work even if the corresponding setting is on
+
+Updated:
+- German translation
+- Underlying ZURB foundation to 6.5.1
+
+------------------------------------------------------
+
 Version 2.6.0
 
 New:

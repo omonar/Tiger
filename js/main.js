@@ -248,6 +248,8 @@
 					createOverlayHeader(t, options);
 					createOverlayGrid(t);
 					
+					content.trigger('overlayAdded', t);
+					
 					return t;
 				},
 		
@@ -264,6 +266,8 @@
 					t.remove();
 				},
 				
+			// Removing overlay
+			
 			removeOverlay = function() {
 				
 					content.removeClass('has-overlay').children('section.' + settings.thumbContClass).each(function() {
@@ -272,12 +276,14 @@
 							removeOly($(this));
 						} else {
 							// Showing hidden overlay(s)
-							$(this).show()
+							$(this).show();
 							$(this).find('.' + settings.thumbsClass).trigger('lazyloadThumbs');
 						}
 					});
 					
 					removeParam(settings.indexName);
+					
+					content.trigger('overlayRemoved', content.children('section.' + settings.thumbContClass + ':visible').eq(0));
 					updateShares();
 					
 					//$('#selectnone, #add-selected').addClass('disabled');

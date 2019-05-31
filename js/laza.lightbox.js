@@ -1457,7 +1457,6 @@
 					if (!(keepMusic === true) && settings.backgroundAudioSlideshowControl) {
 						backgroundAudioRoot.trigger('fadeOutPlayer');
 					}
-
 					if (lb_play) {
 						lb_play.show();
 						lb_pause.hide();

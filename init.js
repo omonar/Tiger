@@ -347,7 +347,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								}
 								
 								// Added date
-								if (_storeAddedDate && (s = JAlbumUtilities.getDeepLastAdded(folder))) {
+								if (_storeAddedDate && (s = JAlbumUtilities.getDeepLastAdded(ao))) {
 									dates.added = ScriptUtils.convert(s / 1000, java.lang.Long.class);
 								}
 								
@@ -358,14 +358,13 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								}
 								
 								// Modified date
-								if (_storeModifiedDate && (s = JAlbumUtilities.deepLastModified(folder))) {
+								if (_storeModifiedDate && (s = JAlbumUtilities.deepLastModified(ao))) {
 									dates.fileModified = ScriptUtils.convert(s / 1000, java.lang.Long.class);
 								}
 							}
 							
 							// Folder caption
 							if (_folderCaptionTemplate && (s = processTemplate(ao, _folderCaptionTemplate))) {
-								s = s.replace(/\$\{resPath\}/g, resPath);
 								if (preFormat) {
 									s = preformatText(s);
 								} else {
@@ -620,7 +619,6 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						if (!isEmpty(dates)) {
 							vars.put('dates', dates);
 						}
-							
 					}
 					
 					// Neighboring folders
@@ -713,7 +711,6 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 					// Title as in the Hero
 					
 					if (_titleCaptionTemplate && (s = processTemplate(folder, _titleCaptionTemplate))) {
-						//s = s.replace(/\$\{resPath\}/g, resPath);
 						if (preFormat) {
 							s = preformatText(s);
 						} else {
