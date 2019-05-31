@@ -1,0 +1,585 @@
+@charset "UTF-8";
+/* laza.lightbox.scss */
+
+$loadingbox-size: 	40;
+
+@import 'defaults';
+
+/* Loading animation */
+@-webkit-keyframes lightbox-loading {
+	0% 		{ opacity: .5; -webkit-transform: scale(.75); }
+	50% 	{ opacity: 1;	-webkit-transform: scale(1); }
+	100% 	{ opacity: .5; -webkit-transform: scale(.75); }
+}
+
+@-moz-keyframes lightbox-loading {
+	0% 		{ opacity: .5; -moz-transform: scale(.75); }
+	50% 	{ opacity: 1;	-moz-transform: scale(1); }
+	100% 	{ opacity: .5; -moz-transform: scale(.75); }
+}
+
+@keyframes lightbox-loading {
+	0% 		{ opacity: .5; transform: scale(.75); }
+	50% 	{ opacity: 1;	transform: scale(1); }
+	100% 	{ opacity: .5; transform: scale(.75); }
+}
+@-moz-keyframes timer { 
+	0%		{ width: 0; } 
+	100%	{ width: 100%; } 
+}
+@-webkit-keyframes timer {
+	0%		{ width: 0; } 
+	100%	{ width: 100%; } 
+}
+@keyframes timer { 
+	0%		{ width: 0; } 
+	100%	{ width: 100%; } 
+}
+
+.lightbox {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 200000;
+	.lightbox-overlay {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background-color: _(lightboxBgColor);
+		z-index: 0;
+	}
+	
+	// Loading indication
+	.lightbox-loading,
+	.lightbox-loading div {
+		border-radius: 50%;
+	}
+	.lightbox-loading {
+		@include box-shadow(rgba(0, 0, 0, .5) 0 0 ($loadingbox-size)+px);
+		background: rgba(0,0,0,.5);
+		height: ($loadingbox-size)+px;
+		left: 50%;
+		margin: (-$loadingbox-size/2)+px 0 0 (-$loadingbox-size/2)+px;
+		padding: ($loadingbox-size/4)+px;
+		position: absolute;
+		top: 50%;
+		width: ($loadingbox-size)+px;
+		z-index: 1;
+		div {
+			@include animation(lightbox-loading 1s ease infinite);	
+			background-color: #fff;
+			height: ($loadingbox-size/2)+px;
+			width: ($loadingbox-size/2)+px;
+		}
+	}
+	.lightbox-main {
+		.lightbox-loading {
+			div {
+				background-color: _(buttonBgColor);
+			}
+		}
+	}
+	.thumb-strip {
+		position: absolute;
+		max-width: 100%;
+		transform: translateX(-50%);
+		left: 50%;
+		top: _U(-thumbstripHeight,px);
+		height: _U(thumbstripHeight,px);
+		padding: 0 5px;
+		background-color: _(lightboxBoxBg);
+		border-radius: 0 0 _U(brm,px) _U(brm,px);
+		box-shadow: _(lightboxBoxShadow);
+		z-index: 10;
+		text-align: left;
+		transition: all $transTime;
+		.thumb-cont {
+			position: relative;
+			height: 100%;
+			overflow: hidden;
+			@include user-select(none);
+			.thumbs {
+				margin-top: 5px;
+				height: _U(thumbsHeight,px);
+				white-space: nowrap;
+				transform: translateX(0);
+				a {
+					display: inline-block;
+					height: 100%;
+					vertical-align: top;
+					margin: 0 1px 0 0;
+					padding: 0 0 4px 0;
+					cursor: default;
+					&:hover {
+						background-color: _(lightboxButtonHover);
+					}
+					&.active {
+						background-color: _(lightboxButtonColor);
+					}
+					img {
+						vertical-align: top;
+					}
+				}
+			}
+		}
+		button {
+			position: absolute;
+			display: none;
+			color: _(lightboxButtonColor);
+			&.left, &.right {
+				width: 3rem;
+				font-size: 1.5rem;
+				text-align: center;
+				top: 0;
+				height: 100%;
+			}				
+			&.left {
+				left: 0;
+			}
+			&.right {
+				right: 0;
+			}
+		}
+		&:hover {
+			background-color: _(lightboxBoxHoverBg);
+			button {
+				color: _(lightboxButtonHover);
+			}
+		}
+		&.scroll {
+			width: 100%;
+			padding: 0 3rem;
+			.thumb-cont {
+				overflow: hidden;
+				.thumbs {
+					position: absolute;
+					left: 0;
+					overflow: hidden;
+				}
+			}
+			button {
+				display: inline-block;
+			}
+		}
+	}
+	
+	.controls {
+		position: absolute;
+		left: 50%;
+		top: 0;
+		height: 3.5rem;
+		white-space: nowrap;
+		transform: translateX(-50%);
+		background-color: _(lightboxBoxBg);
+		border-radius: 0 0 _U(brm,px) _U(brm,px);
+		box-shadow: _(lightboxBoxShadow);
+		z-index: 11;
+		opacity: 1;
+		transition: top $transTime, background-color $transTime, opacity $transTime2;
+		&.use-text {
+			button {
+				font-size: 0.7rem;
+				padding: 0 .3rem;
+				min-width: 4rem;
+				text-align: center;
+				&.previous:before, &.next:before {
+					font-size: 1.5rem;
+				}
+			}
+		}
+		button {
+			display: inline-block;
+			height: 100%;
+			padding: 0 .7rem;
+			vertical-align: top;
+			color: _(lightboxButtonColor);
+			transition: color $transTime;
+			&:before {
+				display: block;
+				font-size: 1.5rem;
+				line-height: 2.4rem;
+			}
+			&:hover {
+				color: _(lightboxButtonHover);
+			}
+			&:focus {
+				outline: 1px dotted rgba(224,224,224,0.2);
+			}
+			&.previous:before, &.next:before {
+				font-size: 2rem;
+			}
+			&.pause:before {
+				font-size: 1rem;
+			}
+			&.zoom-out,
+			&.hide-thumbs,
+			&.hide-caption,
+			&.pause {
+				display: none;
+			}
+			.progress {
+				position: absolute;
+				height: 1px;
+				overflow: hidden;
+				background-color: #999;
+				width: 0;
+				left: 0;
+				bottom: 0;
+				content: ' ';
+				z-index: 24;
+				-moz-animation: timer _U(slideshowDelay,s) linear;
+				-webkit-animation: timer _U(slideshowDelay,s) linear;
+				-ms-animation: timer _U(slideshowDelay,s) linear;
+				animation: timer _U(slideshowDelay,s) linear;
+			}
+		}
+		&:hover {
+			background-color: _(lightboxBoxHoverBg);
+		}
+	}
+	
+	.lightbox-main {
+		@include touch-action(none);
+		position: absolute;
+		z-index: 1;
+		padding: _U(lightboxBorderWidth,px);
+		background-color: _B('(lightboxBorderWidth > 0)? lightboxBorderColorCss : "transparent"');
+		box-shadow: _(lightboxImageShadow);
+		border-radius: _U(imgCornerRadius,px);
+		transition: left $transTime, 
+					top $transTime, 
+					width $transTime, 
+					height $transTime,
+					transform $transTime,
+					opacity $transTime;
+		> * {
+			border-radius: _U(lightboxImageCornerRadius,px);
+			@include user-select(none);
+		}
+		&.image {
+			img {
+				width: 100%;
+			}
+		}
+		&.audio {
+			img.poster {
+				width: 100%;
+			}
+			audio {
+				position: absolute;
+				bottom: _U(lightboxBorderWidth,px);
+				left: 50%;
+				max-width: 100%;
+				@include translateX(-50%);
+				min-width: 320px;
+				width: 80%;
+			}
+		}
+		&.video {
+			video {
+				width: 100%;
+			}
+		}
+		&.other {
+			min-width: 240px;
+			text-align: center;
+		}
+		&.pdf {
+			object, iframe {
+				width: 100%;
+				height: 100%;
+			}
+		}
+		.click-hint {
+			text-align: center;
+			padding: 0.5em;
+			color: _(lightText);
+			font-size: 80%;
+			background-color: rgba(51,51,51,0.6);
+		}
+		&.external {
+			max-width: 100%;
+			max-height: 100%;
+			overflow: auto;
+			&.iframe {
+				overflow: hidden;
+			}
+		}
+		&.vr {
+			overflow: hidden;
+			iframe {
+				display: block;
+			}
+			.error {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				max-width: 60%;
+				transform: translate(-50%, -50%);
+				padding: 1rem;
+				color: #eee;
+				background-color: #000;
+				border-radius: .5rem;
+			}
+		}
+		
+		.regions {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			a {
+				position: absolute;
+				display: inline-block;
+				border: 1px solid $lighten50;
+				transition: all $transTime;
+				span {
+					position: absolute;
+					top: 0;
+					left: 0;
+					max-width: 100%;
+					padding: 0 4px 4px 6px;
+					background-color: $lighten50;
+					font-size: $fontXS;
+					color: _(darkText);
+					text-overflow: ellipsis;
+					overflow: hidden;
+					white-space: nowrap;
+					transition: all $transTime;
+				}
+				.active,
+				&:hover {
+					border: 1px solid #fff;
+					span {
+						color: _(darkerText);
+						max-width: none;
+						background-color: #fff;
+					}
+				}
+			}
+		}
+	}
+	
+	.lightbox-caption {
+		position: absolute;
+		width: 100%;
+		left: 0;
+		bottom: 0;
+		padding: 1rem;
+		transition: all $transTime;
+		background-color: _(lightboxBoxBg);
+		border-radius: _U(brm,px) _U(brm,px) 0 0;
+		box-shadow: _(lightboxBoxShadow);
+		z-index: 12;
+		transform: translateY(100%);
+		.buttons {
+			float: right;
+			margin-left: 1rem;
+			> * {
+				vertical-align: middle;
+			}
+			.download {
+				display: inline-block;
+				padding: 0.5rem;
+				&:before {
+					color: _(lightboxButtonColor);
+				}
+				a {
+					padding: 0.2rem;
+					font-size: $fontS;
+				}
+			}
+			.button {
+				border-radius: 0;
+				margin-bottom: 0;
+				margin-right: 1px;
+				cursor: default;
+				&:first-of-type {
+					border-top-left-radius: _U(brs,px);
+					border-bottom-left-radius: _U(brs,px);
+				}
+				&:last-of-type {
+					margin-right: 0;
+					border-top-right-radius: _U(brs,px);
+					border-bottom-right-radius: _U(brs,px);
+				}
+				&:before {
+					font-size: 1rem;
+					vertical-align: text-bottom;
+				}
+			}
+			.numbers {
+				display: inline-block;
+				margin: 0 0.5em;
+				color: _(lightboxButtonColor);
+			}
+		}
+		.caption {
+			color: _(lightboxButtonColor);
+			h1, h2, h3, h4, h5, h6 {
+				color: _(lightboxButtonColor);
+			}
+			h1 {
+				font-size: 1.6em;
+			}
+			h2 {
+				font-size: 1.4em;
+			}
+			h3 {
+				font-size: 1.2em;
+			}
+			h4 {
+				font-size: 1.1em;
+			}
+		}
+		&:hover {
+			background-color: _(lightboxBoxHoverBg);
+		}
+	}
+	
+	&.thumbs-visible {
+		.thumb-strip {
+			top: 0;
+		}
+		.controls {
+			top: _U(thumbstripHeight,px);
+			> .hide-thumbs {
+				display: inline-block;
+			}
+			> .show-thumbs {
+				display: none;
+			}
+		}
+	}
+	
+	&.zoomed {
+		.controls > .zoom-out { 
+			display: inline-block;
+		}
+		.controls > .zoom-in { 
+			display: none !important; 
+		}
+	}
+	
+	&.no-zoom {
+		.controls > .zoom-in,
+		.controls > .zoom-out { 
+			display: none !important;
+		}
+	}		
+	
+	&.caption-visible {
+		.lightbox-caption {
+			transform: translateY(0);
+		}
+		.controls > .hide-caption {
+			display: inline-block;
+		}
+		.controls > .show-caption {
+			display: none !important;
+		}
+	}
+	
+	&.playing {
+		.controls > .pause {
+			display: inline-block;
+		}
+		.controls > .play {
+			display: none !important;
+		}
+	}
+	
+	&.controls-hide {
+		.controls {
+			opacity: 0;
+		}
+	}
+}
+
+.jalbumWidgetbar .lightbox-caption {
+	bottom: 20px;
+}
+
+.photodata {
+	font-size: $fontS;
+	p {
+		font-size: $fontS;
+		margin: 0;
+		i {
+			font-style: normal;
+		}
+	}
+}
+
+.modal .photodata {
+	p {
+		padding: .2rem;
+		line-height: 1.5;
+		b {
+			float: left;
+			display: inline-block;
+			font-weight: normal;
+			width: 30%;
+			margin-right: 1rem;
+		}
+		i {
+			display: block;
+			overflow: hidden;
+		}
+		&:nth-child(odd) {
+			background-color: _B('modalWindowsLight? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.1)"');
+		}
+		&:before, 
+		&:after { content: "\0020"; display: block; height: 0; visibility: hidden; } 
+		&:after { clear:both; }
+	}
+}
+
+.lightbox-caption .photodata {
+	p {
+		display: inline-block;
+		b {
+			margin: 0 .25rem 0 0;
+		}
+		i {
+			margin: 0 1rem 0 0;
+		}
+	}
+}
+
+/********* medium displays >= 640px */
+@media screen and (min-width: 30em) {
+	.lightbox {
+		.thumb-strip {
+			max-width: 90%;
+			&.scroll {
+				width: 90%;
+			}
+		}
+		.lightbox-caption {
+			width: 90%;
+			left: 5%;
+		}
+	}
+}
+
+@media screen and (min-width: 40em) {
+	.lightbox {
+		.thumb-strip {
+			max-width: 80%;
+			&.scroll {
+				width: 80%;
+			}
+		}
+		.lightbox-caption {
+			width: 80%;
+			left: 10%;
+		}
+	}
+}
+

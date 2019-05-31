@@ -1,0 +1,3 @@
+/* Initializing the User Interface */
+
+new tiger.Gui(context);

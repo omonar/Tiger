@@ -1,0 +1,245 @@
+charset "UTF-8";
+/* 
+ *	styles.css - custom styles for the skin's Page templates
+ */
+
+@import 'defaults';
+
+
+/************** About page */
+
+#about-page {
+	margin: 1em 0;
+}
+
+#about-page .texts {
+	overflow: hidden;
+}
+
+#about-page .texts p {
+	line-height: 1.5em;
+}
+
+/************** Sitemap page */
+
+#sitemap-page {
+	margin: 1em 0;
+}
+
+#sitemap-page .sitemap {
+	font-size: 125%;
+	overflow: hidden;
+}
+
+#sitemap-page .caption {
+	margin: 0 0 1em 0;
+}
+
+#sitemap-page .sitemap .title {
+	margin: 0 0 1em 0;
+}
+
+#sitemap-page .sitemap .title a {
+	font-size: 120%;
+}
+
+#sitemap-page .sitemap .title a:before {
+	margin-right: .5em;
+}
+
+#sitemap-page .sitemap ul {
+	padding-left: 2em;
+}
+
+#sitemap-page .sitemap.showthumbs ul {
+	padding-left: 0;
+	margin: 20px 0 0 0;
+	list-style-type: none;
+}
+
+#sitemap-page .sitemap.showthumbs > ul {
+	padding-left: 2em;
+}
+
+#sitemap-page .sitemap li {
+	clear: both;
+	padding: 0;
+	margin: 0.5em 0;
+}
+
+
+#sitemap-page small {
+	font-size: 1rem;
+	margin-top: 0.5em;
+	display: block;
+}
+
+#sitemap-page .sitemap li a.thumb {
+	float: left;
+	display: inline-block;
+	width: 10%;
+	min-width: 64px;
+	text-align: center;
+	margin-right: 1em;
+	text-align: center;
+}
+
+#sitemap-page .sitemap li a.thumb img {
+	max-width: 100%;
+	max-height: 100%;
+	height: auto;
+}
+
+#sitemap-page .sitemap li div {
+	padding-top: 15px;
+	margin-top: 20px;
+	overflow: hidden;
+}
+
+#sitemap-page .clearfix:before {
+	display: inline;
+}
+
+/************** Contents page */
+
+#contents-page h1 {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+#contents-page .one-letter {
+	display: inline-block;
+	vertical-align: top;
+	width: 30%;
+	margin: 0 1.5% 3% 1.5%;
+}
+
+#contents-page .one-letter h2 {
+	text-align: center;
+	border-bottom: 1px solid _(textColor);
+}
+
+#contents-page .one-letter ul {
+	padding-left: 2em;
+	list-style-type: none;
+}
+
+#contents-page.showthumbs .one-letter ul {
+	padding-left: 0;
+}
+
+#contents-page .one-letter li {
+	clear: both;
+	padding: 0.5em 0;
+}
+
+#contents-page small {
+	margin-top: 0.5em;
+	display: block;
+}
+
+#contents-page .one-letter li a {
+	font-weight: bold;
+}
+
+#contents-page .one-letter li a.thumb {
+	float: left;
+	display: inline-block;
+	width: 20%;
+	margin-top: 0.5em;
+	margin-right: 1em;
+	text-align: center;
+	overflow: hidden;
+}
+
+#contents-page .one-letter li a.thumb img {
+	display: inline-block;
+	max-width: 100%;
+	max-height: 100%;
+	height: auto;
+}
+
+#contents-page .one-letter li a.thumb.icon img {
+	margin-top: -15%;
+}
+
+#contents-page .one-letter li div {
+	overflow: hidden;
+}
+
+#contents-page.showthumbs .one-letter li div {
+	margin-top: 0.5em;
+}
+
+/************** Contact page */
+
+#contact-page {
+	margin: 1em 0;
+}
+
+#contact-page .texts {
+	overflow: hidden;
+}
+
+#contact-page .texts blockquote {
+	font-size: 80%;
+	line-height: 1.5em;
+	padding-left: 12px;
+	border-left: 6px solid _(textColor);
+}
+#contact-page .texts > div {
+	font-size: 120%;
+	padding: 15px 5px;
+	border-top: 1px solid rgba(255,255,255,0.3);
+	border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+#contact-page .texts > p {
+	margin-bottom: 0;
+	padding-bottom: 1em;
+	border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+#contact-page .texts blockquote,
+#contact-page .texts a {
+	font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important;
+}
+
+#contact-page .texts a {
+	font-size: 80%;
+	padding: 5px;
+	line-height: 14px;
+}
+
+#contact-page .texts a.button {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-bottom: 0;
+}
+
+/************** Tumblr Feed */
+
+.tumblr_post { 
+	background-color: rgba(255,255,255,0.1);
+	padding: 2em 2em 1em 2em;
+	width: 90%;
+	margin: 0.5em auto;
+}
+
+.tumblr_posts { 
+	list-style-type: none;
+	padding: 0;
+}
+
+.tumblr_title { 
+	font-size: 200%;
+}
+
+.tumblr_body img { 
+	height: 300px; 
+}
+
+.tumblr_photo { 
+	height: 300px; 
+}

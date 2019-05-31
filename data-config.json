@@ -1,0 +1,18 @@
+{
+	"paging":	0,
+	"include":	[
+					"imageCaption",
+					"thumbCaption",
+					"photodata",
+					"regions",
+					"mostphotos",
+					"location",
+					"shop",
+					"dates",
+					"epochDate",
+					"epochDateRange",
+					"external",
+					"projectionType",
+					"soundClip"
+				]
+}

@@ -1,0 +1,12 @@
+<ja:if not exists="backgroundImage">
+body, .lightbox-overlay {
+	background-image: url(bg.jpg);
+	background-position: center top;
+	background-repeat: repeat;
+	background-size: cover;
+}
+</ja:if>
+.cont-box > .columns, .feedbox {
+	background-image: url(bg1.jpg);
+	background-position: center center;
+}

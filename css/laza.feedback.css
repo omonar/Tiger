@@ -1,0 +1,213 @@
+/* laza.feedback.scss */
+/* defaults.scss :: default values, functions and mixins */
+@-webkit-keyframes pop {
+  0% {
+    -webkit-transform: scale(1); }
+  50% {
+    -webkit-transform: scale(1.15); }
+  100% {
+    -webkit-transform: scale(1); } }
+@-moz-keyframes pop {
+  0% {
+    -moz-transform: scale(1); }
+  50% {
+    -moz-transform: scale(1.15); }
+  100% {
+    -moz-transform: scale(1); } }
+@keyframes pop {
+  0% {
+    transform: scale(1); }
+  50% {
+    transform: scale(1.15); }
+  100% {
+    transform: scale(1); } }
+.modal.feedback-cart .window {
+  width: 92%;
+  max-height: none;
+  height: 94%;
+  left: 4%; }
+  .modal.feedback-cart .window.has-header .content {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    top: 60px;
+    padding: 0;
+    overflow-y: auto; }
+  .modal.feedback-cart .window .buttons {
+    text-align: center;
+    padding: 0.9375rem 0;
+    border-top: 1px solid ${modalColor}; }
+    .modal.feedback-cart .window .buttons .button {
+      display: inline-block;
+      margin: 0.25rem; }
+  .modal.feedback-cart .window .button.icon-cancel {
+    margin: 0 .25rem 0 0;
+    padding: .2rem;
+    border-radius: 2rem;
+    color: ${modalColor};
+    background-color: ${modalBgColorAlt}; }
+    .modal.feedback-cart .window .button.icon-cancel:hover {
+      color: #fff;
+      background-color: #c00; }
+    .modal.feedback-cart .window .button.icon-cancel:before {
+      margin-right: 0; }
+  .modal.feedback-cart .window .before-items,
+  .modal.feedback-cart .window .after-items {
+    padding: 1rem;
+    border-bottom: 1px solid ${modalColor}; }
+  .modal.feedback-cart .window .items .item {
+    padding: 1rem; }
+    .modal.feedback-cart .window .items .item:nth-child(even) {
+      background-color: <%=modalWindowsLight? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.1)"%>; }
+    .modal.feedback-cart .window .items .item .info > * {
+      display: inline-block;
+      vertical-align: middle; }
+    .modal.feedback-cart .window .items .item .info .thumb {
+      max-width: 100px;
+      max-height: 60px;
+      margin: .1rem .25rem;
+      transition: transform 400ms; }
+      .modal.feedback-cart .window .items .item .info .thumb:hover {
+        transform: scale(2); }
+    .modal.feedback-cart .window .items .item .info .title {
+      font-size: 0.875em;
+      padding: 0 0.25rem;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis; }
+    .modal.feedback-cart .window .items .item .data {
+      text-align: center; }
+      .modal.feedback-cart .window .items .item .data:last-child {
+        margin-bottom: 0; }
+      .modal.feedback-cart .window .items .item .data input, .modal.feedback-cart .window .items .item .data textarea, .modal.feedback-cart .window .items .item .data select {
+        margin-bottom: .5rem; }
+  .modal.feedback-cart .window .details,
+  .modal.feedback-cart .window .new-items {
+    border-bottom: 1px solid ${modalColor}; }
+  .modal.feedback-cart .window .summary {
+    padding: 1rem;
+    line-height: 40px;
+    text-align: center;
+    background-color: ${modalHighlightBgColor};
+    border-bottom: 1px solid ${modalColor}; }
+    .modal.feedback-cart .window .summary .summary-txt {
+      display: inline-block; }
+      .modal.feedback-cart .window .summary .summary-txt img {
+        margin: 0.1rem;
+        max-height: 40px; }
+    .modal.feedback-cart .window .summary .details-btn {
+      display: inline-block;
+      margin-left: .5rem;
+      padding: 0 .75rem 0 .5rem;
+      background-color: #444;
+      color: #ddd;
+      transition: background-color .25s ease-out, color .25s ease-out; }
+      .modal.feedback-cart .window .summary .details-btn:hover {
+        color: #fff;
+        background-color: #222; }
+  .modal.feedback-cart .window p.fineprint {
+    font-size: 0.7rem;
+    margin: 0.35rem 0; }
+  .modal.feedback-cart .window .instructions {
+    margin-top: .5rem;
+    border-top: 1px solid #aaa;
+    padding: 1rem; }
+    .modal.feedback-cart .window .instructions > div {
+      font-size: 0.85rem;
+      overflow: hidden; }
+    .modal.feedback-cart .window .instructions:before {
+      float: left;
+      line-height: 1.5;
+      margin-right: 0.5rem; }
+  .modal.feedback-cart .window input[readonly] {
+    border: 0;
+    box-shadow: none;
+    padding: .5rem;
+    height: auto;
+    margin-bottom: 0; }
+
+.modal .instructions {
+  margin: .modal .instructions gap2;
+  font-size: 0.85rem; }
+
+.feedback-shortcut {
+  position: fixed;
+  right: 0.15625rem;
+  bottom: 0.15625rem;
+  z-index: 9; }
+  .feedback-shortcut .button {
+    margin-bottom: 0; }
+    .feedback-shortcut .button b {
+      margin-left: .2em;
+      padding: 0.1em .45em .2em;
+      color: ${buttonBgColor};
+      background-color: ${buttonColor};
+      border-radius: .8em; }
+    .feedback-shortcut .button.add-cart b {
+      color: white;
+      background-color: red; }
+    .feedback-shortcut .button.pop {
+      -webkit-animation: pop 500ms ease;
+      -moz-animation: pop 500ms ease;
+      animation: pop 500ms ease; }
+
+/* medium displays >= 640px */
+@media only screen and (min-width: 40.063em), only screen and (orientation: landscape) {
+  .modal.feedback-cart .window {
+    width: 80%;
+    height: 80%;
+    left: 10%; }
+    .modal.feedback-cart .window .items .item {
+      padding: 1rem;
+      text-align: left; }
+      .modal.feedback-cart .window .items .item > * {
+        display: inline-block;
+        vertical-align: middle; }
+      .modal.feedback-cart .window .items .item .info {
+        width: 44%;
+        margin-right: 4%; }
+        .modal.feedback-cart .window .items .item .info .thumb {
+          max-width: 30%; }
+        .modal.feedback-cart .window .items .item .info .title {
+          width: 48%;
+          overflow: hidden;
+          text-overflow: ellipsis; }
+      .modal.feedback-cart .window .items .item .data {
+        text-align: left;
+        width: 52%; }
+        .modal.feedback-cart .window .items .item .data form.inline {
+          text-align: right; }
+          .modal.feedback-cart .window .items .item .data form.inline label, .modal.feedback-cart .window .items .item .data form.inline select, .modal.feedback-cart .window .items .item .data form.inline [type=color], .modal.feedback-cart .window .items .item .data form.inline [type=date], .modal.feedback-cart .window .items .item .data form.inline [type=datetime-local], .modal.feedback-cart .window .items .item .data form.inline [type=datetime], .modal.feedback-cart .window .items .item .data form.inline [type=month], .modal.feedback-cart .window .items .item .data form.inline [type=number], .modal.feedback-cart .window .items .item .data form.inline [type=tel], .modal.feedback-cart .window .items .item .data form.inline [type=text] {
+            display: inline-block;
+            vertical-align: middle;
+            width: auto; }
+    .modal.feedback-cart .window .summary {
+      text-align: left; }
+      .modal.feedback-cart .window .summary .details-btn {
+        float: right; }
+
+  .feedback-shortcut {
+    position: fixed;
+    right: 0.9375rem;
+    bottom: 0.9375rem; } }
+/* large displays >= 1024px */
+@media only screen and (min-width: 64.063em) {
+  .modal.feedback-cart .window {
+    width: 70%;
+    left: 15%; }
+    .modal.feedback-cart .window .items .item .info .title {
+      width: 60%; } }
+@media print {
+  .modal.feedback-cart .window {
+    width: 100%;
+    height: auto;
+    left: none; }
+    .modal.feedback-cart .window .items .item {
+      line-height: 60px;
+      padding: 0.2rem;
+      text-align: left; }
+      .modal.feedback-cart .window .items .item .data {
+        display: inline-block;
+        float: right; } }
+
+/*# sourceMappingURL=laza.feedback.css.map */

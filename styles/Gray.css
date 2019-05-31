@@ -1,0 +1,5 @@
+body, .lightbox-overlay {
+	background-image: -moz-linear-gradient(top, rgba(0,0,0,0.8) 0%, ${mainBgColor} 100%);
+	background-image: -webkit-linear-gradient(top, rgba(0,0,0,0.8) 0%, ${mainBgColor} 100%);
+	background-image: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, ${mainBgColor} 100%);
+}

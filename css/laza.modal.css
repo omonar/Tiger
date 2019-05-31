@@ -1,0 +1,142 @@
+/* laza.modal.scss */
+/* defaults.scss :: default values, functions and mixins */
+.modal {
+  background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 300000; }
+  .modal .window {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    top: 50%;
+    width: 80%;
+    max-height: 98%;
+    padding: 0;
+    color: ${modalColor};
+    background-color: ${modalBgColor};
+    -moz-transform: translate(0, -50%);
+    -ms-transform: translate(0, -50%);
+    -webkit-transform: translate(0, -50%);
+    transform: translate(0, -50%);
+    box-shadow: ${boxShadow};
+    overflow: auto; }
+    .modal .window.small {
+      left: 15%;
+      width: 70%; }
+    .modal .window.large {
+      left: 5%;
+      width: 90%; }
+    .modal .window.alert {
+      border-left: 4px solid #900; }
+    .modal .window.warning {
+      border-left: 4px solid #f90; }
+    .modal .window.success {
+      border-left: 4px solid #090; }
+    .modal .window.secondary {
+      border-left: 4px solid #777; }
+    .modal .window .content {
+      padding: 20px 60px 20px 20px;
+      -webkit-overflow-scrolling: touch; }
+    .modal .window.has-header .content {
+      padding: 20px; }
+    .modal .window.no-padding .content {
+      padding: 0; }
+    .modal .window header {
+      height: 60px;
+      line-height: 60px;
+      padding-left: 20px;
+      padding-right: 60px;
+      text-align: left;
+      color: ${modalHeadColor};
+      background-color: ${modalHeadBgColor}; }
+    .modal .window .content h1, .modal .window .content h2, .modal .window .content h3, .modal .window .content h4, .modal .window .content h5, .modal .window .content h6 {
+      color: ${modalColor}; }
+    .modal .window.map {
+      padding: 0 60px 0 0;
+      background-color: #000; }
+      .modal .window.map img {
+        max-width: none; }
+    .modal .window .btn {
+      position: absolute;
+      text-align: left;
+      text-indent: -9999px;
+      background-color: rgba(0, 0, 0, 0.1);
+      padding: 0;
+      position: absolute;
+      border: none;
+      width: 60px; }
+      .modal .window .btn:hover, .modal .window .btn:focus {
+        background-color: rgba(0, 0, 0, 0.4);
+        outline: none; }
+      .modal .window .btn:hover:before, .modal .window .btn:hover:after {
+        background-color: #fff; }
+      .modal .window .btn:before, .modal .window .btn:after {
+        position: absolute;
+        margin-left: -0.5px;
+        width: 2px;
+        background-color: rgba(255, 255, 255, 0.5);
+        content: ''; }
+      .modal .window .btn.close {
+        height: 60px;
+        z-index: 20;
+        top: 0;
+        right: 0; }
+        .modal .window .btn.close:before, .modal .window .btn.close:after {
+          bottom: 25%;
+          left: 50%;
+          top: 25%; }
+        .modal .window .btn.close:before {
+          -moz-transform: rotate(45deg);
+          -ms-transform: rotate(45deg);
+          -webkit-transform: rotate(45deg);
+          transform: rotate(45deg); }
+        .modal .window .btn.close:after {
+          -moz-transform: rotate(-45deg);
+          -ms-transform: rotate(-45deg);
+          -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg); }
+    .modal .window .buttons {
+      text-align: center;
+      padding: 0.9375rem 0; }
+      .modal .window .buttons .button {
+        display: inline-block;
+        margin: 0.25rem; }
+
+@media only screen and (min-width: 64em) {
+  .modal .window {
+    left: 25%;
+    width: 50%; }
+    .modal .window.small {
+      left: 33%;
+      width: 34%; }
+    .modal .window.large {
+      left: 15%;
+      width: 70%; } }
+@media print {
+  body.has-modal > * {
+    display: none; }
+  body.has-modal .modal {
+    position: static !important;
+    display: block;
+    color: #000;
+    background-color: transparent !important;
+    box-shadow: none;
+    border: 1px solid #ddd; }
+    body.has-modal .modal.hidden {
+      display: none; }
+    body.has-modal .modal .window {
+      position: static !important;
+      transform: none; }
+    body.has-modal .modal header {
+      color: #000;
+      background-color: #ddd; }
+    body.has-modal .modal .content {
+      position: static !important; }
+    body.has-modal .modal .button {
+      display: none !important; } }
+
+/*# sourceMappingURL=laza.modal.css.map */

@@ -1,0 +1,85 @@
+/* laza.slider.scss */
+/* defaults.scss :: default values, functions and mixins */
+.slider-wrapper {
+  position: relative;
+  overflow: hidden;
+  margin: <%=sliderType.equals("small")? "0" : headerMargin%>;
+  margin-bottom: 0.9375em;
+  width: auto;
+  box-shadow: ${boxShadow}; }
+  .slider-wrapper ul {
+    margin: 0;
+    height: 300px;
+    list-style-type: none;
+    background-color: rgba(0, 0, 0, 0.75); }
+    .slider-wrapper ul li {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      overflow: hidden; }
+      .slider-wrapper ul li:first-child {
+        display: list-item; }
+      .slider-wrapper ul li .caption {
+        position: absolute;
+        top: 5%;
+        right: 0;
+        padding: 0.2em 0.5em;
+        color: ${folderTextColor};
+        background-color: rgba(0, 0, 0, 0.2); }
+        .slider-wrapper ul li .caption h1, .slider-wrapper ul li .caption h2, .slider-wrapper ul li .caption h3, .slider-wrapper ul li .caption h4, .slider-wrapper ul li .caption h5, .slider-wrapper ul li .caption h6 {
+          color: ${folderTextColor}; }
+      .slider-wrapper ul li .fill {
+        max-width: none; }
+  .slider-wrapper .slider-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.25);
+    z-index: 999; }
+    .slider-wrapper .slider-progress span {
+      position: absolute;
+      display: inline-box;
+      left: 0;
+      height: 2px;
+      content: ' ';
+      background-color: rgba(255, 255, 255, 0.85);
+      transition: left .5s ease-in-out; }
+  .slider-wrapper .slider-pause {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 30px;
+    width: 30px;
+    margin: -15px auto 0 auto;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.2);
+    text-align: center;
+    overflow: hidden;
+    z-index: 998; }
+    .slider-wrapper .slider-pause:before, .slider-wrapper .slider-pause:after {
+      display: inline-block;
+      width: 8px;
+      height: 20px;
+      background-color: #ddd;
+      content: ' '; }
+    .slider-wrapper .slider-pause:before {
+      margin-right: 2px; }
+    .slider-wrapper .slider-pause:after {
+      margin-left: 2px; }
+
+/* large displays >= 1024px */
+@media only screen and (min-width: 64.063em) {
+  .slider-wrapper ul {
+    height: <%=sliderType.equals("small")? "200px" : "400px"%>;
+    overflow: hidden; }
+    .slider-wrapper ul li {
+      font-size: 80%; } }
+
+/*# sourceMappingURL=laza.slider.css.map */

@@ -1,0 +1,250 @@
+@charset "UTF-8";
+/* user.scss :: User defined styles */
+
+@import '../css/defaults';
+
+$duration: 1s; 
+
+@-webkit-keyframes shake {
+  0%, 100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+
+  10%, 30%, 50%, 70%, 90% {
+    -webkit-transform: translate3d(-3px, 0, 0);
+    transform: translate3d(-3px, 0, 0);
+  }
+
+  20%, 40%, 60%, 80% {
+    -webkit-transform: translate3d(3px, 0, 0);
+    transform: translate3d(3px, 0, 0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+
+  10%, 30%, 50%, 70%, 90% {
+    -webkit-transform: translate3d(-3px, 0, 0);
+    transform: translate3d(-3px, 0, 0);
+  }
+
+  20%, 40%, 60%, 80% {
+    -webkit-transform: translate3d(3px, 0, 0);
+    transform: translate3d(3px, 0, 0);
+  }
+}
+
+@-webkit-keyframes opened {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		-webkit-transform: scale(3) rotate(360deg);
+		transform: scale(3) rotate(360deg);
+	}
+}
+
+@keyframes opened {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		-webkit-transform: scale(3) rotate(360deg);
+		transform: scale(3) rotate(360deg);
+	}
+}
+
+@-webkit-keyframes flipper-f {
+	0% {
+		-webkit-transform: scale(1) rotateY(0);
+		transform: scale(1) rotateY(0);
+	}
+	50% {
+		-webkit-transform: scale(1.5) rotateY(90deg);
+		transform: scale(1.5) rotateY(90deg);
+	}
+	50.1% {
+		visibility: hidden;
+	}
+}
+@keyframes flipper-f {
+	0% {
+		-webkit-transform: scale(1) rotateY(0);
+		transform: scale(1) rotateY(0);
+	}
+	50% {
+		-webkit-transform: scale(1.5) rotateY(90deg);
+		transform: scale(1.5) rotateY(90deg);
+	}
+	50.1% {
+		visibility: hidden;
+	}
+}
+
+@-webkit-keyframes flipper-b {
+	/*
+	0% {
+		-webkit-transform: scale(1) rotateY(180deg);
+		transform: scale(1) rotateY(180deg);
+	}
+	*/
+	0% {
+		visibility: hidden;
+	}
+	49.9% {
+		visibility: hidden;
+	}
+	50% {
+		visibility: visible;
+		-webkit-transform: scale(1.5) rotateY(90deg);
+		transform: scale(1.5) rotateY(90deg);
+	}
+	100% {
+		-webkit-transform: scale(1) rotateY(0);
+		transform: scale(1) rotateY(0);
+	}
+}
+@keyframes flipper-b {
+	0% {
+		visibility: hidden;
+	}
+	49.9% {
+		visibility: hidden;
+	}
+	50% {
+		visibility: visible;
+		-webkit-transform: scale(1.5) rotateY(90deg);
+		transform: scale(1.5) rotateY(90deg);
+	}
+	100% {
+		-webkit-transform: scale(1) rotateY(0);
+		transform: scale(1) rotateY(0);
+	}
+}
+
+
+body.adventcalendar {
+	.page-top {
+		.top-bar {
+			.menu {
+				display: none;
+			}
+		}
+	}
+	.hero .hero-image header .back-btn {
+		display: none;
+	}
+	.feedbox {
+		background-image: none;
+	}
+	.thumbnails {
+		.column {
+			-webkit-perspective: 1000;
+			perspective: 1000;
+			position: relative;
+			z-index: 0;
+			&:hover {
+				z-index: 999;
+			}
+			&.empty {
+				height: 1px;
+			}
+			.card {
+				position: relative;
+				min-height: _B('Math.round(maxThumbHeight * .6) + "px"');
+				background-color: transparent;
+				background-image: none;
+				box-shadow: none;
+				.thumb, .cover {
+					-webkit-backface-visibility: hidden;
+					backface-visibility: hidden;
+				}
+				&.open {
+					transform-style: preserve-3d;
+					z-index: 999;
+					.cover {
+						animation: flipper-f $duration linear forwards;
+					}
+					.thumb {
+						animation: flipper-b $duration linear forwards;
+					}
+				}
+				.cover {
+					position: absolute;
+					left: 0;
+					top: 0;
+					width: 100%;
+					height: 100%;
+					z-index: 13;
+					cursor: pointer;
+					h1, h2, p {
+						margin: 0;
+					}
+					> *:first-child {
+						padding-top: 20%;
+					}
+					&.canopen {
+						background-color: #aa0000;
+						transition: all 1s ease;
+						h1, h2, p {
+							color: #fcc;
+						}
+						.date {
+							border-top-color: #fff;
+							border-bottom-color: #fff;
+						}
+						&:hover {
+							background-color: #dd0000;
+							h1, h2, p {
+								color: #fff;
+							}
+							transform: scale(1.1);
+						}
+					}
+					&.cannotopen {
+						background-color: rgba(0,0,0,0.1);
+						h1, h2, p {
+							color: #999;
+						}
+						.date {
+							border-top-color: #999;
+							border-bottom-color: #999;
+						}
+						&:hover {
+							-moz-animation: shake 1s linear;
+							-webkit-animation: shake 1s linear;
+							-ms-animation: shake 1s linear;
+							animation: shake 1s linear;
+						}
+					}
+				}
+				.thumb {
+					position: absolute;
+					left: 0;
+					top: 0;
+					width: 100%;
+					height: 100%;
+					z-index: 12;
+					img {
+						position: absolute;
+						max-width: none;
+						left: 50%;
+						top: 50%;
+						transform: translate(-50%, -50%);
+						transition: all $duration ease;
+						&:hover {
+							transform: scale(1.1) translate(-45%, -45%);
+						}
+					}
+				}
+			}
+		}
+	}
+}

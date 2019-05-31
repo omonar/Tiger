@@ -1,0 +1,82 @@
+<%-- User interface for editing this page from within jAlbum --%>
+<ja:ui>
+	class AboutUI extends JWebPageUI {
+		import javax.swing.filechooser.*;
+		
+		JTextField aboutHeader = new JTextField();
+		JTextArea aboutText = new JSmartTextArea(8,30);
+		JTextField authorImage = new JTextField(10);
+		JButton selectImage = new JButton("Select");
+		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(new FileNameExtensionFilter("Images", new String[] {"jpg", "png", "gif"}));
+		fc.setDialogTitle("Select author image");
+		
+		File getFile() {
+			int returnVal = fc.showOpenDialog(window);
+			return (returnVal == JFileChooser.APPROVE_OPTION)? fc.getSelectedFile() : null;
+		}
+		
+		String copyFile(File src) {
+			if (src.exists()) {
+				File dst = new File(engine.getDirectory(), "res");
+				String name = src.getName(), n = name.toLowerCase();
+				boolean scale = n.indexOf(".jpg") > 0 || n.indexOf(".png") > 0; 
+				try {
+					if (!dst.exists()) {
+						dst.mkdirs();
+					}
+					dst = new File(dst, name);
+					if (scale) {
+						AlbumImage ai = new AlbumImage(src, engine);
+						ai = ai.scaleToFit(new Dimension(320,320));
+						ai.saveImage(dst);
+					} else
+						IO.copyFile(src, dst);
+					return dst.getName();
+				} catch (IOException e) {
+					System.out.println(e);
+					return null;
+				}
+			}
+			return null;
+		}
+		
+		{
+			selectImage.addActionListener(new ActionListener() { 
+				public void actionPerformed(ActionEvent e) {
+					File src = getFile();
+					if (src != null) {
+						String n = copyFile(src);
+						if (n != null)
+							authorImage.setText(n);
+					}
+			}});
+			
+			aboutText.setLineWrap(true);
+			add(new JLabel("Author image"));
+			add("tab hfill", authorImage);
+			add(selectImage);
+			add("br", new JLabel("Header"));
+			add("tab hfill", aboutHeader);
+			add("br", new JLabel("Text"));
+			add("tab hfill vfill", new JScrollPane(aboutText));
+		}
+	}
+</ja:ui>
+<ja:include page="page-header.inc" /> <%-- Keep this --%>
+
+				<div id="about-page" class="clearfix">
+					<ja:if exists="authorImage">
+					<div class="medium-4 columns"><img src="${resPath}/${authorImage}"></div>
+					<div class="medium-8 columns">
+					</ja:if><ja:else>
+					<div class="columns">
+					</ja:else>
+						<ja:if exists="aboutHeader"><h1>${aboutHeader}</h1></ja:if>
+						<ja:if exists="aboutText"><div class="about-text">
+							<ja:include page="templates/About.inc" />
+						</div></ja:if>
+					</div>
+				</div>
+
+<ja:include page="page-footer.inc" /> <%-- Keep this --%>

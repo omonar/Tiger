@@ -1,0 +1,1 @@
+<%= getCatalogue(rootFolder, relPath, showContentsDescriptions, showContentsThumbs); %>

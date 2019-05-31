@@ -1,0 +1,19 @@
+<ja:if not exists="backgroundImage">
+body, .lightbox-overlay {
+	background-image: url(bg.jpg);
+	background-position: center top;
+	background-repeat: repeat;
+}
+</ja:if>
+.lightbox .thumb-strip {
+	background-image: url(bg1.jpg);
+	border-left: 2px dashed #000;
+	border-right: 2px dashed #000;
+	border-bottom: 2px dashed #000;
+}
+.lightbox .lightbox-caption {
+	background-image: url(bg1.jpg);
+	border-left: 2px dashed #000;
+	border-right: 2px dashed #000;
+	border-top: 2px dashed #000;
+}

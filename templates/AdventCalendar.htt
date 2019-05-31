@@ -1,0 +1,53 @@
+<ja:ui>
+	import java.time.LocalDate;
+	import java.time.ZoneId;
+	
+	class SitemapUI extends JWebPageUI {
+		Date date = new Date();
+		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		int year  = localDate.getYear();
+		int month = localDate.getMonthValue();
+		int day   = localDate.getDayOfMonth();		
+		
+		JComboBox startYear = new JComboBox(new Object[] {
+			"2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030" 
+		});
+		JComboBox startMonth = new JComboBox(new Object[] {
+			"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" 
+		});
+		JComboBox startDay = new JComboBox(new Object[] {
+			"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", 
+			"11", "12", "13", "14", "15", "16", "17", "18", "19", "20", 
+			"21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
+			"31"
+		});
+		JSpinner duration = new JSpinner(new SpinnerNumberModel(24, 1, 365, 1));
+		JComboBox select = new JComboBox(new Object[] {
+			"original order",			// "Original order"
+			"latest"					// "Last N added"
+		});
+		
+		{	
+			startYear.setEditable(true);
+			startYear.getEditor().setItem(year.toString());
+			startMonth.setSelectedIndex(month - 1);
+			startDay.setSelectedIndex(day - 1);
+			
+			add(new JLabel("Start date"));
+			add("tab", startYear);
+			add("tab", startMonth);
+			add("tab", startDay);
+			add("br", new JLabel("Duration"));
+			add("tab", duration);
+			add(new JLabel("days"));
+			add("br", new JLabel("Select items"));
+			add("tab", select);
+		}
+	}
+</ja:ui>
+<ja:include page="page-header.inc" /> <%-- Keep this --%>
+
+	<ja:if exists="comment"><div>${comment}</div></ja:if>
+	<ja:include page="templates/AdventCalendar.inc" />
+
+<ja:include page="page-footer.inc" /> <%-- Keep this --%>

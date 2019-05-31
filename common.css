@@ -1,0 +1,221 @@
+<%	/* Initializing variables for CSS files */
+
+	var backgroundLuminosity = getLuminosity(backgroundColor),
+		boxBackgroundAlpha = getAlpha(boxBackgroundColor),
+		lightboxLuminosity = getLuminosity(backgroundColor, lightboxBackgroundColor);
+	
+	// Constants
+	
+	lightStyle = 'Cardboard,Creme,Exhibition,Hemp,Leather Light,Retro,Ricepaper,Shine,Stonewall,Wallpaper,White,Wood lightYellow'.indexOf(styleName) >= 0;
+	//headlineIsScript = 'Cookie,Dancing Script,Dynalight,Euphoria Script,Grand Hotel,Great Vibes,Indie Flower,La Belle Aurore,Lobster,Lobster Two,Loved by the King,Mountains of Christmas,Princess Sofia,Rochester,Shadows Into Light Two'.indexOf(headlineFont) >= 0;
+	hasBoxBgImage = 'Brushed,Cork,Exhibition,Shine,Techno'.indexOf(styleName) >= 0;
+	
+	folderTitleSameAsHeadline = headlineFont.length === 0;
+	if (folderTitleSameAsHeadline) {
+		hFont = fontFamily;
+		hWeight = 'normal';
+	} else {
+		var hf = headlineFont.split(':');
+		hFont = (hf[0].contains(' ')? ('"' + hf[0] + '"') : hf[0]) + ', sans-serif';
+		hWeight = (hf.length > 1)? hf[1] : 'normal'
+	}
+	
+	if (isLightColor(textColor)) {
+		lightText = textColor;
+		darkText = '#444444';
+		lighterText = lighten(textColor, 0.5);
+		darkerText = '#000000';
+		transparentText = setAlpha(textColor, 0.4);
+	} else {
+		lightText = '#dddddd';
+		darkText = textColor;
+		lighterText = '#ffffff';
+		darkerText = darken(textColor, 0.5);
+		transparentText = setAlpha(textColor, 0.2);
+	}
+				
+	// Main layout
+
+	backgroundImage = encodeAsJava(backgroundImageName);
+	mainBgColor = getCssColor(backgroundColor);
+	heroBgColor = getCssColor(heroColor);
+	htmlColor = backgroundImage? 'transparent'
+					:
+					(heroFullWidth? getFlatColor(backgroundColor, topmenuColor) : mainBgColor);
+	
+	// Menu
+	
+	topmenuBgColor = getCssColor(topmenuColor);
+	topmenuDropdownBgColor = (getAlpha(topmenuColor) < 0.1)? htmlColor : topmenuBgColor; 
+	topmenuLightColor = lighten(topmenuColor, 0.1);
+	topmenuTextColor = getLegibleColor(backgroundColor, topmenuColor, textColor);
+	topmenuLinkColor = getLegibleColor(backgroundColor, topmenuColor, linkColor);
+	topmenuHoverColor = getLegibleColor(backgroundColor, topmenuColor, hoverColor);
+	topmenuActualBg = isLightColor(backgroundColor, topmenuColor, 0.8)? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.15)';
+	
+	if (heroFullWidth) {
+		footerColor = topmenuTextColor;
+		footerLinkColor = topmenuLinkColor;
+		footerHoverColor = topmenuHoverColor;
+		footerBoxTheme = isLightColor(backgroundColor, topmenuColor)? 'light' : 'dark';
+	} else {
+		footerColor = getLegibleColor(backgroundColor, textColor, 0.4);
+		footerLinkColor = linkColor;
+		footerHoverColor = hoverColor;
+		footerBoxTheme = isLightColor(backgroundColor)? 'light' : 'dark';
+	}
+	
+	footerBoxWidth = Math.floor(parseFloat(maxPageWidth || 67.5)) * 5;
+	
+	pageWidth = Math.round(parseFloat(maxPageWidth || 67.5) * 16);
+	
+	// Buttons
+	
+	buttonBgColor = getCssColor(buttonColor);
+	if (isLightColor(buttonBgColor, 0.75)) {
+		buttonHoverBgColor = lighten(buttonColor);
+		buttonColor = getLegibleColor(buttonColor, darkText);
+		buttonHoverColor = getLegibleColor(buttonHoverBgColor, darkerText);
+	} else {
+		buttonHoverBgColor = darken(buttonColor);
+		buttonColor = getLegibleColor(buttonColor, lightText);
+		buttonHoverColor = getLegibleColor(buttonHoverBgColor, lighterText);
+	}
+	
+	// Thumbnails, boxes	
+
+	boxBgColor = getCssColor(boxBackgroundColor);
+	
+	boxShadow = boxDropShadow? ('1px 2px 6px rgba(0,0,0,' + (0.5 - backgroundLuminosity * 0.4).toFixed(2) + ')') : 'none';
+	tooltipColor = (backgroundLuminosity > 0.8)? lightText : darkText;
+	tooltipBgColor = (backgroundLuminosity > 0.8)? '#111' : '#fff';
+	widgetBarColor = (backgroundLuminosity > 0.6)? 'white' : 'black';
+	
+	boxTextColor = getLegibleColor(backgroundColor, boxBackgroundColor, textColor);
+	boxHoverBgColor = (boxBackgroundAlpha < 0.5)? 
+		setAlpha(boxBackgroundColor, boxBackgroundAlpha + 0.2)
+		:
+		lighten(boxBackgroundColor, 0.2);
+	
+	if (isLightColor(backgroundColor, boxBackgroundColor)) {
+		shareButtonTheme = 'light';
+		commentingTheme = 'light';
+	} else {
+		shareButtonTheme = 'dark';
+		commentingTheme = 'dark';
+	}
+			
+	// Corner radius
+
+	brs = Math.round(cornerRadius * 0.333);
+	brm = Math.round(cornerRadius * 0.667);
+	brl = cornerRadius;
+
+	switch (boxPadding) {
+		case 'small':
+			thumbPad = '4px';
+			break;
+		case 'medium':
+			thumbPad = '8px';
+			break;
+		case 'large':
+			thumbPad = '12px';
+			break;
+		case 'x-large':
+			thumbPad = '20px';
+			break;
+		default: 
+			thumbPad = '0';
+			break;
+	}
+
+	// Lightbox
+	
+	lightboxBgColor = getCssColor(lightboxBackgroundColor);
+	lightboxBorderColorCss = getCssColor(lightboxBorderColor);
+	if (lightboxLuminosity > 0.92) {
+		// White theme :: needs darkening
+		lightboxBoxBg = 'rgba(240,240,240,0.6)';
+		lightboxBoxHoverBg = 'rgba(240,240,240,0.95)';
+		lightboxButtonColor = darkText;
+		lightboxButtonHover = darkerText;
+	} else {
+		if (lightboxLuminosity > 0.6) {
+			// Light lightbox
+			lightboxBoxBg = 'rgba(255,255,255,' + (0.25 + lightboxLuminosity / 2).toFixed(2) + ')';
+			lightboxBoxHoverBg = 'rgba(255,255,255,' + (0.5 + lightboxLuminosity / 2).toFixed(2) + ')';
+			lightboxButtonColor = darkText;
+			lightboxButtonHover = darkerText;
+		} else {
+			// Dark lightbox
+			lightboxBoxBg = 'rgba(17,17,17,' + (0.5 - lightboxLuminosity / 2).toFixed(2) + ')';
+			lightboxBoxHoverBg = 'rgba(17,17,17,' + (1 - lightboxLuminosity / 2).toFixed(2) + ')';
+			lightboxButtonColor = lightText;
+			lightboxButtonHover = lighterText;
+		}	
+	}
+	lightboxBoxShadow = boxDropShadow? ('1px 2px 6px rgba(0,0,0,' + (0.5 - lightboxLuminosity * 0.4).toFixed(2) + ')') :	'none';
+	lightboxImageShadow = boxDropShadow? ('2px 6px 16px rgba(0,0,0,' + (0.5 - lightboxLuminosity * 0.4).toFixed(2) + ')') :	'none';
+	lightboxImageCornerRadius = Math.max(0, Math.round(imgCornerRadius - lightboxBorderWidth * 0.6667));
+	thumbsHeight = thumbstripHeight - 6;
+	
+	// Modal windows
+	
+	modalWindowsLight = modalWindowsTheme === 'light' || (modalWindowsTheme === 'auto' && backgroundLuminosity > 0.3);
+	
+	if (modalWindowsLight) {
+		modalBgColor = '#eee';
+		modalBgColorAlt = '#ccc';
+		modalColor = '#222';
+		modalHeadBgColor = '#888';
+		modalHighlightBgColor = '#fff'; 
+	} else {
+		modalBgColor = '#333';
+		modalBgColorAlt = '#666';
+		modalColor = '#eee';
+		modalHeadBgColor = '#555';
+		modalHighlightBgColor = '#000'; 
+	}
+	modalHeadColor = '#fff';
+	
+	backBtnTopMargin = (headlineSize - 1.5) / 2;
+
+%>
+
+/*# sourceMappingURL= */
+
+<%-- Zurb foundtaion styles --%>
+<ja:include page="css/foundation.min.css" />
+
+<%-- Icon font styles --%>
+<ja:include page="css/iconfont.min.css" />
+
+<%-- Lightbox styles --%>
+<ja:include page="css/laza.lightbox.css" />
+
+<%-- Paypal cart styles --%>
+<ja:if test="${showShop}"><ja:include page="css/laza.paypal.css" /></ja:if>
+
+<%-- Feedback styles --%>
+<ja:if test="${showFeedback}"><ja:include page="css/laza.feedback.css" /></ja:if>
+
+<%-- Modal styles --%>
+<ja:include page="css/laza.modal.css" />
+
+<%-- The main user definition css file --%>
+<ja:include page="css/user.css" />
+
+<%-- Font/lineheight sizes calculated from the zoom --%>
+<%= getFontSizes(zoom, headlineSize); %>
+
+<%-- Custom page templates --%>
+<ja:include page="templates/styles.css" />
+
+<%-- Chosen skin style --%>
+<ja:include page="styles/${style}" />
+
+<%-- CSS hooks added through the user interface --%>
+<ja:if exists="cssHook"><%= engine.processTemplate(cssHook) %></ja:if>
+
+<%-- Debugging layers --%>
+<ja:if test="${debug}" value="true"><ja:include page="css/debug.css" /></ja:if>

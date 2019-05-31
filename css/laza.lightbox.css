@@ -1,0 +1,451 @@
+/* laza.lightbox.scss */
+/* defaults.scss :: default values, functions and mixins */
+/* Loading animation */
+@-webkit-keyframes lightbox-loading {
+  0% {
+    opacity: .5;
+    -webkit-transform: scale(0.75); }
+  50% {
+    opacity: 1;
+    -webkit-transform: scale(1); }
+  100% {
+    opacity: .5;
+    -webkit-transform: scale(0.75); } }
+@-moz-keyframes lightbox-loading {
+  0% {
+    opacity: .5;
+    -moz-transform: scale(0.75); }
+  50% {
+    opacity: 1;
+    -moz-transform: scale(1); }
+  100% {
+    opacity: .5;
+    -moz-transform: scale(0.75); } }
+@keyframes lightbox-loading {
+  0% {
+    opacity: .5;
+    transform: scale(0.75); }
+  50% {
+    opacity: 1;
+    transform: scale(1); }
+  100% {
+    opacity: .5;
+    transform: scale(0.75); } }
+@-moz-keyframes timer {
+  0% {
+    width: 0; }
+  100% {
+    width: 100%; } }
+@-webkit-keyframes timer {
+  0% {
+    width: 0; }
+  100% {
+    width: 100%; } }
+@keyframes timer {
+  0% {
+    width: 0; }
+  100% {
+    width: 100%; } }
+.lightbox {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200000; }
+  .lightbox .lightbox-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: ${lightboxBgColor};
+    z-index: 0; }
+  .lightbox .lightbox-loading,
+  .lightbox .lightbox-loading div {
+    border-radius: 50%; }
+  .lightbox .lightbox-loading {
+    -webkit-box-shadow: rgba(0, 0, 0, 0.5) 0 0 40px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0 0 40px;
+    background: rgba(0, 0, 0, 0.5);
+    height: 40px;
+    left: 50%;
+    margin: -20px 0 0 -20px;
+    padding: 10px;
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    z-index: 1; }
+    .lightbox .lightbox-loading div {
+      -moz-animation: lightbox-loading 1s ease infinite;
+      -webkit-animation: lightbox-loading 1s ease infinite;
+      animation: lightbox-loading 1s ease infinite;
+      background-color: #fff;
+      height: 20px;
+      width: 20px; }
+  .lightbox .lightbox-main .lightbox-loading div {
+    background-color: ${buttonBgColor}; }
+  .lightbox .thumb-strip {
+    position: absolute;
+    max-width: 100%;
+    transform: translateX(-50%);
+    left: 50%;
+    top: -${thumbstripHeight}px;
+    height: ${thumbstripHeight}px;
+    padding: 0 5px;
+    background-color: ${lightboxBoxBg};
+    border-radius: 0 0 ${brm}px ${brm}px;
+    box-shadow: ${lightboxBoxShadow};
+    z-index: 10;
+    text-align: left;
+    transition: all 500ms; }
+    .lightbox .thumb-strip .thumb-cont {
+      position: relative;
+      height: 100%;
+      overflow: hidden;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none; }
+      .lightbox .thumb-strip .thumb-cont .thumbs {
+        margin-top: 5px;
+        height: ${thumbsHeight}px;
+        white-space: nowrap;
+        transform: translateX(0); }
+        .lightbox .thumb-strip .thumb-cont .thumbs a {
+          display: inline-block;
+          height: 100%;
+          vertical-align: top;
+          margin: 0 1px 0 0;
+          padding: 0 0 4px 0;
+          cursor: default; }
+          .lightbox .thumb-strip .thumb-cont .thumbs a:hover {
+            background-color: ${lightboxButtonHover}; }
+          .lightbox .thumb-strip .thumb-cont .thumbs a.active {
+            background-color: ${lightboxButtonColor}; }
+          .lightbox .thumb-strip .thumb-cont .thumbs a img {
+            vertical-align: top; }
+    .lightbox .thumb-strip button {
+      position: absolute;
+      display: none;
+      color: ${lightboxButtonColor}; }
+      .lightbox .thumb-strip button.left, .lightbox .thumb-strip button.right {
+        width: 3rem;
+        font-size: 1.5rem;
+        text-align: center;
+        top: 0;
+        height: 100%; }
+      .lightbox .thumb-strip button.left {
+        left: 0; }
+      .lightbox .thumb-strip button.right {
+        right: 0; }
+    .lightbox .thumb-strip:hover {
+      background-color: ${lightboxBoxHoverBg}; }
+      .lightbox .thumb-strip:hover button {
+        color: ${lightboxButtonHover}; }
+    .lightbox .thumb-strip.scroll {
+      width: 100%;
+      padding: 0 3rem; }
+      .lightbox .thumb-strip.scroll .thumb-cont {
+        overflow: hidden; }
+        .lightbox .thumb-strip.scroll .thumb-cont .thumbs {
+          position: absolute;
+          left: 0;
+          overflow: hidden; }
+      .lightbox .thumb-strip.scroll button {
+        display: inline-block; }
+  .lightbox .controls {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 3.5rem;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    background-color: ${lightboxBoxBg};
+    border-radius: 0 0 ${brm}px ${brm}px;
+    box-shadow: ${lightboxBoxShadow};
+    z-index: 11;
+    opacity: 1;
+    transition: top 500ms, background-color 500ms, opacity 1s; }
+    .lightbox .controls.use-text button {
+      font-size: 0.7rem;
+      padding: 0 .3rem;
+      min-width: 4rem;
+      text-align: center; }
+      .lightbox .controls.use-text button.previous:before, .lightbox .controls.use-text button.next:before {
+        font-size: 1.5rem; }
+    .lightbox .controls button {
+      display: inline-block;
+      height: 100%;
+      padding: 0 .7rem;
+      vertical-align: top;
+      color: ${lightboxButtonColor};
+      transition: color 500ms; }
+      .lightbox .controls button:before {
+        display: block;
+        font-size: 1.5rem;
+        line-height: 2.4rem; }
+      .lightbox .controls button:hover {
+        color: ${lightboxButtonHover}; }
+      .lightbox .controls button:focus {
+        outline: 1px dotted rgba(224, 224, 224, 0.2); }
+      .lightbox .controls button.previous:before, .lightbox .controls button.next:before {
+        font-size: 2rem; }
+      .lightbox .controls button.pause:before {
+        font-size: 1rem; }
+      .lightbox .controls button.zoom-out, .lightbox .controls button.hide-thumbs, .lightbox .controls button.hide-caption, .lightbox .controls button.pause {
+        display: none; }
+      .lightbox .controls button .progress {
+        position: absolute;
+        height: 1px;
+        overflow: hidden;
+        background-color: #999;
+        width: 0;
+        left: 0;
+        bottom: 0;
+        content: ' ';
+        z-index: 24;
+        -moz-animation: timer ${slideshowDelay}s linear;
+        -webkit-animation: timer ${slideshowDelay}s linear;
+        -ms-animation: timer ${slideshowDelay}s linear;
+        animation: timer ${slideshowDelay}s linear; }
+    .lightbox .controls:hover {
+      background-color: ${lightboxBoxHoverBg}; }
+  .lightbox .lightbox-main {
+    -ms-touch-action: none;
+    touch-action: none;
+    position: absolute;
+    z-index: 1;
+    padding: ${lightboxBorderWidth}px;
+    background-color: <%=(lightboxBorderWidth > 0)? lightboxBorderColorCss : "transparent"%>;
+    box-shadow: ${lightboxImageShadow};
+    border-radius: ${imgCornerRadius}px;
+    transition: left 500ms, top 500ms, width 500ms, height 500ms, transform 500ms, opacity 500ms; }
+    .lightbox .lightbox-main > * {
+      border-radius: ${lightboxImageCornerRadius}px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none; }
+    .lightbox .lightbox-main.image img {
+      width: 100%; }
+    .lightbox .lightbox-main.audio img.poster {
+      width: 100%; }
+    .lightbox .lightbox-main.audio audio {
+      position: absolute;
+      bottom: ${lightboxBorderWidth}px;
+      left: 50%;
+      max-width: 100%;
+      -moz-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
+      -webkit-transform: translateX(-50%);
+      transform: translateX(-50%);
+      min-width: 320px;
+      width: 80%; }
+    .lightbox .lightbox-main.video video {
+      width: 100%; }
+    .lightbox .lightbox-main.other {
+      min-width: 240px;
+      text-align: center; }
+    .lightbox .lightbox-main.pdf object, .lightbox .lightbox-main.pdf iframe {
+      width: 100%;
+      height: 100%; }
+    .lightbox .lightbox-main .click-hint {
+      text-align: center;
+      padding: 0.5em;
+      color: ${lightText};
+      font-size: 80%;
+      background-color: rgba(51, 51, 51, 0.6); }
+    .lightbox .lightbox-main.external {
+      max-width: 100%;
+      max-height: 100%;
+      overflow: auto; }
+      .lightbox .lightbox-main.external.iframe {
+        overflow: hidden; }
+    .lightbox .lightbox-main.vr {
+      overflow: hidden; }
+      .lightbox .lightbox-main.vr iframe {
+        display: block; }
+      .lightbox .lightbox-main.vr .error {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        max-width: 60%;
+        transform: translate(-50%, -50%);
+        padding: 1rem;
+        color: #eee;
+        background-color: #000;
+        border-radius: .5rem; }
+    .lightbox .lightbox-main .regions {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%; }
+      .lightbox .lightbox-main .regions a {
+        position: absolute;
+        display: inline-block;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        transition: all 500ms; }
+        .lightbox .lightbox-main .regions a span {
+          position: absolute;
+          top: 0;
+          left: 0;
+          max-width: 100%;
+          padding: 0 4px 4px 6px;
+          background-color: rgba(255, 255, 255, 0.5);
+          font-size: 0.75em;
+          color: ${darkText};
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          transition: all 500ms; }
+        .lightbox .lightbox-main .regions a .active, .lightbox .lightbox-main .regions a:hover {
+          border: 1px solid #fff; }
+          .lightbox .lightbox-main .regions a .active span, .lightbox .lightbox-main .regions a:hover span {
+            color: ${darkerText};
+            max-width: none;
+            background-color: #fff; }
+  .lightbox .lightbox-caption {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    padding: 1rem;
+    transition: all 500ms;
+    background-color: ${lightboxBoxBg};
+    border-radius: ${brm}px ${brm}px 0 0;
+    box-shadow: ${lightboxBoxShadow};
+    z-index: 12;
+    transform: translateY(100%); }
+    .lightbox .lightbox-caption .buttons {
+      float: right;
+      margin-left: 1rem; }
+      .lightbox .lightbox-caption .buttons > * {
+        vertical-align: middle; }
+      .lightbox .lightbox-caption .buttons .download {
+        display: inline-block;
+        padding: 0.5rem; }
+        .lightbox .lightbox-caption .buttons .download:before {
+          color: ${lightboxButtonColor}; }
+        .lightbox .lightbox-caption .buttons .download a {
+          padding: 0.2rem;
+          font-size: 0.875em; }
+      .lightbox .lightbox-caption .buttons .button {
+        border-radius: 0;
+        margin-bottom: 0;
+        margin-right: 1px;
+        cursor: default; }
+        .lightbox .lightbox-caption .buttons .button:first-of-type {
+          border-top-left-radius: ${brs}px;
+          border-bottom-left-radius: ${brs}px; }
+        .lightbox .lightbox-caption .buttons .button:last-of-type {
+          margin-right: 0;
+          border-top-right-radius: ${brs}px;
+          border-bottom-right-radius: ${brs}px; }
+        .lightbox .lightbox-caption .buttons .button:before {
+          font-size: 1rem;
+          vertical-align: text-bottom; }
+      .lightbox .lightbox-caption .buttons .numbers {
+        display: inline-block;
+        margin: 0 0.5em;
+        color: ${lightboxButtonColor}; }
+    .lightbox .lightbox-caption .caption {
+      color: ${lightboxButtonColor}; }
+      .lightbox .lightbox-caption .caption h1, .lightbox .lightbox-caption .caption h2, .lightbox .lightbox-caption .caption h3, .lightbox .lightbox-caption .caption h4, .lightbox .lightbox-caption .caption h5, .lightbox .lightbox-caption .caption h6 {
+        color: ${lightboxButtonColor}; }
+      .lightbox .lightbox-caption .caption h1 {
+        font-size: 1.6em; }
+      .lightbox .lightbox-caption .caption h2 {
+        font-size: 1.4em; }
+      .lightbox .lightbox-caption .caption h3 {
+        font-size: 1.2em; }
+      .lightbox .lightbox-caption .caption h4 {
+        font-size: 1.1em; }
+    .lightbox .lightbox-caption:hover {
+      background-color: ${lightboxBoxHoverBg}; }
+  .lightbox.thumbs-visible .thumb-strip {
+    top: 0; }
+  .lightbox.thumbs-visible .controls {
+    top: ${thumbstripHeight}px; }
+    .lightbox.thumbs-visible .controls > .hide-thumbs {
+      display: inline-block; }
+    .lightbox.thumbs-visible .controls > .show-thumbs {
+      display: none; }
+  .lightbox.zoomed .controls > .zoom-out {
+    display: inline-block; }
+  .lightbox.zoomed .controls > .zoom-in {
+    display: none !important; }
+  .lightbox.no-zoom .controls > .zoom-in,
+  .lightbox.no-zoom .controls > .zoom-out {
+    display: none !important; }
+  .lightbox.caption-visible .lightbox-caption {
+    transform: translateY(0); }
+  .lightbox.caption-visible .controls > .hide-caption {
+    display: inline-block; }
+  .lightbox.caption-visible .controls > .show-caption {
+    display: none !important; }
+  .lightbox.playing .controls > .pause {
+    display: inline-block; }
+  .lightbox.playing .controls > .play {
+    display: none !important; }
+  .lightbox.controls-hide .controls {
+    opacity: 0; }
+
+.jalbumWidgetbar .lightbox-caption {
+  bottom: 20px; }
+
+.photodata {
+  font-size: 0.875em; }
+  .photodata p {
+    font-size: 0.875em;
+    margin: 0; }
+    .photodata p i {
+      font-style: normal; }
+
+.modal .photodata p {
+  padding: .2rem;
+  line-height: 1.5; }
+  .modal .photodata p b {
+    float: left;
+    display: inline-block;
+    font-weight: normal;
+    width: 30%;
+    margin-right: 1rem; }
+  .modal .photodata p i {
+    display: block;
+    overflow: hidden; }
+  .modal .photodata p:nth-child(odd) {
+    background-color: <%=modalWindowsLight? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.1)"%>; }
+  .modal .photodata p:before, .modal .photodata p:after {
+    content: "\0020";
+    display: block;
+    height: 0;
+    visibility: hidden; }
+  .modal .photodata p:after {
+    clear: both; }
+
+.lightbox-caption .photodata p {
+  display: inline-block; }
+  .lightbox-caption .photodata p b {
+    margin: 0 .25rem 0 0; }
+  .lightbox-caption .photodata p i {
+    margin: 0 1rem 0 0; }
+
+/********* medium displays >= 640px */
+@media screen and (min-width: 30em) {
+  .lightbox .thumb-strip {
+    max-width: 90%; }
+    .lightbox .thumb-strip.scroll {
+      width: 90%; }
+  .lightbox .lightbox-caption {
+    width: 90%;
+    left: 5%; } }
+@media screen and (min-width: 40em) {
+  .lightbox .thumb-strip {
+    max-width: 80%; }
+    .lightbox .thumb-strip.scroll {
+      width: 80%; }
+  .lightbox .lightbox-caption {
+    width: 80%;
+    left: 10%; } }
+
+/*# sourceMappingURL=laza.lightbox.css.map */

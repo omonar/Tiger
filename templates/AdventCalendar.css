@@ -1,0 +1,170 @@
+/* user.scss :: User defined styles */
+/* defaults.scss :: default values, functions and mixins */
+@-webkit-keyframes shake {
+  0%, 100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0); }
+  10%, 30%, 50%, 70%, 90% {
+    -webkit-transform: translate3d(-3px, 0, 0);
+    transform: translate3d(-3px, 0, 0); }
+  20%, 40%, 60%, 80% {
+    -webkit-transform: translate3d(3px, 0, 0);
+    transform: translate3d(3px, 0, 0); } }
+@keyframes shake {
+  0%, 100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0); }
+  10%, 30%, 50%, 70%, 90% {
+    -webkit-transform: translate3d(-3px, 0, 0);
+    transform: translate3d(-3px, 0, 0); }
+  20%, 40%, 60%, 80% {
+    -webkit-transform: translate3d(3px, 0, 0);
+    transform: translate3d(3px, 0, 0); } }
+@-webkit-keyframes opened {
+  0% {
+    opacity: 1; }
+  100% {
+    opacity: 0;
+    -webkit-transform: scale(3) rotate(360deg);
+    transform: scale(3) rotate(360deg); } }
+@keyframes opened {
+  0% {
+    opacity: 1; }
+  100% {
+    opacity: 0;
+    -webkit-transform: scale(3) rotate(360deg);
+    transform: scale(3) rotate(360deg); } }
+@-webkit-keyframes flipper-f {
+  0% {
+    -webkit-transform: scale(1) rotateY(0);
+    transform: scale(1) rotateY(0); }
+  50% {
+    -webkit-transform: scale(1.5) rotateY(90deg);
+    transform: scale(1.5) rotateY(90deg); }
+  50.1% {
+    visibility: hidden; } }
+@keyframes flipper-f {
+  0% {
+    -webkit-transform: scale(1) rotateY(0);
+    transform: scale(1) rotateY(0); }
+  50% {
+    -webkit-transform: scale(1.5) rotateY(90deg);
+    transform: scale(1.5) rotateY(90deg); }
+  50.1% {
+    visibility: hidden; } }
+@-webkit-keyframes flipper-b {
+  /*
+  0% {
+  	-webkit-transform: scale(1) rotateY(180deg);
+  	transform: scale(1) rotateY(180deg);
+  }
+  */
+  0% {
+    visibility: hidden; }
+  49.9% {
+    visibility: hidden; }
+  50% {
+    visibility: visible;
+    -webkit-transform: scale(1.5) rotateY(90deg);
+    transform: scale(1.5) rotateY(90deg); }
+  100% {
+    -webkit-transform: scale(1) rotateY(0);
+    transform: scale(1) rotateY(0); } }
+@keyframes flipper-b {
+  0% {
+    visibility: hidden; }
+  49.9% {
+    visibility: hidden; }
+  50% {
+    visibility: visible;
+    -webkit-transform: scale(1.5) rotateY(90deg);
+    transform: scale(1.5) rotateY(90deg); }
+  100% {
+    -webkit-transform: scale(1) rotateY(0);
+    transform: scale(1) rotateY(0); } }
+body.adventcalendar .page-top .top-bar .menu {
+  display: none; }
+body.adventcalendar .hero .hero-image header .back-btn {
+  display: none; }
+body.adventcalendar .feedbox {
+  background-image: none; }
+body.adventcalendar .thumbnails .column {
+  -webkit-perspective: 1000;
+  perspective: 1000;
+  position: relative;
+  z-index: 0; }
+  body.adventcalendar .thumbnails .column:hover {
+    z-index: 999; }
+  body.adventcalendar .thumbnails .column.empty {
+    height: 1px; }
+  body.adventcalendar .thumbnails .column .card {
+    position: relative;
+    min-height: <%=Math.round(maxThumbHeight * .6) + "px"%>;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none; }
+    body.adventcalendar .thumbnails .column .card .thumb, body.adventcalendar .thumbnails .column .card .cover {
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden; }
+    body.adventcalendar .thumbnails .column .card.open {
+      transform-style: preserve-3d;
+      z-index: 999; }
+      body.adventcalendar .thumbnails .column .card.open .cover {
+        animation: flipper-f 1s linear forwards; }
+      body.adventcalendar .thumbnails .column .card.open .thumb {
+        animation: flipper-b 1s linear forwards; }
+    body.adventcalendar .thumbnails .column .card .cover {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 13;
+      cursor: pointer; }
+      body.adventcalendar .thumbnails .column .card .cover h1, body.adventcalendar .thumbnails .column .card .cover h2, body.adventcalendar .thumbnails .column .card .cover p {
+        margin: 0; }
+      body.adventcalendar .thumbnails .column .card .cover > *:first-child {
+        padding-top: 20%; }
+      body.adventcalendar .thumbnails .column .card .cover.canopen {
+        background-color: #aa0000;
+        transition: all 1s ease; }
+        body.adventcalendar .thumbnails .column .card .cover.canopen h1, body.adventcalendar .thumbnails .column .card .cover.canopen h2, body.adventcalendar .thumbnails .column .card .cover.canopen p {
+          color: #fcc; }
+        body.adventcalendar .thumbnails .column .card .cover.canopen .date {
+          border-top-color: #fff;
+          border-bottom-color: #fff; }
+        body.adventcalendar .thumbnails .column .card .cover.canopen:hover {
+          background-color: #dd0000;
+          transform: scale(1.1); }
+          body.adventcalendar .thumbnails .column .card .cover.canopen:hover h1, body.adventcalendar .thumbnails .column .card .cover.canopen:hover h2, body.adventcalendar .thumbnails .column .card .cover.canopen:hover p {
+            color: #fff; }
+      body.adventcalendar .thumbnails .column .card .cover.cannotopen {
+        background-color: rgba(0, 0, 0, 0.1); }
+        body.adventcalendar .thumbnails .column .card .cover.cannotopen h1, body.adventcalendar .thumbnails .column .card .cover.cannotopen h2, body.adventcalendar .thumbnails .column .card .cover.cannotopen p {
+          color: #999; }
+        body.adventcalendar .thumbnails .column .card .cover.cannotopen .date {
+          border-top-color: #999;
+          border-bottom-color: #999; }
+        body.adventcalendar .thumbnails .column .card .cover.cannotopen:hover {
+          -moz-animation: shake 1s linear;
+          -webkit-animation: shake 1s linear;
+          -ms-animation: shake 1s linear;
+          animation: shake 1s linear; }
+    body.adventcalendar .thumbnails .column .card .thumb {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 12; }
+      body.adventcalendar .thumbnails .column .card .thumb img {
+        position: absolute;
+        max-width: none;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        transition: all 1s ease; }
+        body.adventcalendar .thumbnails .column .card .thumb img:hover {
+          transform: scale(1.1) translate(-45%, -45%); }
+
+/*# sourceMappingURL=AdventCalendar.css.map */

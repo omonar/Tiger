@@ -1,0 +1,16 @@
+/* Debug styles */
+section:hover {
+	outline: 1px solid rgba(255,255,0,0.5);
+}
+header:hover, footer:hover, article:hover {
+	outline: 1px solid rgba(0,255,255,0.5);
+}
+div:hover, ul:hover {
+	outline: 1px solid rgba(255,0,255,0.5);
+}
+li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover, p:hover {
+	outline: 1px solid rgba(0,255,0,0.5);
+}
+a:hover {
+	outline: 1px solid rgba(0,128,255,0.5);
+}

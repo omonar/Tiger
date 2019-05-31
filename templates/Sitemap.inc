@@ -1,0 +1,1 @@
+<%= getSitemap(rootFolder, '', showSitemapDescriptions, showSitemapThumbs); %>

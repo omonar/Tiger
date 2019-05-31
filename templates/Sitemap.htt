@@ -1,0 +1,28 @@
+<ja:ui>
+	class SitemapUI extends JWebPageUI {
+		JCheckBox showSitemapDescriptions = new JCheckBox("Show descriptions", true);
+		JCheckBox showSitemapThumbs = new JCheckBox("Show thumbnails", false);
+		{
+			showSitemapDescriptions.setOpaque(false);
+			showSitemapThumbs.setOpaque(false);
+			add(showSitemapDescriptions);
+			add("br", showSitemapThumbs);
+			add("br", new JLabel("The sitemap is automatically generated. Put it in the root of your album!"));
+			add("br", new JLabel("The comment added below will be displayed above the folders."));
+		}
+	}
+</ja:ui>
+<ja:include page="page-header.inc" /> <%-- Keep this --%>
+
+	<div id="sitemap-page">
+		<ja:if exists="caption"><div class="caption">${caption}</div></ja:if>
+		<div class="sitemap<ja:if test="${showSitemapThumbs}"> showthumbs</ja:if>">
+			<div class="title">
+				<a href="${rootPath}/${indexName}" class="icon-home">${albumTitle}</a>
+				<ja:if test="${showSitemapDescriptions}"><small>${albumDescription}</small></ja:if>
+			</div>
+			<ja:include page="templates/Sitemap.inc" />
+		</div>
+	</div>
+
+<ja:include page="page-footer.inc" /> <%-- Keep this --%>
