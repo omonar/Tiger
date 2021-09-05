@@ -687,7 +687,7 @@
 						if (!isExternal && settings.showDownload) {
 							var link;
 							
-							if (item[J.ORIGINAL] && (isImage || isPdf || settings.allowDownloadOthers)) {
+							if (album.getOriginalPath(item) && (isImage || isPdf || settings.allowDownloadOthers)) {
 								// Original of images and PDF's are allowed to download, others with extra permission
 								link = 	album.getOriginalPath(item);
 							} else if (isImage && settings.allowDownloadScaled) { 

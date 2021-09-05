@@ -250,7 +250,12 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						(vars = ao.getVars())) {
 						
 						// Extra fileLabel variable
-						vars.put('fileLabel', vars.get('fileTitle') || vars.get('label').replace(/_/g, ' '));
+						// vars.put('fileLabel', vars.get('fileTitle') || vars.get('label').replace(/_/g, ' '));
+						s = vars.get('label');
+						if (s.startsWith('img') || s.startsWith('vid')) {
+							s = s.substring(0,19);
+						}
+						vars.put('fileLabel', vars.get('fileTitle') || s.replaceAll('_', ' '));
 						
 						dates = {};
 						
@@ -367,7 +372,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 							
 							// Folder caption
 							if (_folderCaptionTemplate && (s = processTemplate(ao, _folderCaptionTemplate))) {
-								vars.put('thumbCaption', s);
+								vars.put('thumbCaption', s.replaceAll('_', ' '));
 							} else {
 								vars.put('thumbCaption', '');
 							}
@@ -450,7 +455,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								
 								// Thumbnail caption
 								if (thumbCaptionTemplate && (s = processTemplate(ao, thumbCaptionTemplate))) {
-									vars.put('thumbCaption', s);
+									vars.put('thumbCaption', s.replaceAll('_', ' '));
 								} else {
 									vars.put('thumbCaption', '');
 								}
@@ -462,7 +467,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								
 								// Image caption
 								if (imageCaptionTemplate && (s = processTemplate(ao, imageCaptionTemplate))) {
-									vars.put('imageCaption', s);
+									vars.put('imageCaption', s.replaceAll('_', ' '));
 								} else {
 									vars.put('imageCaption', '');
 								}
@@ -684,7 +689,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 							v = ao.getVars();
 							rp = urlEncode(getRelativePath(folder, ao));
 							vars.put('previousFolderPath', rp);									//  + v.get('closeupPath')
-							vars.put('previousFolderTitle', ao.getTitle() || ao.getName());
+							vars.put('previousFolderTitle', ao.getTitle() || ao.getName().replaceAll('_',' '));
 							vars.put('previousFolderThumbPath', v.get('iconPath')? '' : getThumbPath(ao));
 							s = v.get('askPermission');
 							if (s !== null) {
@@ -712,7 +717,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 							v = ao.getVars();
 							rp = urlEncode(getRelativePath(folder, ao));
 							vars.put('nextFolderPath', rp);
-							vars.put('nextFolderTitle', ao.getTitle() || ao.getName());
+							vars.put('nextFolderTitle', ao.getTitle() || ao.getName().replaceAll('_',' '));
 							vars.put('nextFolderThumbPath', v.get('iconPath')? '' : getThumbPath(ao));
 							s = v.get('askPermission');
 							if (s !== null) {
@@ -780,7 +785,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 					// Title as in the Hero
 					
 					if (_titleCaptionTemplate && (s = processTemplate(folder, _titleCaptionTemplate))) {
-						vars.put('folderCaption', s);
+						vars.put('folderCaption', s.replaceAll('_', ' '));
 					} else {
 						vars.put('folderCaption', '');
 					}
