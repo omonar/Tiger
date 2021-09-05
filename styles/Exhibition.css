@@ -1,9 +1,0 @@
-<ja:if not exists="backgroundImage">
-body, .lightbox-overlay {
-	background-image: url(bg.jpg);
-	background-position: center top;
-	background-repeat: repeat-x;
-	background-size: auto;
-}
-</ja:if>
-

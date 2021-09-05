@@ -1,0 +1,73 @@
+/******************************************* Cookie policy */
+@charset "UTF-8";
+
+@import 'defaults';
+
+#cookiepolicy {
+	position: absolute;
+	position: fixed;
+	display: none;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	padding: $gap2;
+	background-color: $darken80;
+	font-size: $fontXS;
+	z-index: 999999;
+	.close {
+		display: inline-block;
+		position: absolute;
+		right: 0;
+		top: 0;
+		color: #666;
+		width: 2rem;
+		height: 2rem;
+		text-align: center;
+		line-height: 2rem;
+		font-size: 1rem;
+		cursor: pointer;
+		&:hover {
+			color: #fff;
+		}
+	}
+	p {
+		margin: 0;
+		color: _(lightText);
+		text-align: center;
+		a.btn {
+			margin: 0 $gap0;
+			padding: $gap0 $gap1 $gap1;
+			color: _(buttonTextColor);
+			background-color: _(buttonBgColor);
+			cursor: pointer;
+			border-radius: .25rem;
+			&:before {
+				font-size: 13.5px;
+				vertical-align: -3px;
+			}
+		}
+		span {
+			margin: 0 1em;
+			cursor: pointer;
+			position: relative;
+			padding-left: 1.25rem;
+			&.checkbox:before,
+			&.checkbox:after {
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 16px;
+				height: 100%;
+			}
+			&.checkbox:before {
+				z-index: 1;
+				color: _(lighterText);
+				font-size: 13.5px;
+			}
+			&.checkbox:after {
+				content: '';
+				border: 1px solid _(transparentText);
+			}
+		}
+	}
+}

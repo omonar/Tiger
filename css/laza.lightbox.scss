@@ -2,6 +2,7 @@
 /* laza.lightbox.scss */
 
 $loadingbox-size: 	40;
+$fitTiming:			300ms;
 
 @import 'defaults';
 
@@ -36,6 +37,13 @@ $loadingbox-size: 	40;
 	100%	{ width: 100%; } 
 }
 
+.use-mainbg .lightbox .lightbox-overlay {
+	background-image: _B('backgroundImage? ("url(" + backgroundImage + ")") : "none"');
+	background-position: _B('backgroundPos? backgroundPos : "top center"');
+	background-repeat: _B('(backgroundImage && backgroundRepeat && backgroundRepeat !== "stretch")? backgroundRepeat : "repeat"');
+	background-size: _B('(backgroundImage && backgroundRepeat === "stretch")? "cover" : "auto"');
+	background-attachment: fixed;
+}	
 .lightbox {
 	position: fixed;
 	left: 0;
@@ -52,28 +60,27 @@ $loadingbox-size: 	40;
 		background-color: _(lightboxBgColor);
 		z-index: 0;
 	}
-	
-	// Loading indication
+	// Load animation
 	.lightbox-loading,
 	.lightbox-loading div {
 		border-radius: 50%;
 	}
 	.lightbox-loading {
-		@include box-shadow(rgba(0, 0, 0, .5) 0 0 ($loadingbox-size)+px);
-		background: rgba(0,0,0,.5);
-		height: ($loadingbox-size)+px;
-		left: 50%;
+		position: absolute;
 		margin: (-$loadingbox-size/2)+px 0 0 (-$loadingbox-size/2)+px;
 		padding: ($loadingbox-size/4)+px;
-		position: absolute;
+		left: 50%;
 		top: 50%;
 		width: ($loadingbox-size)+px;
+		height: ($loadingbox-size)+px;
+		background: rgba(0,0,0,.5);
+		box-shadow: rgba(0, 0, 0, .5) 0 0 ($loadingbox-size)+px;
 		z-index: 1;
 		div {
-			@include animation(lightbox-loading 1s ease infinite);	
-			background-color: #fff;
 			height: ($loadingbox-size/2)+px;
 			width: ($loadingbox-size/2)+px;
+			background-color: #fff;
+			@include animation(lightbox-loading 1s ease infinite);	
 		}
 	}
 	.lightbox-main {
@@ -96,7 +103,7 @@ $loadingbox-size: 	40;
 		box-shadow: _(lightboxBoxShadow);
 		z-index: 10;
 		text-align: left;
-		transition: all $transTime;
+		transition: top $fitTiming ease-out, background-color $fitTiming, opacity $fitTiming;
 		.thumb-cont {
 			position: relative;
 			height: 100%;
@@ -114,11 +121,12 @@ $loadingbox-size: 	40;
 					margin: 0 1px 0 0;
 					padding: 0 0 4px 0;
 					cursor: default;
+					line-height: _U(thumbstripHeight,px);
 					&:hover {
 						background-color: _(lightboxButtonHover);
 					}
 					&.active {
-						background-color: _(lightboxButtonColor);
+						background-color: _(lightboxTextColor);
 					}
 					img {
 						vertical-align: top;
@@ -129,7 +137,8 @@ $loadingbox-size: 	40;
 		button {
 			position: absolute;
 			display: none;
-			color: _(lightboxButtonColor);
+			color: _(lightboxTextColor);
+			transition: color $transTime;
 			&.left, &.right {
 				width: 3rem;
 				font-size: 1.5rem;
@@ -169,57 +178,53 @@ $loadingbox-size: 	40;
 	
 	.controls {
 		position: absolute;
+		display: flex;
+		overflow: hidden;
 		left: 50%;
 		top: 0;
-		height: 3.5rem;
-		white-space: nowrap;
+		max-width: 100vw;
 		transform: translateX(-50%);
 		background-color: _(lightboxBoxBg);
 		border-radius: 0 0 _U(brm,px) _U(brm,px);
 		box-shadow: _(lightboxBoxShadow);
 		z-index: 11;
 		opacity: 1;
-		transition: top $transTime, background-color $transTime, opacity $transTime2;
+		transition: top $fitTiming ease-out, background-color $fitTiming, opacity $transTime2;
 		&.use-text {
 			button {
-				font-size: 0.7rem;
-				padding: 0 .3rem;
-				min-width: 4rem;
+				font-size: 9px;
+				padding: 0 2px 2px 2px;
+				min-width: 48px;
 				text-align: center;
-				&.previous:before, &.next:before {
-					font-size: 1.5rem;
+				&:before {
+					display: block;
+					line-height: 30px;
 				}
 			}
 		}
 		button {
-			display: inline-block;
-			height: 100%;
-			padding: 0 .7rem;
-			vertical-align: top;
-			color: _(lightboxButtonColor);
-			transition: color $transTime;
+			display: block;
+			padding: 0 10px;
+			color: _(lightboxTextColor);
+			transition: color $transTime ease-out, background-color $transTime ease-out;
 			&:before {
-				display: block;
-				font-size: 1.5rem;
-				line-height: 2.4rem;
+				font-size: 18px;
+				line-height: 48px;
+			}
+			&.previous,
+			&.next {
+				padding: 0 2px;
+			}
+			&.previous:before,
+			&.next:before {
+				font-size: 36px;
 			}
 			&:hover {
 				color: _(lightboxButtonHover);
+				background-color: _(lightboxBoxHoverBg);
 			}
 			&:focus {
-				outline: 1px dotted rgba(224,224,224,0.2);
-			}
-			&.previous:before, &.next:before {
-				font-size: 2rem;
-			}
-			&.pause:before {
-				font-size: 1rem;
-			}
-			&.zoom-out,
-			&.hide-thumbs,
-			&.hide-caption,
-			&.pause {
-				display: none;
+				outline: 1px dotted rgba(224,224,224,0.1);
 			}
 			.progress {
 				position: absolute;
@@ -243,17 +248,16 @@ $loadingbox-size: 	40;
 	}
 	
 	.lightbox-main {
-		@include touch-action(none);
 		position: absolute;
 		z-index: 1;
 		padding: _U(lightboxBorderWidth,px);
 		background-color: _B('(lightboxBorderWidth > 0)? lightboxBorderColorCss : "transparent"');
 		box-shadow: _(lightboxImageShadow);
 		border-radius: _U(imgCornerRadius,px);
-		transition: left $transTime, 
-					top $transTime, 
-					width $transTime, 
-					height $transTime,
+		transition: left $transTime ease-out, 
+					top $transTime ease-out, 
+					width $transTime ease-out, 
+					height $transTime ease-out,
 					transform $transTime,
 					opacity $transTime;
 		> * {
@@ -271,7 +275,7 @@ $loadingbox-size: 	40;
 			}
 			audio {
 				position: absolute;
-				bottom: _U(lightboxBorderWidth,px);
+				bottom: _B('lightboxBorderWidth + 16 + "px"');
 				left: 50%;
 				max-width: 100%;
 				@include translateX(-50%);
@@ -366,63 +370,99 @@ $loadingbox-size: 	40;
 	}
 	
 	.lightbox-caption {
+		display: flex;
 		position: absolute;
+		align-items: flex-start;
+		justify-content: center;
 		width: 100%;
 		left: 0;
 		bottom: 0;
-		padding: 1rem;
-		transition: all $transTime;
+		padding: $gap1;
 		background-color: _(lightboxBoxBg);
 		border-radius: _U(brm,px) _U(brm,px) 0 0;
 		box-shadow: _(lightboxBoxShadow);
 		z-index: 12;
 		transform: translateY(100%);
+		transition: transform $fitTiming ease-out, opacity $transTime2;
+		&.hasbuttons {
+			justify-content: space-between;
+			.caption {
+				text-align: left;
+			}
+		}
+		.download {
+			padding: 0.5rem;
+			&:before {
+				color: _(lightboxTextColor);
+			}
+			a {
+				padding: 0.2rem;
+				font-size: $fontS;
+			}
+		}
+		.ratingbox {
+			margin: 0 $gap1;
+			display: inline-block;
+			text-align: center;
+			label {
+				display: block;
+				letter-spacing: 0.25rem;
+				font-size: 10px;
+				line-height: 14px;
+				opacity: 0.6;
+			}
+		}
 		.buttons {
-			float: right;
-			margin-left: 1rem;
-			> * {
-				vertical-align: middle;
-			}
-			.download {
-				display: inline-block;
-				padding: 0.5rem;
-				&:before {
-					color: _(lightboxButtonColor);
-				}
-				a {
-					padding: 0.2rem;
-					font-size: $fontS;
-				}
-			}
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: center;
+			margin: 0 auto;
 			.button {
-				border-radius: 0;
+				display: inline-flex;
+				align-items: center;
+				padding: $gap2;
 				margin-bottom: 0;
 				margin-right: 1px;
-				cursor: default;
-				&:first-of-type {
-					border-top-left-radius: _U(brs,px);
-					border-bottom-left-radius: _U(brs,px);
-				}
-				&:last-of-type {
-					margin-right: 0;
-					border-top-right-radius: _U(brs,px);
-					border-bottom-right-radius: _U(brs,px);
+				text-align: left;
+				font-size: $fontXS;
+				color: _(lightboxTextColor);
+				background-color: _(lightboxBoxHoverBg);
+				transition: color $transTime, background-color $transTime;
+				span {
+					display: none;
 				}
 				&:before {
-					font-size: 1rem;
-					vertical-align: text-bottom;
+					font-size: 18px;
+				}
+				b {
+					margin-left: .2em;
+					padding: .1em .45em .2em;
+					color: white;
+					background-color: red;
+					border-radius: _U(brs,px);
+				}
+				&:hover {
+					color: _(buttonHoverTextColor);
+					background-color: _(buttonHoverBgColor);
 				}
 			}
 			.numbers {
-				display: inline-block;
 				margin: 0 0.5em;
-				color: _(lightboxButtonColor);
+				color: _(lightboxTextColor);
 			}
 		}
 		.caption {
-			color: _(lightboxButtonColor);
+			flex: 1;
+			padding: $gap1;
+			max-height: 30vh;
+			overflow-x: hidden;
+			overflow-y: auto;
+			text-align: center;
+			color: _(lightboxTextColor);
+			@include niceWebkitScroll();
 			h1, h2, h3, h4, h5, h6 {
-				color: _(lightboxButtonColor);
+				color: _(lightboxTextColor);
 			}
 			h1 {
 				font-size: 1.6em;
@@ -442,6 +482,17 @@ $loadingbox-size: 	40;
 		}
 	}
 	
+	.controls {
+		.zoom-in,
+		.zoom-out,
+		.zoom-level, 
+		.hide-thumbs,
+		.hide-caption,
+		.pause {
+			display: none;
+		}
+	}
+	
 	&.thumbs-visible {
 		.thumb-strip {
 			top: 0;
@@ -456,19 +507,41 @@ $loadingbox-size: 	40;
 			}
 		}
 	}
-	
-	&.zoomed {
-		.controls > .zoom-out { 
-			display: inline-block;
-		}
-		.controls > .zoom-in { 
-			display: none !important; 
+
+	&.show-zoom-in {
+		.controls .zoom-in { 
+			display: block;
 		}
 	}
 	
-	&.no-zoom {
-		.controls > .zoom-in,
-		.controls > .zoom-out { 
+	&.show-zoom-out {
+		.controls .zoom-out { 
+			display: block;
+		}
+	}
+	
+	&.show-zoom-level {
+		.controls .zoom-level { 
+			display: block;
+		}
+	}
+	
+	.controls .exitfullscreen {
+		display: none;
+	}
+	
+	&.fullscreen {
+		.controls .fullscreen { 
+			display: none;
+		}
+		.controls .exitfullscreen { 
+			display: block;
+		}
+	}
+	
+	&.no-caption {
+		.controls .show-caption,
+		.controls .hide-caption { 
 			display: none !important;
 		}
 	}		
@@ -477,19 +550,19 @@ $loadingbox-size: 	40;
 		.lightbox-caption {
 			transform: translateY(0);
 		}
-		.controls > .hide-caption {
-			display: inline-block;
+		.controls .hide-caption {
+			display: block;
 		}
-		.controls > .show-caption {
+		.controls .show-caption {
 			display: none !important;
 		}
 	}
 	
 	&.playing {
-		.controls > .pause {
-			display: inline-block;
+		.controls .pause {
+			display: block;
 		}
-		.controls > .play {
+		.controls .play {
 			display: none !important;
 		}
 	}
@@ -503,41 +576,6 @@ $loadingbox-size: 	40;
 
 .jalbumWidgetbar .lightbox-caption {
 	bottom: 20px;
-}
-
-.photodata {
-	font-size: $fontS;
-	p {
-		font-size: $fontS;
-		margin: 0;
-		i {
-			font-style: normal;
-		}
-	}
-}
-
-.modal .photodata {
-	p {
-		padding: .2rem;
-		line-height: 1.5;
-		b {
-			float: left;
-			display: inline-block;
-			font-weight: normal;
-			width: 30%;
-			margin-right: 1rem;
-		}
-		i {
-			display: block;
-			overflow: hidden;
-		}
-		&:nth-child(odd) {
-			background-color: _B('modalWindowsLight? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.1)"');
-		}
-		&:before, 
-		&:after { content: "\0020"; display: block; height: 0; visibility: hidden; } 
-		&:after { clear:both; }
-	}
 }
 
 .lightbox-caption .photodata {
@@ -570,6 +608,34 @@ $loadingbox-size: 	40;
 
 @media screen and (min-width: 40em) {
 	.lightbox {
+		.controls {
+			&.use-text {
+				text-align: center;
+				button {
+					padding: 0 4px 4px 4px;
+					min-width: 60px;
+					font-size: 11px;
+					&:before {
+						line-height: 39px;
+					}
+				}
+			}
+			button {
+				padding: 0 14px;
+				&:before {
+					line-height: 55px;
+					font-size: 22.5px;
+				}
+				&.previous,
+				&.next {
+					padding: 0 4px;
+				}
+				&.previous:before,
+				&.next:before {
+					font-size: 45px;
+				}
+			}
+		}
 		.thumb-strip {
 			max-width: 80%;
 			&.scroll {
@@ -577,8 +643,28 @@ $loadingbox-size: 	40;
 			}
 		}
 		.lightbox-caption {
+			flex-direction: row;
+			align-items: flex-start;
 			width: 80%;
 			left: 10%;
+			.caption {
+				padding: $gap1 $gap2;
+				text-align: left;
+				width: max-content;
+			}
+			.caption + .buttons {
+				margin-left: auto;
+			}
+			.buttons {
+				justify-content: flex-end;
+				.button {
+					margin-bottom: 1px;
+					span {
+						margin-left: $gap15;
+						display: block;
+					}
+				}
+			}
 		}
 	}
 }

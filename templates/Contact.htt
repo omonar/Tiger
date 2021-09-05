@@ -1,4 +1,5 @@
 <ja:ui>
+	/* User Interface */
 	class ContactUI extends JWebPageUI {
 		import javax.swing.filechooser.*;
 		import se.datadosen.jalbum.AlbumImage;
@@ -27,12 +28,14 @@
 		JTextField vimeo_id = new JTextField(16);
 		JTextField youtube_id = new JTextField(16);
 		JTextField instagram_id = new JTextField(16);
+		
 		JTextField custom_link1 = new JTextField(16);
 		JTextField custom_linktext1 = new JTextField(16);
 		JTextField custom_link2 = new JTextField(16);
 		JTextField custom_linktext2 = new JTextField(16);
 		JTextField custom_link3 = new JTextField(16);
 		JTextField custom_linktext3 = new JTextField(16);
+		JTextField custom_links_label = new JTextField(16);
 		
 		File getFile() {
 			int returnVal = fc.showOpenDialog(window);
@@ -89,17 +92,20 @@
 			add("br", new JLabel("Phone number", ShareIcons.phone, SwingConstants.LEADING));
 			add("tab", phone_number);
 
-			add("br", new JLabel("Custom link 1"));
+			add("br", new JLabel("Custom links label"));
+			add("tab", custom_links_label);
+			
+			add("br", new JLabel("Link 1"));
 			add("tab", custom_link1);
 			add("tab", new JLabel("Text"));
 			add("tab", custom_linktext1);
 			
-			add("br", new JLabel("Custom link 2"));
+			add("br", new JLabel("Link 2"));
 			add("tab", custom_link2);
 			add("tab", new JLabel("Text"));
 			add("tab", custom_linktext2);
 			
-			add("br", new JLabel("Custom link 3"));
+			add("br", new JLabel("Link 3"));
 			add("tab", custom_link3);
 			add("tab", new JLabel("Text"));
 			add("tab", custom_linktext3);
@@ -147,48 +153,5 @@
 	}
 </ja:ui>
 <ja:include page="page-header.inc" /> <%-- Keep this --%>
-	<div id="contact-page" class="clearfix">
-		<div class="texts">
-			<ja:if exists="caption"><p>${caption}</p></ja:if>
-			<ja:if exists="email_address"><div class="email"><strong>${text.contactMeInEmail}</strong>: <a href="mailto:${email_address}" class="icon-email"> ${email_address}</a></div></ja:if>
-			<ja:if exists="map_location"><div id="map_canvas" class="map" style="height:240px;"></div></ja:if>
-			<ja:if exists="postal_address"><div class="address"><strong>${text.postalAddress}</strong>: <blockquote><%= postal_address.replaceAll("\n", "<br/>") %></blockquote></div></ja:if>
-			<ja:if exists="phone_number"><div class="phone"><strong>${text.phoneNumber}</strong>: <a href="callto://${phone_number}" class="icon-phone"> ${phone_number}</a></div></ja:if>
-			<ja:if test="<%= custom_link1 || custom_link2 || custom_link3 %>"><div class="custom">
-			<ja:if exists="custom_link1"><a href="${custom_link1}" target="_blank">${custom_linktext1}</a></ja:if>
-			<ja:if exists="custom_link2"><a href="${custom_link2}" target="_blank">${custom_linktext2}</a></ja:if>
-			<ja:if exists="custom_link3"><a href="${custom_link3}" target="_blank">${custom_linktext3}</a></ja:if>
-			</div></ja:if>
-			<ja:if exists="skype_id"><div class="skype"><strong>Skype</strong>: <a href="skype:${skype_id}?call" target="_blank" class="icon-skype"> ${skype_id}</a></div></ja:if>
-			<ja:if exists="facebook_id"><div class="facebook"><strong>Facebook</strong>: <a href="http://www.facebook.com/${facebook_id}" target="_blank" class="icon-facebook"> https://www.facebook.com/${facebook_id}</a></div></ja:if>
-			<ja:if exists="twitter_id"><div class="twitter"><strong>Twitter</strong>: <a href="https://twitter.com/#!/${twitter_id}" target="_blank" class="icon-twitter"> https://twitter.com/${twitter_id}</a></div></ja:if>
-			<ja:if exists="pinterest_id"><div class="pinterest"><strong>Pinterest</strong>: <a href="http://pinterest.com/${pinterest_id}" target="_blank" class="icon-pinterest"> https://pinterest.com/${pinterest_id}</a></div></ja:if>
-			<ja:if exists="tumblr_id"><div class="tumblr"><strong>Tumblr</strong>: <a href="http://${tumblr_id}.tumblr.com/" target="_blank" class="icon-tumblr"> https://${tumblr_id}.tumblr.com/</a></div></ja:if>
-			<ja:if exists="jalbum_id"><div class="jalbum"><strong>jAlbum</strong>: <a href="http://${jalbum_id}.jalbum.net/" target="_blank" class="icon-jalbum"> https://${jalbum_id}.jalbum.net/</a></div></ja:if>
-			<ja:if exists="flickr_id"><div class="flickr"><strong>flickr</strong>: <a href="http://www.flickr.com/photos/${flickr_id}/" target="_blank" class="icon-flickr"> https://www.flickr.com/photos/${flickr_id}/</a></div></ja:if>
-			<ja:if exists="foursquare_id"><div class="foursquare"><strong>Foursquare</strong>: <a href="http://foursquare.com/${foursquare_id}" target="_blank" class="icon-foursquare"> https://foursquare.com/${foursquare_id}</a></div></ja:if>
-			<ja:if exists="google_id"><div class="google"><strong>Google +</strong>: <a href="https://plus.google.com/u/0/${google_id}/posts" target="_blank" class="icon-google-plus"> https://plus.google.com/u/0/${google_id}/posts</a></div></ja:if>
-			<ja:if exists="linkedin_id"><div class="linkedin"><strong>LinkedIn</strong>: <a href="http://www.linkedin.com/in/${linkedin_id}" target="_blank" class="icon-linkedin">https://www.linkedin.com/in/${linkedin_id}</a></div></ja:if>
-			<ja:if exists="vimeo_id"><div class="vimeo"><strong>Vimeo</strong>: <a href="http://vimeo.com/${vimeo_id}" target="_blank" class="icon-vimeo"> https://vimeo.com/${vimeo_id}</a></div></ja:if>
-			<ja:if exists="youtube_id"><div class="youtube"><strong>YouTube</strong>: <a href="http://www.youtube.com/user/${youtube_id}" target="_blank" class="icon-play-video"> https://www.youtube.com/user/${youtube_id}</a></div></ja:if>
-			<ja:if exists="instagram_id"><div class="instagram"><strong>Instagram</strong>: <a href="http://instagram.com/${instagram_id}" target="_blank" class="icon-instagram"> https://instagram.com/${instagram_id}</a></div></ja:if>
-		</div>
-	</div>
-	
-	<ja:if exists="map_location">
-	<script src="https://maps.googleapis.com/maps/api/js<ja:if exists="googleApiKey">?key=${googleApiKey}</ja:if>"></script>
-	<script>
-		function init_map() {                                                                                                                                  
-			var pos = new google.maps.LatLng(${map_location}),
-				map = new google.maps.Map(document.getElementById('map_canvas'), {
-					center: pos, zoom: ${map_zoom}, mapTypeId: google.maps.MapTypeId.ROADMAP
-				}),
-				marker = new google.maps.Marker({
-					position: pos, map: map <ja:if exists="postal_address">, title: '<%= postal_address.replaceAll("\n", " :: ").replaceAll("\'", "\\\\\'") %>'</ja:if>
-				});
-		}
-		google.maps.event.addDomListener(window, 'load', init_map);
-	</script>
-	</ja:if>
-
+<ja:include page="templates/Contact.inc" />
 <ja:include page="page-footer.inc" /> <%-- Keep this --%>

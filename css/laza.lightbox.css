@@ -1,5 +1,111 @@
 /* laza.lightbox.scss */
-/* defaults.scss :: default values, functions and mixins */
+@keyframes fade-and-hide {
+  0% {
+    opacity: 100%;
+    visibility: visible;
+    display: block; }
+  99% {
+    opacity: 0; }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    display: none; } }
+@-webkit-keyframes rotating {
+  0% {
+    -webkit-transform: rotate(0); }
+  100% {
+    -webkit-transform: rotate(360deg); } }
+@-moz-keyframes rotating {
+  0% {
+    -moz-transform: rotate(0); }
+  100% {
+    -moz-transform: rotate(360deg); } }
+@-o-keyframes rotating {
+  0% {
+    -o-transform: rotate(0); }
+  100% {
+    -o-transform: rotate(360deg); } }
+@keyframes rotating {
+  0% {
+    transform: rotate(0); }
+  100% {
+    transform: rotate(360deg); } }
+@-webkit-keyframes appear-up {
+  0% {
+    -webkit-transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    -webkit-transform: translateY(0);
+    opacity: 1; } }
+@-moz-keyframes appear-up {
+  0% {
+    -moz-transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    -moz-transform: translateY(0);
+    opacity: 1; } }
+@-o-keyframes appear-up {
+  0% {
+    -o-transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    -o-transform: translateY(0);
+    opacity: 1; } }
+@keyframes appear-up {
+  0% {
+    transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    transform: translateY(0);
+    opacity: 1; } }
+@-moz-keyframes move-down-bounce {
+  0%,
+		100%,
+		20%,
+		50%,
+		80% {
+    -moz-transform: translateY(0);
+    transform: translateY(0); }
+  40% {
+    -moz-transform: translateY(-16px);
+    transform: translateY(-16px); }
+  60% {
+    -moz-transform: translateY(-7px);
+    transform: translateY(-7px); } }
+@-webkit-keyframes move-down-bounce {
+  0%,
+		100%,
+		20%,
+		50%,
+		80% {
+    -moz-transform: translateY(0);
+    transform: translateY(0); }
+  40% {
+    -moz-transform: translateY(-16px);
+    transform: translateY(-16px); }
+  60% {
+    -moz-transform: translateY(-7px);
+    transform: translateY(-7px); } }
+@keyframes move-down-bounce {
+  0%,
+		100%,
+		20%,
+		50%,
+		80% {
+    -moz-transform: translateY(0);
+    -ms-transform: translateY(0);
+    -webkit-transform: translateY(0);
+    transform: translateY(0); }
+  40% {
+    -moz-transform: translateY(-16px);
+    -ms-transform: translateY(-16px);
+    -webkit-transform: translateY(-16px);
+    transform: translateY(-16px); }
+  60% {
+    -moz-transform: translateY(-7px);
+    -ms-transform: translateY(-7px);
+    -webkit-transform: translateY(-7px);
+    transform: translateY(-7px); } }
 /* Loading animation */
 @-webkit-keyframes lightbox-loading {
   0% {
@@ -46,6 +152,13 @@
     width: 0; }
   100% {
     width: 100%; } }
+.use-mainbg .lightbox .lightbox-overlay {
+  background-image: <%=backgroundImage? ("url(" + backgroundImage + ")") : "none"%>;
+  background-position: <%=backgroundPos? backgroundPos : "top center"%>;
+  background-repeat: <%=(backgroundImage && backgroundRepeat && backgroundRepeat !== "stretch")? backgroundRepeat : "repeat"%>;
+  background-size: <%=(backgroundImage && backgroundRepeat === "stretch")? "cover" : "auto"%>;
+  background-attachment: fixed; }
+
 .lightbox {
   position: fixed;
   left: 0;
@@ -65,24 +178,23 @@
   .lightbox .lightbox-loading div {
     border-radius: 50%; }
   .lightbox .lightbox-loading {
-    -webkit-box-shadow: rgba(0, 0, 0, 0.5) 0 0 40px;
-    box-shadow: rgba(0, 0, 0, 0.5) 0 0 40px;
-    background: rgba(0, 0, 0, 0.5);
-    height: 40px;
-    left: 50%;
+    position: absolute;
     margin: -20px 0 0 -20px;
     padding: 10px;
-    position: absolute;
+    left: 50%;
     top: 50%;
     width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: rgba(0, 0, 0, 0.5) 0 0 40px;
     z-index: 1; }
     .lightbox .lightbox-loading div {
+      height: 20px;
+      width: 20px;
+      background-color: #fff;
       -moz-animation: lightbox-loading 1s ease infinite;
       -webkit-animation: lightbox-loading 1s ease infinite;
-      animation: lightbox-loading 1s ease infinite;
-      background-color: #fff;
-      height: 20px;
-      width: 20px; }
+      animation: lightbox-loading 1s ease infinite; }
   .lightbox .lightbox-main .lightbox-loading div {
     background-color: ${buttonBgColor}; }
   .lightbox .thumb-strip {
@@ -98,7 +210,7 @@
     box-shadow: ${lightboxBoxShadow};
     z-index: 10;
     text-align: left;
-    transition: all 500ms; }
+    transition: top 300ms ease-out, background-color 300ms, opacity 300ms; }
     .lightbox .thumb-strip .thumb-cont {
       position: relative;
       height: 100%;
@@ -117,17 +229,19 @@
           vertical-align: top;
           margin: 0 1px 0 0;
           padding: 0 0 4px 0;
-          cursor: default; }
+          cursor: default;
+          line-height: ${thumbstripHeight}px; }
           .lightbox .thumb-strip .thumb-cont .thumbs a:hover {
             background-color: ${lightboxButtonHover}; }
           .lightbox .thumb-strip .thumb-cont .thumbs a.active {
-            background-color: ${lightboxButtonColor}; }
+            background-color: ${lightboxTextColor}; }
           .lightbox .thumb-strip .thumb-cont .thumbs a img {
             vertical-align: top; }
     .lightbox .thumb-strip button {
       position: absolute;
       display: none;
-      color: ${lightboxButtonColor}; }
+      color: ${lightboxTextColor};
+      transition: color 500ms; }
       .lightbox .thumb-strip button.left, .lightbox .thumb-strip button.right {
         width: 3rem;
         font-size: 1.5rem;
@@ -155,45 +269,43 @@
         display: inline-block; }
   .lightbox .controls {
     position: absolute;
+    display: flex;
+    overflow: hidden;
     left: 50%;
     top: 0;
-    height: 3.5rem;
-    white-space: nowrap;
+    max-width: 100vw;
     transform: translateX(-50%);
     background-color: ${lightboxBoxBg};
     border-radius: 0 0 ${brm}px ${brm}px;
     box-shadow: ${lightboxBoxShadow};
     z-index: 11;
     opacity: 1;
-    transition: top 500ms, background-color 500ms, opacity 1s; }
+    transition: top 300ms ease-out, background-color 300ms, opacity 1s; }
     .lightbox .controls.use-text button {
-      font-size: 0.7rem;
-      padding: 0 .3rem;
-      min-width: 4rem;
+      font-size: 9px;
+      padding: 0 2px 2px 2px;
+      min-width: 48px;
       text-align: center; }
-      .lightbox .controls.use-text button.previous:before, .lightbox .controls.use-text button.next:before {
-        font-size: 1.5rem; }
-    .lightbox .controls button {
-      display: inline-block;
-      height: 100%;
-      padding: 0 .7rem;
-      vertical-align: top;
-      color: ${lightboxButtonColor};
-      transition: color 500ms; }
-      .lightbox .controls button:before {
+      .lightbox .controls.use-text button:before {
         display: block;
-        font-size: 1.5rem;
-        line-height: 2.4rem; }
-      .lightbox .controls button:hover {
-        color: ${lightboxButtonHover}; }
-      .lightbox .controls button:focus {
-        outline: 1px dotted rgba(224, 224, 224, 0.2); }
+        line-height: 30px; }
+    .lightbox .controls button {
+      display: block;
+      padding: 0 10px;
+      color: ${lightboxTextColor};
+      transition: color 500ms ease-out, background-color 500ms ease-out; }
+      .lightbox .controls button:before {
+        font-size: 18px;
+        line-height: 48px; }
+      .lightbox .controls button.previous, .lightbox .controls button.next {
+        padding: 0 2px; }
       .lightbox .controls button.previous:before, .lightbox .controls button.next:before {
-        font-size: 2rem; }
-      .lightbox .controls button.pause:before {
-        font-size: 1rem; }
-      .lightbox .controls button.zoom-out, .lightbox .controls button.hide-thumbs, .lightbox .controls button.hide-caption, .lightbox .controls button.pause {
-        display: none; }
+        font-size: 36px; }
+      .lightbox .controls button:hover {
+        color: ${lightboxButtonHover};
+        background-color: ${lightboxBoxHoverBg}; }
+      .lightbox .controls button:focus {
+        outline: 1px dotted rgba(224, 224, 224, 0.1); }
       .lightbox .controls button .progress {
         position: absolute;
         height: 1px;
@@ -211,15 +323,13 @@
     .lightbox .controls:hover {
       background-color: ${lightboxBoxHoverBg}; }
   .lightbox .lightbox-main {
-    -ms-touch-action: none;
-    touch-action: none;
     position: absolute;
     z-index: 1;
     padding: ${lightboxBorderWidth}px;
     background-color: <%=(lightboxBorderWidth > 0)? lightboxBorderColorCss : "transparent"%>;
     box-shadow: ${lightboxImageShadow};
     border-radius: ${imgCornerRadius}px;
-    transition: left 500ms, top 500ms, width 500ms, height 500ms, transform 500ms, opacity 500ms; }
+    transition: left 500ms ease-out, top 500ms ease-out, width 500ms ease-out, height 500ms ease-out, transform 500ms, opacity 500ms; }
     .lightbox .lightbox-main > * {
       border-radius: ${lightboxImageCornerRadius}px;
       -webkit-user-select: none;
@@ -231,7 +341,7 @@
       width: 100%; }
     .lightbox .lightbox-main.audio audio {
       position: absolute;
-      bottom: ${lightboxBorderWidth}px;
+      bottom: <%=lightboxBorderWidth + 16 + "px"%>;
       left: 50%;
       max-width: 100%;
       -moz-transform: translateX(-50%);
@@ -305,53 +415,92 @@
             max-width: none;
             background-color: #fff; }
   .lightbox .lightbox-caption {
+    display: flex;
     position: absolute;
+    align-items: flex-start;
+    justify-content: center;
     width: 100%;
     left: 0;
     bottom: 0;
-    padding: 1rem;
-    transition: all 500ms;
+    padding: 0.3125rem;
     background-color: ${lightboxBoxBg};
     border-radius: ${brm}px ${brm}px 0 0;
     box-shadow: ${lightboxBoxShadow};
     z-index: 12;
-    transform: translateY(100%); }
+    transform: translateY(100%);
+    transition: transform 300ms ease-out, opacity 1s; }
+    .lightbox .lightbox-caption.hasbuttons {
+      justify-content: space-between; }
+      .lightbox .lightbox-caption.hasbuttons .caption {
+        text-align: left; }
+    .lightbox .lightbox-caption .download {
+      padding: 0.5rem; }
+      .lightbox .lightbox-caption .download:before {
+        color: ${lightboxTextColor}; }
+      .lightbox .lightbox-caption .download a {
+        padding: 0.2rem;
+        font-size: 0.875em; }
+    .lightbox .lightbox-caption .ratingbox {
+      margin: 0 0.3125rem;
+      display: inline-block;
+      text-align: center; }
+      .lightbox .lightbox-caption .ratingbox label {
+        display: block;
+        letter-spacing: 0.25rem;
+        font-size: 10px;
+        line-height: 14px;
+        opacity: 0.6; }
     .lightbox .lightbox-caption .buttons {
-      float: right;
-      margin-left: 1rem; }
-      .lightbox .lightbox-caption .buttons > * {
-        vertical-align: middle; }
-      .lightbox .lightbox-caption .buttons .download {
-        display: inline-block;
-        padding: 0.5rem; }
-        .lightbox .lightbox-caption .buttons .download:before {
-          color: ${lightboxButtonColor}; }
-        .lightbox .lightbox-caption .buttons .download a {
-          padding: 0.2rem;
-          font-size: 0.875em; }
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto; }
       .lightbox .lightbox-caption .buttons .button {
-        border-radius: 0;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.625rem;
         margin-bottom: 0;
         margin-right: 1px;
-        cursor: default; }
-        .lightbox .lightbox-caption .buttons .button:first-of-type {
-          border-top-left-radius: ${brs}px;
-          border-bottom-left-radius: ${brs}px; }
-        .lightbox .lightbox-caption .buttons .button:last-of-type {
-          margin-right: 0;
-          border-top-right-radius: ${brs}px;
-          border-bottom-right-radius: ${brs}px; }
+        text-align: left;
+        font-size: 0.75em;
+        color: ${lightboxTextColor};
+        background-color: ${lightboxBoxHoverBg};
+        transition: color 500ms, background-color 500ms; }
+        .lightbox .lightbox-caption .buttons .button span {
+          display: none; }
         .lightbox .lightbox-caption .buttons .button:before {
-          font-size: 1rem;
-          vertical-align: text-bottom; }
+          font-size: 18px; }
+        .lightbox .lightbox-caption .buttons .button b {
+          margin-left: .2em;
+          padding: .1em .45em .2em;
+          color: white;
+          background-color: red;
+          border-radius: ${brs}px; }
+        .lightbox .lightbox-caption .buttons .button:hover {
+          color: ${buttonHoverTextColor};
+          background-color: ${buttonHoverBgColor}; }
       .lightbox .lightbox-caption .buttons .numbers {
-        display: inline-block;
         margin: 0 0.5em;
-        color: ${lightboxButtonColor}; }
+        color: ${lightboxTextColor}; }
     .lightbox .lightbox-caption .caption {
-      color: ${lightboxButtonColor}; }
+      flex: 1;
+      padding: 0.3125rem;
+      max-height: 30vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      text-align: center;
+      color: ${lightboxTextColor};
+      scrollbar-color: dark; }
+      .lightbox .lightbox-caption .caption::-webkit-scrollbar {
+        width: .8rem; }
+      .lightbox .lightbox-caption .caption::-webkit-scrollbar-track {
+        background-color: rgba(0, 0, 0, 0.25); }
+      .lightbox .lightbox-caption .caption::-webkit-scrollbar-thumb {
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        background-color: rgba(255, 255, 255, 0.15); }
       .lightbox .lightbox-caption .caption h1, .lightbox .lightbox-caption .caption h2, .lightbox .lightbox-caption .caption h3, .lightbox .lightbox-caption .caption h4, .lightbox .lightbox-caption .caption h5, .lightbox .lightbox-caption .caption h6 {
-        color: ${lightboxButtonColor}; }
+        color: ${lightboxTextColor}; }
       .lightbox .lightbox-caption .caption h1 {
         font-size: 1.6em; }
       .lightbox .lightbox-caption .caption h2 {
@@ -362,6 +511,13 @@
         font-size: 1.1em; }
     .lightbox .lightbox-caption:hover {
       background-color: ${lightboxBoxHoverBg}; }
+  .lightbox .controls .zoom-in,
+  .lightbox .controls .zoom-out,
+  .lightbox .controls .zoom-level,
+  .lightbox .controls .hide-thumbs,
+  .lightbox .controls .hide-caption,
+  .lightbox .controls .pause {
+    display: none; }
   .lightbox.thumbs-visible .thumb-strip {
     top: 0; }
   .lightbox.thumbs-visible .controls {
@@ -370,58 +526,36 @@
       display: inline-block; }
     .lightbox.thumbs-visible .controls > .show-thumbs {
       display: none; }
-  .lightbox.zoomed .controls > .zoom-out {
-    display: inline-block; }
-  .lightbox.zoomed .controls > .zoom-in {
-    display: none !important; }
-  .lightbox.no-zoom .controls > .zoom-in,
-  .lightbox.no-zoom .controls > .zoom-out {
+  .lightbox.show-zoom-in .controls .zoom-in {
+    display: block; }
+  .lightbox.show-zoom-out .controls .zoom-out {
+    display: block; }
+  .lightbox.show-zoom-level .controls .zoom-level {
+    display: block; }
+  .lightbox .controls .exitfullscreen {
+    display: none; }
+  .lightbox.fullscreen .controls .fullscreen {
+    display: none; }
+  .lightbox.fullscreen .controls .exitfullscreen {
+    display: block; }
+  .lightbox.no-caption .controls .show-caption,
+  .lightbox.no-caption .controls .hide-caption {
     display: none !important; }
   .lightbox.caption-visible .lightbox-caption {
     transform: translateY(0); }
-  .lightbox.caption-visible .controls > .hide-caption {
-    display: inline-block; }
-  .lightbox.caption-visible .controls > .show-caption {
+  .lightbox.caption-visible .controls .hide-caption {
+    display: block; }
+  .lightbox.caption-visible .controls .show-caption {
     display: none !important; }
-  .lightbox.playing .controls > .pause {
-    display: inline-block; }
-  .lightbox.playing .controls > .play {
+  .lightbox.playing .controls .pause {
+    display: block; }
+  .lightbox.playing .controls .play {
     display: none !important; }
   .lightbox.controls-hide .controls {
     opacity: 0; }
 
 .jalbumWidgetbar .lightbox-caption {
   bottom: 20px; }
-
-.photodata {
-  font-size: 0.875em; }
-  .photodata p {
-    font-size: 0.875em;
-    margin: 0; }
-    .photodata p i {
-      font-style: normal; }
-
-.modal .photodata p {
-  padding: .2rem;
-  line-height: 1.5; }
-  .modal .photodata p b {
-    float: left;
-    display: inline-block;
-    font-weight: normal;
-    width: 30%;
-    margin-right: 1rem; }
-  .modal .photodata p i {
-    display: block;
-    overflow: hidden; }
-  .modal .photodata p:nth-child(odd) {
-    background-color: <%=modalWindowsLight? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.1)"%>; }
-  .modal .photodata p:before, .modal .photodata p:after {
-    content: "\0020";
-    display: block;
-    height: 0;
-    visibility: hidden; }
-  .modal .photodata p:after {
-    clear: both; }
 
 .lightbox-caption .photodata p {
   display: inline-block; }
@@ -440,12 +574,44 @@
     width: 90%;
     left: 5%; } }
 @media screen and (min-width: 40em) {
+  .lightbox .controls.use-text {
+    text-align: center; }
+    .lightbox .controls.use-text button {
+      padding: 0 4px 4px 4px;
+      min-width: 60px;
+      font-size: 11px; }
+      .lightbox .controls.use-text button:before {
+        line-height: 39px; }
+  .lightbox .controls button {
+    padding: 0 14px; }
+    .lightbox .controls button:before {
+      line-height: 55px;
+      font-size: 22.5px; }
+    .lightbox .controls button.previous, .lightbox .controls button.next {
+      padding: 0 4px; }
+    .lightbox .controls button.previous:before, .lightbox .controls button.next:before {
+      font-size: 45px; }
   .lightbox .thumb-strip {
     max-width: 80%; }
     .lightbox .thumb-strip.scroll {
       width: 80%; }
   .lightbox .lightbox-caption {
+    flex-direction: row;
+    align-items: flex-start;
     width: 80%;
-    left: 10%; } }
+    left: 10%; }
+    .lightbox .lightbox-caption .caption {
+      padding: 0.3125rem 0.625rem;
+      text-align: left;
+      width: max-content; }
+    .lightbox .lightbox-caption .caption + .buttons {
+      margin-left: auto; }
+    .lightbox .lightbox-caption .buttons {
+      justify-content: flex-end; }
+      .lightbox .lightbox-caption .buttons .button {
+        margin-bottom: 1px; }
+        .lightbox .lightbox-caption .buttons .button span {
+          margin-left: 0.46875rem;
+          display: block; } }
 
 /*# sourceMappingURL=laza.lightbox.css.map */

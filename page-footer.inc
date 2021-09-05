@@ -1,152 +1,191 @@
-<%--------------------------------
-			Page footer 
---------------------------------%>
-					</article>
-				</div>
-			</div>
-		</div>
+<%
+		/********************************
+		 *			Page footer
+		 */
+		 
+			out.println('\t\t\t</article>');
+		out.println('\t\t</section>');
 		
-		<%-- Footer --%>
-		<div class="page-bottom">
-			<div class="row footer">
-				<div class="<%= 'large-' + (12 - (_useFacebookBox? 4 : 0)) + ' medium-6' %> columns">
-					<footer class="${pageType}">
-						<div class="folder-info">
-						<ja:if test="${pageType}" value="index">
-							<ja:if exists="bottomNavigation"><div class="bottom-navigation"><div>${bottomNavigation}</div></div></ja:if>
-							<ja:if test="${level}" value="0"><ja:if exists="albumInfo">${albumInfo}</ja:if></ja:if>
-							<ja:else><ja:if exists="folderInfo">${folderInfo}</ja:if></ja:else>
-						</ja:if>
-						<ja:else><ja:if test="${pageType}" value="page">
-							<ja:if test="${_useBottomNavigation}"><div class="bottom-navigation"><div><%= currentFolder.getVars().get('bottomNavigation'); %></div></div></ja:if>
-						</ja:if></ja:else>
-							<ja:if exists="credits"><span class="credits">${credits}</span></ja:if>
-						</div>
-						<ja:if test=<%= footer && !(level && footerTopLevelOnly) %>><%= getProcessed(footer) %></ja:if>
-						<ja:include page="footer.inc" />
-					</footer>
-				</div>
-				<ja:if test="${_useFacebookBox}">
-				<div class="large-4 columns social-box" id="facebook-box">
-					<div class="fb-page" data-href="https://www.facebook.com/${facebookPageId}" data-colorscheme="${footerBoxTheme}" data-small-header="true" data-width="${footerBoxWidth}" data-hide-cover="<%= !facebookHeader %>" data-show-facepile="${facebookFaces}" data-show-posts="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/${facebookPageId}"><a href="https://www.facebook.com/${facebookPageId}">${facebookPageId}</a></blockquote></div></div>
-				</div>
-				</ja:if>
-			</div>
-		</div>
+		/* Footer */
+		if (typeof bottomNavigation !== UNDEF && bottomNavigation ||
+			folderInfo ||
+			(typeof credits !== UNDEF && credits) ||
+			footer) {
 		
-		<%-- Popups --%>
+			out.println('\t\t<section class="footer ' + ((topmenuAlpha < 0.05)? 'transparent' : 'opaque') +'">');
+				out.println('\t\t\t<div class="cont">');
+					out.println('\t\t\t\t<footer>');
+					
+						if (typeof bottomNavigation !== UNDEF && bottomNavigation) {
+							out.println('\t\t\t\t\t<div class="bottom-navigation"><div>' + ((pageType === 'index')? bottomNavigation : currentFolder.getVars().get('bottomNavigation')) + '</div></div>');
+						}
+						
+						if (pageType === 'index') {
+							out.println('\t\t\t\t\t<div class="folder-info">' + folderInfo + '</div>');
+						}
+						
+						if (typeof credits !== UNDEF && credits) {
+							out.println('\t\t\t\t\t<div class="credits">' + credits + '</div>');
+						}
+						
+						if (_useFacebookBox) {
+							out.println('\t\t\t\t\t<div class="social-box" id="facebook-box">' +
+								'<div class="fb-page" data-href="https://www.facebook.com/' + facebookPageId + 
+									'" data-colorscheme="' + footerBoxTheme + 
+									'" data-small-header="true" data-width="' + footerBoxWidth + 
+									'" data-hide-cover="' + !facebookHeader + 
+									'" data-show-facepile="' + facebookFaces + 
+									'" data-show-posts="false">' + 
+									'<div class="fb-xfbml-parse-ignore">' +
+										'<blockquote cite="https://www.facebook.com/' + facebookPageId + '">' +
+											'<a href="https://www.facebook.com/' + facebookPageId + '">' + facebookPageId + '</a>' +
+										'</blockquote>' +
+									'</div>' +
+								'</div>' +
+							'</div>');
+						}
+						
+					out.println('\t\t\t\t</footer>');
+				
+				if (footer && !(level && footerTopLevelOnly)) {
+					out.println('\t\t\t\t<div class="custom">' + getProcessed(footer) + '</div>');
+				}
+				
+				var f = getInclude('footer.inc');
+				
+				if (f && !(level && footerTopLevelOnly)) {
+					out.println('\t\t\t\t' + getInclude('footer.inc'));
+				}
+				
+				out.println('\t\t\t</div>');
+			out.println('\t\t</section>');
+		}
 		
-		<%-- Share window --%>
-		<ja:if test="${_anyShares}">
-		<div class="modal hidden" id="social-share" role="dialog" data-modal>
-			<div class="window has-header">
-				<header>${text.shareAlbum}</header>
-				<a class="btn close" data-close aria-label="${text.closeWindow}" data-tooltip title="${text.closeWindow}"></a>
-				<div class="content row share-card">
-					<div class="preview clearfix">
-						<div class="thumb">
-							<img src="${folderThumbFileName}" alt="${title}">
-						</div>
-						<div class="caption">
-							<h3>${title}</h3>
-							<ja:if exists="pageDescription"><p>${pageDescription}</p></ja:if>
-						</div>
-					</div>
-					<div class="social-links text-center"></div>
-				</div>
-			</div>
-		</div>
-		</ja:if>
+		/********************************
+		 *			Popups 
+		 */
 		
-		<%-- Album info --%>
-		<ja:if exists="header">
-		<div class="modal hidden" id="album-info" role="dialog" data-modal>
-			<div class="window has-header">
-				<header>${albumTitle}</header>
-				<a class="btn close" data-close aria-label="${text.closeWindow}" data-tooltip title="${text.closeWindow}"></a>
-				<div class="content"><%= getProcessed(header) %></div>
-			</div>
-		</div>
-		</ja:if>
+		/* Share window */
+		if (_anyShares) {
+			out.println('\t\t<div class="modal hidden" id="social-share" role="dialog" data-modal>');
+				out.println('\t\t\t<div class="window has-header">');
+					out.println('\t\t\t\t<header>' + getText('shareAlbum') + '</header>');
+					out.println('\t\t\t\t<a class="btn close" data-close aria-label="' + getText('closeWindow') + '" data-tooltip title="' + getText('closeWindow') + '"></a>');
+					out.println('\t\t\t\t<div class="content">' +
+						'<div class="social">' +
+							'<div class="preview"><img src="' + folderThumbFileName + '">' +
+								'<div class="caption">' +
+									'<h3 class="title">' + title + '</h3>' +
+									(description? ('<div class="description">' + description + '</div>') : '') +
+								'</div>' +
+							'</div>' +
+						'</div>' +
+					'</div>');
+				out.println('\t\t\t</div>');
+			out.println('\t\t</div>');
+		}
+		
+		/* Album info */
+		if (header) {
+			out.println('\t\t<div class="modal hidden" id="album-info" role="dialog" data-modal>');
+				out.println('\t\t\t<div class="window has-header">');
+					out.println('\t\t\t\t<header>' + albumTitle + '</header>');
+					out.println('\t\t\t\t<a class="btn close" data-close aria-label="' + getText('closeWindow') + '" data-tooltip title="' + getText('closeWindow') + '"></a>');
+					out.println('\t\t\t\t<div class="content">' + getProcessed(header) + '</div>');
+				out.println('\t\t\t</div>');
+			out.println('\t\t</div>');
+		}
 			
-		<%-- Help --%>
-		<ja:if test="${showHelp}">
-		<div class="modal hidden" id="help" role="dialog" data-modal>
-			<div class="window large has-header">
-				<header>${text.help}</header>
-				<a class="btn close" data-close aria-label="${text.closeWindow}" data-tooltip title="${text.closeWindow}"></a>
-				<div class="content row">
-					<div class="large-6 columns"><p><img src="${resPath}/help-index.svg" alt="${text.help}"></p></div>
-					<div class="large-6 columns">
-						<ol><li>${text.help.topNavigation}</li><li>${text.help.search}</li><li>${text.help.backgroundAudio}</li><li>${text.help.upOneLevel}</li><li>${text.help.authorInfo}</li><li>${text.help.shareAndLike}</li><li>${text.help.downloadZip}</li><li>${text.help.startSlideshow}</li></ol>
-					</div>
-				</div>
-				<hr>
-				<div class="content row">
-					<div class="large-6 columns"><p><img src="${resPath}/help-lightbox.svg" alt="${text.help}"></p></div>
-					<div class="large-6 columns">
-						<ol><li>${text.help.previousPicture}</li><li>${text.help.backToIndex}</li><li>${text.help.toggleFit}</li><li>${text.help.toggleInfo}</li><li>${text.help.toggleThumbnails}</li><li>${text.help.toggleAutoPlay}</li><li>${text.help.nextPicture}</li><li>${text.help.meta}</li><li>${text.help.map}</li><li>${text.help.faces}</li><li>${text.help.downloadImage}</li><li>${text.help.shop}</li><li>${text.help.share}</li></ol>
-					</div>
-				</div>
-			</div>
-		</div>
-		</ja:if>
+		/* Help */
+		if (showHelp) {
+			out.println('\t\t<div class="modal hidden no-padding" id="help" role="dialog" data-modal>');
+				out.println('\t\t\t<div class="window large has-header">');
+					out.println('\t\t\t\t<a class="btn close" data-close aria-label="' + getText('closeWindow') + '" data-tooltip title="' + getText('closeWindow') + '"></a>');
+					out.println('\t\t\t\t<div class="content scrollable">');
+						out.println('\t\t\t\t\t<div class="help-card medium-column">');
+							out.println('\t\t\t\t\t\t<div class="fig"><img src="' + resPath + '/help-index.svg" alt="' + getText('help') + '"></div>');
+							out.println('\t\t\t\t\t\t<div class="caption"><ol>' + 
+									'<li>' + getText('help.topNavigation') + '</li>' + 
+									'<li>' + getText('help.search') + '</li>' +
+									'<li>' + getText('help.backgroundAudio') + '</li>' +
+									'<li>' + getText('help.upOneLevel') + '</li>' +
+									'<li>' + getText('help.authorInfo') + '</li>' +
+									'<li>' + getText('help.shareAndLike') + '</li>' + 
+									'<li>' + getText('help.downloadZip') + '</li>' +
+									'<li>' + getText('help.startSlideshow') + '</li>' +
+								'</ol></div>');
+						out.println('\t\t\t\t\t</div>');
+						out.println('\t\t\t\t\t<div class="help-card medium-column">');
+							out.println('\t\t\t\t\t\t<div class="fig"><img src="' + resPath + '/help-lightbox.svg" alt="' + getText('help') + '"></div>');
+							out.println('\t\t\t\t\t\t<div class="caption"><ol>' +
+									'<li>' + getText('help.previousPicture') + '</li>' +
+									'<li>' + getText('help.backToIndex') + '</li>' +
+									'<li>' + getText('help.toggleFit') + '</li>' +
+									'<li>' + getText('help.toggleInfo') + '</li>' +
+									'<li>' + getText('help.toggleThumbnails') + '</li>' +
+									'<li>' + getText('help.toggleAutoPlay') + '</li>' +
+									'<li>' + getText('help.nextPicture') + '</li>' +
+									'<li>' + getText('help.meta') + '</li>' +
+									'<li>' + getText('help.map') + '</li>' +
+									'<li>' + getText('help.faces') + '</li>' +
+									'<li>' + getText('help.downloadImage') + '</li>' +
+									'<li>' + getText('help.shop') + '</li>' +
+									'<li>' + getText('help.share') + '</li>' +
+								'</ol></div>');
+						out.println('\t\t\t\t\t</div>');
+					out.println('\t\t\t\t</div>');
+				out.println('\t\t\t</div>');
+			out.println('\t\t</div>');
+		}
 		
-		<%-- Modernizr for modern browsers --%>
-		<script src="${resPath}/modernizr.js"></script>
+		// jQuery library
+		if (avoidCDNs) {
+			out.println('\t\t<script src="' + resPath + '/jquery.min.js"></script>');
+		} else {
+			// Google CDN first, then local
+			out.println('\t\t<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery' + min + '.js"></script>');
+			out.println('\t\t<script>window.jQuery || document.write(\'<script src="' + resPath + '/jquery.min.js"><\\/script>\');</script>');
+			// jQuery Migrate check: <script src="https://code.jquery.com/jquery-migrate-git.js"></script>
+		}
+
+		if (_anyVr) {
+			out.println('\t\t<script src="' + resPath + '/photosphere/three.min.js"></script>');
+			out.println('\t\t<script src="' + resPath + '/photosphere/photo-sphere-viewer.min.js" async defer></script>');
+		}
+
+		if (_useFotomoto) {
+			out.println('\t\t<script src="https://widget.fotomoto.com/stores/script/' + fotomotoID + '.js?api=true' + fotomotoAid + '" async defer></script>');
+		}
+
+		// The concatenated JS file
+		out.println('\t\t<script src="' + resPath + '/all' + min + '.js?v=' + skinVersion + '"></script>');
+		out.println('\t\t<script>');
+			out.println('\t\t\t_jaWidgetBarColor = \'' + widgetBarColor + '\';');
+			out.println(getInclude('index-scripts.inc'));
+			// Javascript hook
+			if (jsHook) {
+				out.println(getProcessed(jsHook));
+			}
+		out.println('\t\t</script>');
 		
-		<%-- jQuery library --%>
-		<ja:if test="${avoidCDNs}">
-		<script src="${resPath}/jquery.min.js"></script>
-		</ja:if><ja:else>
-		<%-- Google CDN first, then local --%>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery${min}.js"></script>
-		<script>window.jQuery || document.write('<script src="${resPath}/jquery.min.js"><\/script>');</script>
-		</ja:else>
-		
-		<ja:if test="${_anyVr}">
-		<script src="${resPath}/photosphere/three.min.js"></script>
-		<script src="${resPath}/photosphere/photo-sphere-viewer.min.js" async defer></script>
-		</ja:if>
-		
-		<ja:if test="${_useFotomoto}">
-		<script src="https://widget.fotomoto.com/stores/script/${fotomotoID}.js?api=true${fotomotoAid}" async defer></script>
-		</ja:if>
-		
-		<%-- The concatenated JS file --%>
-		<script src="${resPath}/all${min}.js?v=${skinVersion}"></script>
-		<script>
-			_jaWidgetBarColor = '${widgetBarColor}';
-			<%-- Page initialization scripts --%>
-			$(document).ready(function(){			
-					<ja:include page="index-scripts.inc" />
-				});
-			<%-- Javascript hook --%>
-			<ja:if exists="jsHook"><%= engine.processTemplate(jsHook) %></ja:if>
-		</script>
-		<%= getCustomPageJS(currentObject, typeof debugMode !== UNDEF && !!debugMode); %>
-		
-		<%-- Widget inclusion relocated --%>
-		<ja:widget pageType="index" />
-		
-		<%-- Facebook root --%>
-		<ja:if test=<%= _useFacebook || _useFacebookBox %>>
-		<div id="fb-root"></div>
-		</ja:if>
-		
-		<%-- User defined footer code --%>
-		<ja:if exists="bodyHook">
-		<ja:if test="${bodyFitWidth}">
-		<div class="row below-body">
-			<div class="columns">
-				<%= getProcessed(bodyHook) %>
-			</div>
-		</div>
-		</ja:if>
-		<ja:else>
-		<%= getProcessed(bodyHook) %>
-		</ja:else>
-		</ja:if>
-		
-	</body>
-</html>
+		// Custom page related JS
+		out.println(getCustomPageJS(currentObject, typeof debugMode !== UNDEF && !!debugMode));
+
+		// Facebook root
+		if (_useFacebook) {
+			out.println('\t\t<div id="fb-root"></div>');
+		}
+
+		// Widgets
+		if (engine.isWidgetInjection()) {
+			out.println('\t\t' + engine.getWidgetInjectionCode(pageType, rootPath).replace('javascript";\nscript.src', 'javascript";\nscript.async = true;\nscript.src').replace(/\n$/, '').replace(/\n/g, '\n\t\t'));
+		}
+
+		// User defined BODY code
+		if (bodyHook) {
+			out.println(getProcessed(bodyHook));
+		}
+
+	out.println('\t</body>');
+out.println('</html>');
+%>

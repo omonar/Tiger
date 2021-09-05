@@ -13,6 +13,8 @@
 					"epochDateRange",
 					"external",
 					"projectionType",
-					"soundClip"
+					"soundClip",
+					"panorama",
+					"originalFile"
 				]
 }

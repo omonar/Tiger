@@ -1,0 +1,28 @@
+@charset "UTF-8";
+/* user.scss :: User defined styles */
+@import 'defaults';
+
+.folders {
+	.cont {
+		.card {
+			width: _(folderWidthL);
+			.caption {
+				.title {
+					font-size: $fontL;
+				}
+			}
+		}
+	}
+}
+
+.thumbnails {
+	.cont {
+		&.fixgrid,
+		&.grid,
+		&.flexgrid {
+			.card {
+				width: _(thumbWidthL);
+			}
+		}
+	}
+}

@@ -23,39 +23,29 @@
 
 .modal.feedback-cart {
 	.window {
-		width: 92%;
-		max-height: none;
-		height: 94%;
-		left: 4%;
+		max-width: 96vw;
+		max-height: 96vh;
 		&.has-header .content {
-			position: absolute;
 			width: 100%;
-			bottom: 0;
-			top: 60px;
 			padding: 0;
 			overflow-y: auto;
 		}
-		.buttons {
-			text-align: center;
-			padding: $gap3 0;
-			border-top: 1px solid _(modalColor);
-			.button {
-				display: inline-block;
-				margin: 0.25rem;
-			}
-		}
-		.button.icon-cancel {
+		.button.icon-close {
+			flex: none;
 			margin: 0 .25rem 0 0;
-			padding: .2rem;
-			border-radius: 2rem;
+			padding: 0;
+			border-radius: 0.25rem;
 			color: _(modalColor);
 			background-color: _(modalBgColorAlt);
+			width: 1.5rem;
+			height: 1.5rem;
 			&:hover {
 				color: #fff;
 				background-color: #c00;
 			}
 			&:before {
-				margin-right: 0;
+				font-size: 18px;
+				line-height: 1.5rem;
 			}
 		}
 		.before-items, 
@@ -65,17 +55,18 @@
 		}
 		.items {
 			.item {
-				padding: 1rem;
+				display: flex;
+				flex-flow: column;
+				padding: $gap2 $gap3;
 				&:nth-child(even) {
-					background-color: _B('modalWindowsLight? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.1)"');
+					background-color: _B('modalWindowsLight? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.05)"');
 				}
 				.info {
-					> * {
-						display: inline-block;
-						vertical-align: middle;
-					}
+					display: flex;
+					align-items: center;
+					margin: 0 0 $gap2 0;
 					.thumb {
-						max-width: 100px;
+						max-width: 90px;
 						max-height: 60px;
 						margin: .1rem .25rem;
 						transition: transform 400ms;
@@ -84,10 +75,11 @@
 						}
 					}
 					.title {
-						font-size: $fontS;
-						padding: 0 0.25rem;
-						max-width: 100%;
+						flex: 2;
+						min-width: 10%;
 						overflow: hidden;
+						line-height: 1.5;
+						padding: 0 $gap2;
 						text-overflow: ellipsis;
 					}
 				}
@@ -107,7 +99,7 @@
 			border-bottom: 1px solid _(modalColor);
 		}
 		.summary {
-			padding: 1rem;
+			padding: $gap2 $gap3;
 			line-height: 40px;
 			text-align: center;
 			background-color: _(modalHighlightBgColor);
@@ -121,8 +113,8 @@
 			}
 			.details-btn {
 				display: inline-block;
-				margin-left: .5rem;
-				padding: 0 .75rem 0 .5rem;
+				margin-left: $gap2;
+				padding: 0 $gap3 0 $gap2;
 				background-color: #444;
 				color: #ddd;
 				transition: background-color .25s ease-out, color .25s ease-out;
@@ -132,22 +124,33 @@
 				}
 			}
 		}
-		p.fineprint {
-			font-size: 0.7rem;
-			margin: 0.35rem 0;
+		.buttons {
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: center;
+			align-items: stretch;
+			margin: $gap2 0;
+			padding: $gap1 $gap3;
+			text-align: center;
+		}
+		.fineprint {
+			margin: $gap2 0;
+			padding: 0 $gap3;
+			text-align: center;
+			font-size: $fontXS;
 		}
 		.instructions {
-			margin-top: .5rem;
+			margin: $gap2 0 0 0;
+			padding: $gap2 $gap3;
 			border-top: 1px solid #aaa;
-			padding: 1rem;
 			> div {
-				font-size: 0.85rem;
+				font-size: $fontS;
 				overflow: hidden;
 			}
 			&:before {
 				float: left;
-				line-height: 1.5;
-				margin-right: 0.5rem;
+				line-height: 1.25;
+				margin-right: $gap1;
 			}
 		}
 		input[readonly] {	
@@ -167,70 +170,28 @@
 	}
 }
 
-.feedback-shortcut {
-	position: fixed;
-	right: $gap0;
-	bottom: $gap0;
-	z-index: 9;
-	.button {
-		margin-bottom: 0;
-		b {
-			margin-left: .2em;
-			padding: 0.1em .45em .2em;
-			color: _(buttonBgColor);
-			background-color: _(buttonColor);
-			border-radius: .8em;
-		}
-		&.add-cart {
-			b {
-				color: white;
-				background-color: red;
-			}
-		}
-		&.pop {
-			-webkit-animation: pop $transTime ease;
-			-moz-animation: pop $transTime ease;
-			animation: pop $transTime ease;
-		}
-	}
-}
-
 /* medium displays >= 640px */
-@media only screen and (min-width: 40.063em),
+@media only screen and (min-width: $bp_medium),
 	only screen and (orientation: landscape) {
 	.modal.feedback-cart {
 		.window {
-			width: 80%;
-			height: 80%;
-			left: 10%;
+			max-width: _(maxPageWidth);
 			.items {
 				.item {
-					padding: 1rem;
+					flex-flow: row wrap;
+					padding: $gap2 $gap3;
 					text-align: left;
-					> * {
-						display: inline-block;
-						vertical-align: middle;
-					}	
 					.info {
-						width: 44%;
-						margin-right: 4%;
-						.thumb {
-							max-width: 30%;
-						}
-						.title {
-							width: 48%;
-							overflow: hidden;
-							text-overflow: ellipsis;
-						}
+						flex: 4;
+						max-width: 44%;
+						margin: 0 $gap2 0 0;
 					}
 					.data {
-						text-align: left;
-						width: 52%;
+						flex: 5;
 						form.inline {
 							text-align: right;
 							label, select, [type=color], [type=date], [type=datetime-local], [type=datetime], [type=month], [type=number], [type=tel], [type=text] {
 								display: inline-block;
-								vertical-align: middle;
 								width: auto;
 							}
 						}
@@ -245,19 +206,12 @@
 			}
 		}
 	}
-	.feedback-shortcut {
-		position: fixed;
-		right: $gap3;
-		bottom: $gap3;
-	}
 }
 
 /* large displays >= 1024px */
-@media only screen and (min-width: 64.063em) {
+@media only screen and (min-width: $bp_large) {
 	.modal.feedback-cart {
 		.window {
-			width: 70%;
-			left: 15%;
 			.items {
 				.item {
 					.info {
@@ -276,7 +230,6 @@
 		.window {
 			width: 100%;
 			height: auto;
-			left: none;
 			.items {
 				.item {
 					line-height: 60px;

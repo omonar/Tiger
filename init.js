@@ -15,12 +15,15 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 	FixedShapeFilter = Java.type("FixedShapeFilter"),
 	ConstrainRatioFilter = Java.type("tiger.ConstrainRatioFilter"),
 	File = Java.type("java.io.File"),
+	Long = Java.type("java.lang.Long"),
 	SkinProperties = Java.type("se.datadosen.jalbum.SkinProperties"),
 	MyJSONObject = Java.type("se.datadosen.util.MyJSONObject"),
 	System = Java.type("java.lang.System"),
+	IO = Java.type('se.datadosen.util.IO'),
+	LinkFile = Java.type("se.datadosen.io.LinkFile"),
 	Zip = Java.type("tiger.Zip"),
-	ScriptUtils = Java.type("jdk.nashorn.api.scripting.ScriptUtils"),
-	AtomicInteger = Java.type("java.util.concurrent.atomic.AtomicInteger");
+	AtomicInteger = Java.type("java.util.concurrent.atomic.AtomicInteger"),
+	JSONMaker = Java.type("se.datadosen.jalbum.JSONMaker");
 
 	// No multiple index pages :: setting up before loading Util
 	engine.setRows(0);
@@ -37,17 +40,19 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 	 *	Global variables
 	 */
 
+	// Undefined
+	UNDEF = 'undefined';
+	
 	time = (new Date()).getTime();					// time
 	today = (time / 86400000) | 0;					// today: number of days since 1970-01-01
-
+	
+	skinVersion = new SkinProperties(skinDirectory).getProperty(SkinProperties.VERSION);
+	
 	// Fixing wrong Facebook App ID
 	if (facebookAppId.indexOf('E') !== -1) {
 		print('Facebook App ID is in wrong format, please check it in the Settings!');
 		facebookAppId = facebookAppId.split('E')[0].replace(/\./g, '');
 	}
-	
-	// HTML attribute
-	htmlAttr = (shareFacebook? 'prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#" ' : '') + 'lang="' + lang + '"';
 	
 	// Page protocol
 	pageProtocol = basePath.startsWith('https://')? 'https:' : 'http:';
@@ -55,62 +60,6 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 	// Debug mode? Don't use the minified javascript libraries.
 	min = (typeof debugMode !== UNDEF && !!debugMode)? '' : '.min';
 	
-	// Undefined
-	UNDEF = 'undefined';
-	
-	// Grid classes
-	folderGridClass = 'caption-' + folderCaptionPlacement + getGridLadder(folderCols);
-	pageGridClass = getGridLadder(pageCols);
-	thumbGridClass = 'caption-' + captionPlacement + getGridLadder(thumbCols);
-	
-	// Box padding
-	boxPad = (function() {
-			switch (boxPadding) {
-				case 'none': 	return 0;
-				case 'small':	return 4;
-				case 'medium':	return 8;
-				case 'large':	return 12;
-				case 'x-large':	return 20;
-			}
-			return 0;
-		}());
-	
-	// Folder image :: this image is copied to the index file's folder with the given name, cropped to the given size
-	// Can be used as splash image for example
-	// GUI should contain a JTextField folderImageSize, otherwise uncomment this:
-	// folderImageSize = "800x400";
-	folderImageFileName = 'folderimage.jpg';
-	folderImageDims = (heroFullWidth? 1600 : ((parseFloat(maxPageWidth) || 67.5) * 16)) + 'x' + folderImageHeight;
-	
-	// Folder thumbnail :: placed along the folder image
-	// Can be used for sharing over social sites as page thumbnail
-	folderThumbFileName = 'folderthumb.jpg';
-	folderThumbDims = (function() {
-			var w,
-				h,
-				mpw = ((parseFloat(maxPageWidth) || 67.5) - 1.875) * 16;
-				
-			if (folderCols < 2) {
-				w = mpw - 2 * boxPad;
-			} else {
-				var fc2 = Math.max(Math.floor(folderCols * 0.75), 1);
-				w = Math.round((mpw - (fc2 - 1) * 4) / fc2) - 2 * boxPad;
-			}
-			
-			if (fixedShapeFolderThumbs) {
-				if (folderThumbAspectRatio) {
-					var ar = folderThumbAspectRatio.split(':');
-					h = Math.round(w * ar[1] / ar[0]);
-				} else {
-					h = Math.round(w * maxThumbHeight / maxThumbWidth);
-				}
-			} else {
-				h = w;
-			}
-			
-			return w + 'x' + h;
-		}());
-		
 	// album description processed
 	albumCaption = getProcessed(albumDescription);		
 	
@@ -130,7 +79,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 				s += '<div class="modifieddate"><span>' + getText('modified') + '</span> ' + currentDate + '</div>';
 			}
 			
-			if (showImageCount) {
+			if (typeof showImageCount !== UNDEF && showImageCount) {
 				s += getCounts(rootFolder, true, 'div', 'counts');
 			}
 			
@@ -140,34 +89,35 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 	albumImageUrl = urlEncodeFix(basePath + folderImageFileName);
 	albumThumbUrl = urlEncodeFix(basePath + folderThumbFileName);
 		
-	credits = '';
+	credits = getCredits();
 	
 	// Feature detection
 	_useFacebookBox = !!useFacebookBox && !!facebookAppId && !!facebookPageId;
 	_useFacebookCommenting = !!facebookCommenting && !!facebookAppId;
 	_useFacebook = _useFacebookBox || shareFacebook || _useFacebookCommenting;
-	_usePinterest = pinItButton;
-	_useTopNavigation = topNavigationIncludeFolders || topNavigationIncludePages || topNavigationIncludeWebLocations;
+	_usePinterest = !!pinItButton;
+	_useTopNavigation = topNavigationIncludeFolders || topNavigationIncludePages || topNavigationIncludeWebLocations || homepageAddress;
 	_useBottomNavigation = bottomNavigationIncludeFolders || bottomNavigationIncludePages || bottomNavigationIncludeWebLocations;
 	_useDisqusCommenting = !!disqusCommenting && !!disqusAppId;
 	_useShop = !!showShop && !!shopId;
 	_useFeedback = !!showFeedback && !!feedbackEmail && !!feedbackTemplate;
 	_useMap = (showMapSection || showMap)  && !!googleApiKey;
-	_useTagCloud = tagCloudSource !== 'none';
+	_useTagCloud = tagCloudSource !== 'none' && !!tagCloudFields;
 	_useSearchNew = searchNewSource !== 'none';
 	_usePhotodata = !!showPhotoData && !!photoDataTemplate;
 	_useRegions = !!showRegions;
 	_useFotomoto = !!useFotomoto && !!fotomotoID;
 	_useMostPhotos = !!useMostphotos;
-	_useTagCloudBox = tagCloudSource !== 'none' && !!tagCloudFields;
 	_useSearch = !!useSearch && !!searchFields;
+	_useFilters = !!useFilters && (typeof filterData !== 'undefined');
+	_useSort = !!useSort && (typeof sortData !== 'undefined');
 	_useZip = zipImages !== 'none';
+	_useExtraSizes = (typeof extraSizes !== 'undefined') && extraSizes;
+	_useRating = !!useRating && (visitorRating || useJalbumRating);
 	_anyVr = false;
 	_storeAddedDate = searchNewReference === 'added' || newDaysRef === 'added';
 	_storeTakenDate = searchNewReference === 'dateTaken' || newDaysRef === 'dateTaken';
 	_storeModifiedDate = searchNewReference === 'fileModified' || newDaysRef === 'fileModified';
-
-	//_anyVr = false;
 	_anyShares =
 			facebookLike ||
 			twitterTweet ||
@@ -178,19 +128,19 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 			sharePinterest ||
 			shareLinkedin ||
 			shareDigg || 
-			shareStumbleupon || 
 			shareReddit ||
 			shareTumblr ||
-			shareEmail;
+			shareEmail ||
+			shareLink;
 			
 	_titleCaptionTemplate = titleCaptionTemplate;
 	_folderCaptionTemplate = folderCaptionTemplate;
-	_useOriginalTime = thumbCaptionTemplate.contains('${originalTime}') || imageCaptionTemplate.contains('${originalTime}');
+	_useOriginalTime = 	thumbCaptionTemplate.indexOf('${originalTime}') >= 0 || 
+						imageCaptionTemplate.indexOf('${originalTime}') >= 0;
 	
 	// Javascript variables compiled upfront
 	jsGlobalVars = null;
 	jsLightboxVars = null;
-	jsSliderVars = null;
 	jsMapVars = null;
 	jsCookiePolicyVars = null;
 
@@ -198,7 +148,17 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 	backgroundMusicFolder = 'res';
 	
 	relPath = '';
+	relPathEncoded = '';
 	
+	folderThumbDims = (typeof folderThumbSize !== UNDEF)? folderThumbSize : '1024x768';
+	folderImageDims = folderImageSize;
+	folderImgDims = '800x' + folderImageSize.split('x')[1];
+	
+	// Generating slide pages for Facebook shares
+	engine.setSlides(_useFacebook);
+	
+	extraMeta = {};
+		
 	/* 
 	 * 	New variables
 	 *	All types
@@ -225,6 +185,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 	 				regions
 	 
 	 */
+	 
 			
 	var processFolder = function(folder) {
 					 
@@ -234,16 +195,51 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 					vrCount = new AtomicInteger(0),
 					imageNum = new AtomicInteger(0),
 					zipCount = new AtomicInteger(0),
-					dateRange;
+					dateRange,
+					filters = getTableData(filterData),
+					sort = getTableData(sortData),
+					storeAdded = _storeAddedDate,
+					storeModified = _storeModifiedDate,
+					storeTaken = _storeTakenDate;
 					
-				//logger(Level.FINE, 'Processing folder "{0}"', folder);
+				relPath = getRelPath(folder);
+				relPathEncoded = encodeAsJava(relPath);
 				
+				//logger(Level.FINE, 'Processing folder "{0}"', relPath);
+				updateStatus(getTextTemplate("preprocessingFolder", level? relPath : folder.getName()));
+				
+				if (filters) {
+					if (filters.hasOwnProperty('addedDate')) {
+						storeAdded = true;
+					}
+					if (filters.hasOwnProperty('fileDate')) {
+						storeModified = true;
+					}
+					if (filters.hasOwnProperty('originalDate')) {
+						storeTaken = true;
+					}
+				}
+				
+				if (sort) {
+					if (sort.hasOwnProperty('addedDate')) {
+						storeAdded = true;
+					}
+					if (sort.hasOwnProperty('fileDate')) {
+						storeModified = true;
+					}
+					if (sort.hasOwnProperty('originalDate')) {
+						storeTaken = true;
+					}
+				}
+					
 				// creating extra variables --> data1.json
 				folder.getChildren().forEach(function(ao) { 
 					// parallelStream() fails !!!
 						
 					var vars,
+						meta,
 						cat = ao.getCategory(),
+						price,
 						v,
 						s,
 						t,
@@ -254,27 +250,29 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						(vars = ao.getVars())) {
 						
 						// Extra fileLabel variable
-						s = vars.get('label');
-						if (s.startsWith('img') || s.startsWith('vid')) {
-							s = s.substring(0,19);
-						} 
-						vars.put('fileLabel', vars.get('fileTitle') || s.replaceAll('_', ' '));
+						vars.put('fileLabel', vars.get('fileTitle') || vars.get('label').replace(/_/g, ' '));
 						
 						dates = {};
 						
 						// Shop
-						if (cat !== Category.webPage && cat !== Category.webLocation && _useShop) {
+						if (_useShop && cat !== Category.webPage && cat !== Category.webLocation) {
 									
 							if (cat !== Category.folder) {
 								shopCount.getAndIncrement();
 							}
 							
+							price = (usePriceAsSingleOption && vars.containsKey('price'))? vars.get('price') : null;
+							
 							if (vars.containsKey('shopOptionsLocal') || 
 								vars.containsKey('shopDiscountRateLocal') ||
-								vars.containsKey('shopQuantityCapLocal')	) {
+								vars.containsKey('shopQuantityCapLocal') ||
+								price
+								) {
 						
 								var shop = new MyJSONObject();
-								if (s = vars.get('shopOptionsLocal')) {
+								if (price) {
+									shop.put('options', getText('price') + '=' + price);
+								} else if (s = vars.get('shopOptionsLocal')) {
 									shop.put('options', s.replace(/\n/g, '::'));
 									if (s === '-') {
 										shopCount.getAndDecrement();
@@ -287,6 +285,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 									shop.put('quantityCap', s);
 								}
 								vars.put('shop', shop);
+								
 							}
 						}
 						
@@ -296,19 +295,22 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 							
 							// Description
 							s = vars.get((cat === Category.folder)? 'description' : 'comment');
-							if (preFormat) {
-								vars.put('commentShort', shorten(preformatText(s).replace(/(<br>\s?)+$/gi, '')));
-							} else {
-								vars.put('commentShort', shorten(stripHTML(s)));
-							}
+							
+							// Comment short
+							vars.put('commentShort', shorten(stripHTML(s)));
 							
 							// Iconpath => SVG, folder thumb path
 							if (s = vars.get('iconPath')) {
-								s = s.replace('folder.png', 'folder.svg');
+								s = s.replace('folder.png', defaultFolderIconName);
 								vars.put('iconpath', s);
 								vars.put('folderThumbPath', s.replace(/^\.\.\//, ''));
 							} else {
-								vars.put('folderThumbPath', createFolderThumb(ao, folderThumbDims, fixedShapeFolderThumbs)); 
+								vars.put('folderThumbPath', createFolderThumb(ao, folderThumbDims, fixedShapeFolderThumbs));
+								if (!fixedShapeFolderThumbs) {
+									var d = getFittedDimensions(folderThumbDims, [ vars.get('originalWidth'), vars.get('originalHeight') ]);
+									vars.put('folderThumbWidth', Math.round(d[0]));
+									vars.put('folderThumbHeight', Math.round(d[1]));
+								}
 							}
 							
 							// Folders only
@@ -338,7 +340,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 										
 									case 'cameraDateRange':
 										if (dateRange.first && dateRange.last) {
-											vars.put('folderModDate', getFormattedDateRange(dateRange.first, dateRange.last));
+											vars.put('folderModDate', getFormattedDateRange(dateRange.first + 0, dateRange.last + 0));
 											break;
 										}							
 										
@@ -347,30 +349,27 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								}
 								
 								// Added date
-								if (_storeAddedDate && (s = JAlbumUtilities.getDeepLastAdded(ao))) {
-									dates.added = ScriptUtils.convert(s / 1000, java.lang.Long.class);
+								if (storeAdded && (s = JAlbumUtilities.getDeepLastAdded(ao))) {
+									dates.added = Long.valueOf(Math.floor(s / 1000));
 								}
 								
 								// Taken date range
-								if (_storeTakenDate && dateRange.first && dateRange.last) {
-									dates.dateRange = [ ScriptUtils.convert(dateRange.first / 1000, java.lang.Long.class), 
-														ScriptUtils.convert(dateRange.last / 1000, java.lang.Long.class) ];
+								if (storeTaken && dateRange.first && dateRange.last) {
+									dates.dateRange = [ Long.valueOf(Math.floor(dateRange.first / 1000)), 
+														Long.valueOf(Math.floor(dateRange.last / 1000)) ];
 								}
 								
 								// Modified date
-								if (_storeModifiedDate && (s = JAlbumUtilities.deepLastModified(ao))) {
-									dates.fileModified = ScriptUtils.convert(s / 1000, java.lang.Long.class);
+								if (storeModified && (s = JAlbumUtilities.deepLastModified(ao))) {
+									dates.fileModified = Long.valueOf(Math.floor(s / 1000));
 								}
 							}
 							
 							// Folder caption
 							if (_folderCaptionTemplate && (s = processTemplate(ao, _folderCaptionTemplate))) {
-								if (preFormat) {
-									s = preformatText(s);
-								} else {
-									s = s.replaceAll('_', ' ');
-								}
 								vars.put('thumbCaption', s);
+							} else {
+								vars.put('thumbCaption', '');
 							}
 
 						} else {
@@ -379,32 +378,25 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 							
 							// Comment
 							s = vars.get('comment');
-							if (preFormat) {
-								s = preformatText(s);
-								vars.put('comment', s);
-								vars.put('commentShort', shorten(s));
-							} else {
-								vars.put('commentShort', shorten(stripHTML(s)));
-							}
+							
+							// Short comment
+							vars.put('commentShort', shorten(stripHTML(s)));
 														
 							if (cat === Category.webPage) {
 								
 								// Web page
-								
-								t = vars.get('title');
-								
-								// Page title, HTML tags removed
-								vars.put('pageTitle', cleanup(stripHTML(t)));
-								
-								// Folder title: hero 
-								vars.put('folderTitle', '<h1>' + t + '</h1>');
+								vars.put('pageTitle', '<h1>' + vars.get('title') + '</h1>');
 								
 								// Top navigation
-								vars.put('topNavigation', _useTopNavigation? getDropdownMenu(rootFolder, ao, !logoName, topNavigationIncludeFolders, topNavigationIncludePages, topNavigationIncludeWebLocations, topNavigationDepth - 1) : '');
+								vars.put('topNavigation', _useTopNavigation? getDropdownMenu(rootFolder, ao, topNavigationIncludeFolders, topNavigationIncludePages, topNavigationIncludeWebLocations, topNavigationDepth - 1, !logoName) : '');
+								
+								// Bottom navigation
+								vars.put('bottomNavigation', _useBottomNavigation? getRootNavigation(folder, '', '', bottomNavigationIncludeFolders, bottomNavigationIncludePages, bottomNavigationIncludeWebLocations) : '');
+								//print('bottomNavigation = ' + folder.getVars().get('bottomNavigation'));
 								
 								// Page URL
 								if (basePath) {
-									vars.put('pageUrl', basePath + relPath + ao.getWebName());
+									vars.put('pageUrl', basePath + relPathEncoded + ao.getWebName());
 								} else {
 									vars.put('pageUrl', '');
 								}
@@ -421,6 +413,9 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								
 								// Caption
 								vars.put('thumbCaption', '<h6>' + t + '</h6>' + (s? ('<div class="comment">' + s + '</div>') : ''));
+								
+								// Page hook for CSS
+								vars.put('pageHook', getOriginalPageName(ao, 'user') + '-page');
 						
 							} else {
 								
@@ -434,18 +429,18 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								
 						
 								// Added date
-								if (_storeAddedDate && (s = ao.getWhenAdded())) {
-									dates.added = ScriptUtils.convert(s / 1000, java.lang.Long.class);
+								if (storeAdded && (s = ao.getWhenAdded())) {
+									dates.added = Long.valueOf(Math.floor(s / 1000));
 								}
 								
 								// Taken date
-								if (_storeTakenDate && (s = getEpochDate(ao, false))) {
-									dates.dateTaken = ScriptUtils.convert(s / 1000, java.lang.Long.class);
+								if (storeTaken && (s = getEpochDate(ao, false))) {
+									dates.dateTaken = Long.valueOf(Math.floor(s / 1000));
 								}
 								
 								// Modified date
-								if (_storeModifiedDate && (s = ao.getLastModified())) {
-									dates.fileModified = ScriptUtils.convert(s / 1000, java.lang.Long.class);
+								if (storeModified && (s = ao.getLastModified())) {
+									dates.fileModified = Long.valueOf(Math.floor(s / 1000));
 								}
 								
 								// Time of day
@@ -456,6 +451,8 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								// Thumbnail caption
 								if (thumbCaptionTemplate && (s = processTemplate(ao, thumbCaptionTemplate))) {
 									vars.put('thumbCaption', s);
+								} else {
+									vars.put('thumbCaption', '');
 								}
 								
 								// Photo data
@@ -465,13 +462,15 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								
 								// Image caption
 								if (imageCaptionTemplate && (s = processTemplate(ao, imageCaptionTemplate))) {
-									vars.put('imageCaption', s.replaceAll('_', ' '));
+									vars.put('imageCaption', s);
+								} else {
+									vars.put('imageCaption', '');
 								}
-
+								
 								if (cat === Category.image) {
 									
 									// Regions / faces
-									if (_useRegions && (s = getRegions(ao)) !== null) {
+									if (_useRegions && (s = getRegions(ao, regionsSkipEmpty)) !== null) {
 										vars.put('regions', JSON.stringify(s));
 										regionCount.getAndIncrement();
 									}
@@ -484,16 +483,36 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 										}
 									}
 									
+									// User designated panorama
+									if (typeof panorama !== UNDEF && panorama) {
+										vars.put('panorama', true);
+									}
+									
+								}
+									
+								if (cat !== Category.audio) {
 									// Sound clip
 									if (useSoundClips && (s = checkSoundClip(ao))) {
 										vars.put('soundClip', s);
 									}
 								}
 									
+								// Copying GIF / SVG files with whatever settings
+								s = getExt(ao.getName()).toLowerCase();
+								if ((s === 'gif' || s === 'svg') && 
+									!linkOriginals && !ao.isIncludeOriginal() &&
+									(s = copyOriginal(ao))) {
+									vars.put('originalFile', s);
+								}
+								
 								// Map
-								if (_useMap && (s = getLocation(ao))) {
+								if (_useMap) {
+									s = getLocation(ao);
 									vars.put('location', s);
-									locationCount.getAndIncrement();
+									//logger(Level.FINE, 'Location for "{0}": "{1}"', [ ao.getName(), s ]);
+									if (s) {
+										locationCount.getAndIncrement();
+									}
 								}
 								
 								// Mostphotos
@@ -520,10 +539,21 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 								}
 								
 								// ZIP: counting only
-								if (zipImages === 'slides' || zipImages === 'originals') {
-									zipCount.getAndIncrement();
-								} else if (zipImages === 'included' && vars.get('originalPath')) {
-									zipCount.getAndIncrement();
+								if (_useZip) {
+									if (zipImages === 'slides' || zipImages === 'originals') {
+										zipCount.getAndIncrement();
+									} else if (zipImages === 'included' && vars.get('originalPath')) {
+										zipCount.getAndIncrement();
+									}
+								}
+								
+								// Extra meta
+								if (!isEmpty(extraMeta) && ((meta = vars.get('meta')) != null)) {
+									for (v in extraMeta) {
+										if ((s = meta.get(extraMeta[v]['meta'])) != null) {
+											vars.put(v, s);
+										}
+									}
 								}
 							}
 						}
@@ -536,7 +566,11 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 				
 				// Current folder variables --> tree.json
 				
-				relPath = getRelPath(folder);
+				/*************************************************
+				 *
+				 *	Processing the current folder for tree.json
+				 *
+				 *************************************************/
 				
 				var	vars = folder.getVars();
 				
@@ -547,24 +581,28 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						modDate,
 						topNav,
 						top = (folder === rootFolder),
-						counts = JAlbumUtilities.countCategories(currentFolder, false);
+						count = getCountObj(folder);
 						
 					// Counters
 					vars.put('shopCount', shopCount.get());
 					vars.put('locationCount', locationCount.get());
 					vars.put('regionCount', regionCount.get());
 					vars.put('vrCount', vrCount.get());
-					vars.put('folderCount', counts.getCount(Category.folder));
-					vars.put('webLocationCount', counts.getCount(Category.webLocation));
-					vars.put('pageCount', counts.getCount(Category.webPage));
-					vars.put('imageCount', counts.getCount(Category.image));
-					vars.put('audioCount', counts.getCount(Category.audio));
-					vars.put('videoCount', counts.getCount(Category.video));
-					vars.put('otherCount', counts.getCount(Category.other));
-					vars.put('itemCount', counts.getCount(Category.image) + counts.getCount(Category.audio) + counts.getCount(Category.video) + counts.getCount(Category.other));
+					vars.put('folderCount', count.folder);
+					vars.put('pageCount', count.webPage);
+					vars.put('webLocationCount', count.webLocation);
+					vars.put('imageCount', count.image);
+					vars.put('audioCount', count.audio);
+					vars.put('videoCount', count.video);
+					vars.put('otherCount', count.other);
+					vars.put('lightboxableCount', count.image + count.audio + count.video + count.other);
+					vars.put('nonLightboxableCount', count.folder + count.webPage + count.webLocation);
 					
 					_anyVr = vrCount.get() > 0;
 
+					// Processing folder image and thumbnail
+					vars.put('hasFolderImage', createFolderImage(folder, folderImageDims, folderThumbDims, folderImgDims));
+					
 					// Zip file?
 					vars.put('zipFile', zipCount.get()? (folder.getWebName() + '.zip') : '');
 					
@@ -601,38 +639,60 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						}
 						
 						// Added date
-						if (_storeAddedDate && (s = JAlbumUtilities.getDeepLastAdded(folder))) {
-							dates.added = ScriptUtils.convert(s / 1000, java.lang.Long.class);
+						if (storeAdded && (s = JAlbumUtilities.getDeepLastAdded(folder))) {
+							dates.added = Long.valueOf(Math.floor(s / 1000));
 						}
 
 						// Taken Date
-						if (_storeTakenDate && dateRange.first && dateRange.last) {
-							dates.dateRange = [ ScriptUtils.convert(dateRange.first / 1000, java.lang.Long.class), 
-												ScriptUtils.convert(dateRange.last / 1000, java.lang.Long.class) ];
+						if (storeTaken && dateRange.first && dateRange.last) {
+							dates.dateRange = [ Long.valueOf(Math.floor(dateRange.first / 1000)), 
+												Long.valueOf(Math.floor(dateRange.last / 1000)) ];
 						}
 						
 						// Modified date
-						if (_storeModifiedDate && (s = JAlbumUtilities.deepLastModified(folder))) {
-							dates.fileModified = ScriptUtils.convert(s / 1000, java.lang.Long.class);
+						if (storeModified && (s = JAlbumUtilities.deepLastModified(folder))) {
+							dates.fileModified = Long.valueOf(Math.floor(s / 1000));
 						}
 						
+						// Dates object
 						if (!isEmpty(dates)) {
 							vars.put('dates', dates);
+						}
+						
+						// Filters
+						if (_useFilters && filters) {
+							vars.put('filters', filters);
+						}
+						
+						// Sort
+						if (_useSort && sort) {
+							vars.put('sort', sort);
 						}
 					}
 					
 					// Neighboring folders
-					if (!top && (linkNeighboringFolders || afterLast === 'ask' || afterLast === 'nextfolder')) {
+					if (!top && (linkNeighboringFolders || afterLast === 'ask' || afterLast === 'nextfolder' || afterLast === 'nextindex')) {
 						
-						if ((ao = getPreviousFolder(folder)) != null) {
+						var rp;
+						
+						ao = neighboringFolderSkipLevels? 
+								getPreviousFolder(folder, 4, true) 
+								: 
+								getPreviousFolder(folder, 0, false);
+						
+						if (ao != null) {
 							v = ao.getVars();
-							vars.put('previousFolderPath', '../' + v.get('closeupPath'));
-							vars.put('previousFolderTitle', ao.getTitle() || ao.getName().replaceAll('_', ' '));
-							vars.put('previousFolderThumbPath', '../' + v.get('thumbPath'));
-							s = encodeAsJava(ao.getWebName());
+							rp = urlEncode(getRelativePath(folder, ao));
+							vars.put('previousFolderPath', rp);									//  + v.get('closeupPath')
+							vars.put('previousFolderTitle', ao.getTitle() || ao.getName());
+							vars.put('previousFolderThumbPath', v.get('iconPath')? '' : getThumbPath(ao));
+							s = v.get('askPermission');
+							if (s !== null) {
+								vars.put('previousFolderAsk', s);
+							}
 							
 							if ((ao = getLastImage(ao)) != null) {
-								vars.put('previousFoldersLast', '../' + s + '/' + indexName + '#img=' + getFinalName(ao));
+								vars.put('previousFoldersLast', rp + indexName + '#img=' + getFinalName(ao));
 							} else {
 								vars.put('previousFoldersLast', '');
 							}
@@ -643,15 +703,24 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 							vars.put('previousFoldersLast', '');
 						}
 						
-						if ((ao = getNextFolder(folder)) != null) {
+						ao = neighboringFolderSkipLevels? 
+								getNextFolder(folder, 4, true, neighboringFolderLoop) 
+								: 
+								getNextFolder(folder, 0, false, neighboringFolderLoop);
+								
+						if (ao != null) {
 							v = ao.getVars();
-							vars.put('nextFolderPath', '../' + v.get('closeupPath'));
-							vars.put('nextFolderTitle', ao.getTitle() || ao.getName().replaceAll('_', ' '));
-							vars.put('nextFolderThumbPath', '../' + v.get('thumbPath'));
-							s = encodeAsJava(ao.getWebName());
+							rp = urlEncode(getRelativePath(folder, ao));
+							vars.put('nextFolderPath', rp);
+							vars.put('nextFolderTitle', ao.getTitle() || ao.getName());
+							vars.put('nextFolderThumbPath', v.get('iconPath')? '' : getThumbPath(ao));
+							s = v.get('askPermission');
+							if (s !== null) {
+								vars.put('nextFolderAsk', s);
+							}
 							
 							if ((ao = getFirstImage(ao)) != null) {
-								vars.put('nextFoldersFirst', '../' + s + '/' + indexName + '#img=' + getFinalName(ao));
+								vars.put('nextFoldersFirst', rp + indexName + '#img=' + getFinalName(ao));
 							} else {
 								vars.put('nextFoldersFirst', '');
 							}
@@ -665,8 +734,8 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 							
 					// Page URL and thumb path
 					if (basePath) {
-						vars.put('pageUrl', basePath + relPath + indexName);
-						vars.put('pageThumbPath', basePath + relPath + folderThumbFileName);
+						vars.put('pageUrl', basePath + relPathEncoded + indexName);
+						vars.put('pageThumbPath', basePath + relPathEncoded + folderThumbFileName);
 					} else {
 						vars.put('pageUrl', '');
 						vars.put('pageThumbPath', folderThumbFileName);
@@ -676,13 +745,13 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 					vars.put('pageTitle', cleanup(stripHTML(t)));
 					
 					// Top navigation
-					vars.put('topNavigation', _useTopNavigation? getDropdownMenu(rootFolder, folder, !top && !logoName, topNavigationIncludeFolders, topNavigationIncludePages, topNavigationIncludeWebLocations, topNavigationDepth - 1) : '');
+					vars.put('topNavigation', _useTopNavigation? getDropdownMenu(rootFolder, folder, topNavigationIncludeFolders, topNavigationIncludePages, topNavigationIncludeWebLocations, topNavigationDepth - 1, !top && !logoName) : '');
 					
 					// Bottom navigation
 					vars.put('bottomNavigation', _useBottomNavigation? getRootNavigation(folder, '', '', bottomNavigationIncludeFolders, bottomNavigationIncludePages, bottomNavigationIncludeWebLocations) : '');
 						
 					// Breadcrumb path
-					if (showBreadcrumbPath !== 'none') {
+					if (showBreadcrumbPath !== 'none' && level > 1) {
 						vars.put('breadcrumbPath', getBreadcrumbPath(folder));
 					}
 					
@@ -711,21 +780,16 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 					// Title as in the Hero
 					
 					if (_titleCaptionTemplate && (s = processTemplate(folder, _titleCaptionTemplate))) {
-						if (preFormat) {
-							s = preformatText(s);
-						} else {
-							s = s.replaceAll('_', ' ');
-						}
-						vars.put('folderTitle', s);
+						vars.put('folderCaption', s);
 					} else {
-						vars.put('folderTitle', '');
+						vars.put('folderCaption', '');
 					}
 					
-					// Processing folder image and thumbnail
-					vars.put('hasFolderImage', createFolderImage(folder, folderImageDims));
 				}
-			};
-					
+				
+				revertStatus();
+			},
+			
 		/*
 		 *	Initializing Javascript variables
 		 */
@@ -733,9 +797,9 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 		getGlobalVars = function() {
 				var o = {
 							albumName:		stripQuot(albumTitle),
-							makeDate:		ScriptUtils.convert((new Date()).getTime() / 1000, java.lang.Long.class),
+							makeDate:		Long.valueOf(Math.floor((new Date()).getTime() / 1000)),
 							licensee:		license,
-							thumbDims:		maxThumbWidth + 'x' + maxThumbHeight + (fixedShapeThumbs? '!' : '')
+							thumbDims:		maxThumbWidth + 'x' + maxThumbHeight
 						};
 						
 				if (indexName !== 'index.html') {
@@ -759,6 +823,32 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 					o['rightClickProtect'] = true;
 				}
 				
+				if (!scrollToTopButton) {
+					o['scrollToTopButton'] = false;
+				}
+				
+				if (_useRating) {
+					o['useRating'] = true;
+					if (visitorRating) {
+						o['visitorRating'] = true;
+					}
+					if (useJalbumRating) {
+						o['jalbumRating'] = true;
+					}
+				}
+				
+				if (lightboxFullscreen) {
+					o['lightboxFullscreen'] = true;
+				}
+				
+				if (slideshowFullscreen) {
+					o['slideshowFullscreen'] = true;
+				}
+				
+				if (alwaysRestartSlideshow) {
+					o['restartSlideshow'] = true;
+				}
+				
 				if (_anyShares) {
 					
 					var s = new Array();
@@ -769,14 +859,16 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 					if (sharePinterest) s.push('pinterest');
 					if (shareLinkedin) s.push('linkedin');
 					if (shareDigg) s.push('digg');
-					if (shareStumbleupon) s.push('stumbleupon');
 					if (shareReddit) s.push('reddit');
 					if (shareEmail) s.push('email');
+					if (shareLink) s.push('link');
 					o['share'] = { 
 						sites:			s.join(','),
-						hook:			'.social-links'
+						hook:			'.social'
 					}
-					
+					if (emailSubject) {
+						o['share']['callAction'] = emailSubject;
+					}
 					s = [];
 					if (facebookLike) s.push('facebook');
 					if (twitterTweet) s.push('twitter');
@@ -789,19 +881,19 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 				
 				if (_useSearch) {
 					o['search'] = {
-						fields:		searchFields,
-						hook:		'.search'
-					}
+							fields:		searchFields,
+							hook:		'.search'
+						}
 				}
 				
 				if (_useFeedback) {
 					o['feedback'] = {
-						to:				xEncrypt(feedbackEmail),
-						floatBtnLabel:	feedbackFloatButtonLabel,
-						copyBtnLabel:	feedbackCopyButtonLabel,
-						sendBtnLabel:	feedbackSendButtonLabel,
-						hook:			'#feedback'
-					};
+							to:				xEncrypt(feedbackEmail),
+							floatBtnLabel:	feedbackFloatButtonLabel || getText('viewFeedbackCart'),
+							copyBtnLabel:	feedbackCopyButtonLabel || getText('copyFeedback'),
+							sendBtnLabel:	feedbackSendButtonLabel || getText('sendFeedback'),
+							hook:			'#feedback'
+						};
 					
 					if (feedbackFormatting !== 'human') {
 						o['feedback']['formatting'] = feedbackFormatting;
@@ -817,7 +909,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 					}
 				}
 				
-				if (extraSizes) {
+				if (_useExtraSizes) {
 					o['extraSizes'] = extraSizes;
 				}
 				
@@ -826,40 +918,34 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						days:		newDaysCount,
 						reference:	newDaysRef
 					}
+					
+					if (newDaysMark === 'text' && newDaysText) {
+						o.markNew['text'] = newDaysText;
+					}
 				}
-				/*if (showFolderImageCount) {
-					o['showCounts'] = true;
-				}*/
-				if (thumbCols !== 4) {
-					o['thumbGridClass'] = thumbGridClass;
-				}
-				if (!hoverEffectThumbs) {
-					o['thumbHoverClass'] = '';
-				}
-				if (!fixedShapeThumbs) {
-					o['fixedShapeThumbs'] = false;
-				}
-				if (!fixedShapeFolderThumbs) {
-					o['fixedShapeFolderThumbs'] = false;
-				}
-				if (!captionPlacement.equals('below')) {
+				
+				if (captionPlacement !== 'below') {
 					o['captionPlacement'] = captionPlacement;
 				}
-				if (!folderCaptionPlacement.equals('below')) {
+				
+				if (thumbLayout !== 'fixgrid') {
+					o['thumbLayout'] = thumbLayout;
+				}
+				
+				if (maxThumbWidth !== 212) {
+					o['maxThumbWidth'] = maxThumbWidth;
+				}
+				
+				if (maxThumbHeight !== 170) {
+					o['maxThumbHeight'] = maxThumbHeight;
+				}
+				
+				if (!hoverEffectThumbs) {
+					o['hoverEffectThumbs'] = false;
+				}
+				
+				if (folderCaptionPlacement !== 'below') {
 					o['folderCaptionPlacement'] = folderCaptionPlacement;
-				}
-				/*
-				if (!fixedShapeThumbs || !captionPlacement.equals('tooltip')) {
-					o['fixThumbs'] = true;
-				}
-				if (!fixedShapeThumbs || !folderCaptionPlacement.equals('over')) {
-					o['fixFolderThumbs'] = true;
-				}
-				*/
-				if (captionPlacement === 'above') {
-					o['captionAbove'] = true;
-				} else if (captionPlacement === 'tooltip') {
-					o['captionTooltip'] = true;
 				}
 				
 				return o;
@@ -891,41 +977,75 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 				if (infoPanelVisible == false) {
 					o['captionVisible'] = false;
 				}
-				if (showPhotoDataInTheCaption) {
-					o['metaAsPopup'] = false;
+				if (showPhotoData) {
+					if (showPhotoDataInTheCaption) {
+						o['metaAsPopup'] = false;
+					}
 				}
-				if (hideFitToggle) {
+				if (!showFitToggle) {
 					o['useZoom'] = false;
+				} else if (zoomSlider) {
+					o['zoomSlider'] = true;
 				}
-				if (hideStartStop) {
-					o['useSlideshow'] = false;
-				}
-				if (fitImages === 'none') {
+				if (!fitImage) {
 					o['fitImages'] = false;
-				} else if (fitImages === 'vertically') {
-					o['fitBoth'] = false;
+				}
+				if (maxZoom !== 1.4) {
+					o['maxZoom'] = maxZoom;
 				}
 				if (dontStretchBehind) {
 					o['fitBetween'] = true;
 				}
 				o['fitPadding'] = fitPadding;
+				/*
 				if (!neverScaleUp) {
 					o['scaleUp'] = true;
+				}
+				*/
+				if (!showStartStop) {
+					o['useSlideshow'] = false;
+				}
+				if (linkOriginals) {
+					o['linkOriginals'] = true;
+				}
+				if (hiDPIImages) {
+					o['hiDpi'] = true;
 				}
 				if (videoAutoPlay) {
 					o['videoAuto'] = true;
 				}
-				if (downloadNonImages) {
-					o['allowDownloadOthers'] = true;
+				if (videoLoop) {
+					o['videoLoop'] = true;
 				}
-				if (hideDownloadButton) {
-					o['hideDownload'] = true;	
+				if (downloadBtn) {
+					o['showDownload'] = true;
+					if (downloadNonImages) {
+						o['allowDownloadOthers'] = true;
+					}
+					if (downloadScaled) {
+						o['allowDownloadScaled'] = true;
+					}
 				}
 				if (printImageButton) {
 					o['printImage'] = true;
 				}
-				if (showShare) {
+				if (_anyShares && showShare) {
 					o['showShare'] = true;
+				}
+				if (showShopBtn) {
+					o['showShop'] = true;
+				}
+				if (showFeedbackBtn) {
+					o['showFeedback'] = true;
+				}
+				if (showMap) {
+					o['showMap'] = true;
+				}
+				if (showRegions) {
+					o['showRegions'] = true;
+					if (regionsBtnText && regionsBtnText !== getText('regionsBtn')) {
+						o['regionsBtn'] = regionsBtnText || getText('faces');
+					}
 				}
 				if (transitionSpeed !== 400) {
 					o['speed'] = transitionSpeed;
@@ -936,11 +1056,14 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 				if (showImageNumbers) {
 					o['showNumbers'] = true;
 				}
-				if (!autohideControls) {
-					o['autohideControls'] = false;
+				if (autohideControls) {
+					o['autohideControls'] = true;
 				}
 				if (slideshowAuto) {
 					o['autoStart'] = true;
+				}
+				if (useAutoPano) {
+					o['autoPano'] = true;
 				}
 				if (!use360Player) {
 					o['use360Player'] = false;
@@ -957,17 +1080,14 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 				if (_useFotomoto) {
 					o['fotomoto'] = true;
 				}
-				if (regionsBtnText && regionsBtnText !== getText('regionsBtn')) {
-					o['regionsBtn'] = regionsBtnText;
-				}
 				if (!clickBesideForIndex) {
 					o['quitOnDocClick'] = false;
 				}
 				if (!clickForNext) {
 					o['clickForNext'] = false;
 				}
-				if (useFullScreen) {
-					o['useFullScreen'] = true;
+				if (showFullscreen) {
+					o['showFullscreen'] = true;
 				}
 				
 				return oo;	
@@ -1005,10 +1125,10 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 		getMapVars = function() {
 				var o = {
 						map: {
-							type:	mapType,
-							zoom:	mapZoom,
-							index:	showMapSection
-						}
+								type:	mapType,
+								zoom:	mapZoom,
+								index:	showMapSection
+							}
 					};
 				
 				if (googleApiKey && googleApiKey.charAt(0) !== '#') {
@@ -1022,54 +1142,67 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 		
 		getIndexVars = function() {
 				var o = {
-							rootPath:	rootPath,
+							rootPath:	getParentFolderLink(level),
 							resPath:	resPath,
-							relPath:	relPath.replace(/\/$/, '')
+							relPath:	encodeAsJava(relPath.replace(/\/$/, ''))
 						};
 				
 				if (_useTagCloud) {
 					o['tagCloud'] = {
-						fields:		tagCloudFields.replace(/,\s+/g, ','),
-						depth:		tagCloudSource,
-						hook:		'#tag-cloud .tag-cloud'
-					};
+							fields:		tagCloudFields.replace(/,\s+/g, ','),
+							depth:		tagCloudSource,
+							hook:		'.tag-cloud-cont'
+						};
+						
 					if (tagCloudSort !== 'none') {
 						o['tagCloud']['sort'] = tagCloudSort;
 					}
+					
 					if (tagCloudFontVaries) {
 						o['tagCloud']['fontVaries'] = true;
 					}
+					
 					if (tagCloudSearch) {
-						o['tagCloud']['searchHook'] = '#tag-cloud form';
+						o['tagCloud']['useSearch'] = tagCloudSearch;
 					}
 				}
 				
 				if (_useSearchNew) {
+					
 					o['searchNew'] = {
-						days:		searchNewDays.replace(/,\s+/g, ','),
-						depth:		searchNewSource,
-						hook:		'.search-new'
-					}
+							days:		searchNewDays.replace(/,\s+/g, ','),
+							depth:		searchNewSource,
+							hook:		'.search-new'
+						}
+					
 					if (searchNewReference !== 'dateTaken') {
 						o['searchNew']['reference'] = searchNewReference;
 					}
+					
 					if (!searchNewSinceLastVisit) {
 						o['searchNew']['sinceLastVisit'] = false;
 					}
 				}
 				
-				if (level > 0) {	
+				if (level > 0) {
+					
 					o['level'] = level;
+					
+					if (typeof previousFolderPath !== UNDEF) {
+						o['previousFolderPath'] = previousFolderPath;
+					}
+					
 					if (typeof previousFoldersLast !== UNDEF) {
 						o['previousFoldersLast'] = previousFoldersLast;
 					}
+					
+					if (typeof nextFolderPath !== UNDEF) {
+						o['nextFolderPath'] = nextFolderPath;
+					}
+					
 					if (typeof nextFoldersFirst !== UNDEF) {
 						o['nextFoldersFirst'] = nextFoldersFirst;
 					}
-				}
-				
-				if (folderCols > 2) {
-					o['folderCols'] = folderCols;
 				}
 				
 				return o;
@@ -1095,24 +1228,29 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 				if (googleSiteID && googleAnalytics !== 'none') {
 					a['googleAnalytics'] = [ xEncrypt(googleSiteID), googleAnalytics, supportDoubleclick ];
 				}
+				
 				if (_useFacebook || _useFacebookBox) {
 					a['facebook'] = [ xEncrypt(facebookAppId), locale ];
 				}
+				
 				if (_useDisqusCommenting) {
 					a['disqus'] = [ xEncrypt(disqusAppId) ];
 				}
+				
 				if (_usePinterest) {
 					a['pinterest'] = [];
 				}
 				
-				return JSON.stringify(a).replace(/\:true/g, ':!0').replace(/\:false/g, ':!1');
-			},	
+				return JSON.stringify(a).replace(/\:true/g, ':!0').replace(/\:false/g, ':!1').replace(/^\{\}$/, '');
+			},
+			
+		// Get Cookie Policy variables
 			
 		getCookiePolicyVars = function() {
 			
 				var v = {};
 				
-				v['cookiePolicy']= showCookiePolicy;
+				v['cookiePolicy'] = showCookiePolicy;
 				
 				if (cookiePolicyStay != 15) {
 					v['stay'] = cookiePolicyStay;
@@ -1132,52 +1270,26 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 			 
 		initAlbum = function() {
 			
-				// Fixed shape
-				if (fixedShapeThumbs) {
+				if (thumbLayout === 'fixgrid') {
+					// Fixed shape
 					engine.addFilter(new FixedShapeFilter(), JAFilter.THUMBNAILS_PRESCALE_STAGE);
 				} else {
+					// Arbitrary AR
 					engine.addFilter(new ConstrainRatioFilter(minVerticalAR, maxHorizontalAR), JAFilter.THUMBNAILS_PRESCALE_STAGE);
 				}
 			
-				/*
-				// Uplink
-				if (homepageAddress) {
-					uplink = homepageAddress;
-					uplinkText = homepageLinkText;
-				}
-				*/
-				
 				if (folderDateSource === 'none') {
 					_folderCaptionTemplate = folderCaptionTemplate.replace(/\s*(<span class="date">)?\$\{folderModDate\}<\/span>/g, '');
 					_titleCaptionTemplate = titleCaptionTemplate.replace(/\s*(<span class="date">)?\$\{folderModDate\}<\/span>/g, '');
 				}
 				
-				var sb = new Array();
-				
 				// Custom link
-				if (customLink) {
-					sb.push('<a href="' + customLink + '" target="_blank">' + 
+				if (typeof customLink !== UNDEF && customLink) {
+					credits = '<a href="' + customLink + '" target="_blank">' + 
 						((customLinkText)? customLinkText : customLink) +
-						'</a>');
+						'</a>' +
+						(credits? (' &middot; ' + credits) : '');
 				}
-				
-				// Credits
-				if (!engine.isExcludeBacklinks()) {
-					// jAlbum credit
-					sb.push('<a href="' + generatorUrl + 
-						'" rel="generator" data-tooltip title="' + 
-						getText('getJalbumNow') + ' (v' + internalVersion + ')">' +
-						(creditText? creditText : (getText('credit').replace(/\{0\}/g, getText('photoAlbums')).replace(/\{1\}/g, 'jAlbum'))) +
-						'</a>');
-					
-					// Skin link
-					sb.push('<a href="' + skinLink + 
-						'" rel="generator" data-tooltip title="' +
-						getText('skin') + ': ' + skin + ' ' + styleName + ', ' + 
-						skinVersion + '">' + skin + '</a>');
-				}
-				
-				credits = sb.join(' &middot; ');
 				
 				if (heroPattern) {
 					copyResource('patterns/' + (isLightColor(backgroundColor, heroColor)? 'light' : 'dark'), heroPattern);
@@ -1186,15 +1298,24 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 				// MS server configuration
 				if (useMsServer) {
 					copySkinFile('includes', 'web.config');
+				} else {
+					removeOutputFile('web.config');
 				}
 		
 				// Expiry headers
 				if (useExpiry) {
 					copySkinFile('includes', '.htaccess');
+				} else {
+					removeOutputFile('.htaccess');
 				}
 				
-				copySkinFile('includes', 'robots.txt');
-				copySkinFile('includes', 'humans.txt');
+				if (useRobotsTxt) {
+					copySkinFile('includes', 'robots.txt');
+					copySkinFile('includes', 'humans.txt');
+				} else {
+					removeOutputFile('robots.txt');
+					removeOutputFile('humans.txt');
+				}
 				
 				// Background music
 				if (backgroundAudio) {
@@ -1212,20 +1333,28 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 				
 				// Creating all.js
 				mergeJs('js',
-					// Foundation libraries
-					'foundation,' + 'what-input,' +
+					// Modernizr
+					'modernizr,' +
+					// Detects input method
+					'what-input,' +
 					// Utilities
 					'laza.util,' +
 					// Album model
 					'jalbum.album,' +
 					// laza libraries
-					'laza.cookie,laza.scrolltop,laza.sharebuttons,laza.transform,laza.swipe,' +
+					'laza.cookie,laza.scrolltop,laza.sticky,laza.transform,laza.swipe,' +
+					// Auto pano player
+					'laza.autopano,' +
+					// Filter-related plugins
+					(_useFilters? 'laza.rangeSlider,' : '') +
 					// Audio player
 					(backgroundMusic? 'laza.audioPlayer,' : '') +
 					// Map
-					((_useMap !== 'none')? 'laza.addmap,' : '') +
-					// Lightbox and misc utilities
-					'laza.lightbox,laza.alignto,laza.addtooltip,laza.modal,laza.matchheight,' +
+					(_useMap? 'laza.addmap,' : '') +
+					// and misc utilities
+					'laza.alignto,laza.tooltip,laza.modal,laza.sharebuttons,' +
+					// Lightbox 
+					'laza.lightbox,' +
 					// Paypal
 					(_useShop? 'laza.paypal,' : '') +
 					// Feedback
@@ -1237,11 +1366,23 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 					debugMode,
 					[
 						// Texts:start
+						// jalbum.album
+						'and',
+						'from',
+						'databaseMissingOrBroken',
+						'checkProcessSubdirectories',
+						'uploadAlbumAgain',
+						'localAccessBlocked',
 						// modal
 						'closeWindow',
 						'okButton',
 						'warning',
 						'error',
+						// ask permission
+						'restrictedLinkTitle',
+						'restrictedLinkQuestion',
+						'restrictedLinkYes',
+						'restrictedLinkNo',
 						// relative date
 						'today',
 						'yesterday',
@@ -1256,7 +1397,9 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						'added',
 						'buyNow',
 						'processedByPaypal',
-						'viewCart',
+						'view',
+						'selectItems',
+						'addSelectedItems',
 						'emptyCart',
 						'removeAllItems',
 						'yes',
@@ -1297,35 +1440,50 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						'feedback',
 						'sendFeedback',
 						'addComment',
-						'viewFeedbackCart',
+						'writeFeedback',
+						'addFeedback',
+						'addFeedbackCart',
+						'view',
 						'feedbackOnAlbum',
-						'dismissFeedback',
+						'removeAll',
 						'removeAllItems',
 						'to',
 						'subject',
 						'warning',
-						'removeAll',
 						'copiedToClipboard',
-						'messageSent',
 						'errorSending',
 						'emailMissing',
 						'tooLong',
 						'copyInstructions',
 						'feedbackButtonExplanation',
+						'message',
 						// share buttons
 						'share',
 						'shareOn',
 						'checkThisOut',
+						'email',
+						'copy',
+						'copied',
+						'slideshow',
 						'localWarning',
-						// search
+						// search, filters, sort
 						'foundNTimes',
 						'notFound',
 						'search',
+						'searchBoxTip',
 						'newImages',
+						'results',
+						'reset',
 						'label',
 						'return',
-						'and',
-						// search new
+						'select',
+						'sortBy',
+						'sortedBy',
+						'ascending',
+						'descending',
+						'multipleSelectHint',
+						'noRating',
+						// search by date
 						'newItem',
 						'today',
 						'inThePast24Hours',
@@ -1335,6 +1493,10 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						'inThePastNMonths',
 						'inThePastNYears',
 						'sinceMyLastVisit',
+						'betweenDays',
+						'onDay',
+						'beforeDay',
+						'afterDay',
 						'imagesAdded',
 						'imagesModified',
 						'imagesTaken',
@@ -1346,6 +1508,7 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						'atLastPageQuestion', 
 						'startOver', 
 						'backToHome',
+						'nextIndex',
 						'stop',
 						'pause',
 						'pauseShort',
@@ -1358,8 +1521,13 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						'nextPictureShort',
 						'previousFolder',
 						'nextFolder',
+						'zoom',
 						'oneToOneSize',
 						'oneToOneSizeShort',
+						'fullscreen',
+						'exitFullscreen',
+						'fullscreenShort',
+						'exitFullscreenShort',
 						'fitToScreen',
 						'fitToScreenShort',
 						'showInfo',
@@ -1371,12 +1539,14 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						'hideThumbs',
 						'hideThumbsShort',
 						'clickToOpen',
+						'rating',
 						'metaBtn', 
 						'metaLabel',
 						'mapBtn',
 						'mapLabel',
 						'shopBtn',
 						'shopLabel',
+						'viewCart',
 						'viewCartLabel',
 						'feedbackLabel',
 						'shareBtn',
@@ -1390,22 +1560,10 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 						'mostphotosLabel',
 						'regionsBtn',
 						'regionsLabel',
-						// feedback
-						'sendFeedback',
-						'message',
-						'subject',
-						'comment',
-						'yourEmail',
-						'send',
-						'messageSent',
-						'errorSending',
-						'tooLong',
-						'emailMissing',
-						'noItemsSelected',
-						'selectItemsHint',
 						// scroll to top
 						'scrollTopTooltip',
 						// etc
+						'new',
 						'more',
 						'less',
 						'locationWarning',
@@ -1431,6 +1589,12 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 					if (shopOptions) {
 						shop.put('options', shopOptions.replace(/\n/g, '::'));
 					}
+					if (shopOptionSelectMethod === 'radio') {
+						shop.put('selectMethod', shopOptionSelectMethod);
+					}
+					if (showPriceRange) {
+						shop.put('showPriceRange', showPriceRange);
+					}
 					if (shopHandling) {
 						shop.put('handling', shopHandling);
 					}
@@ -1455,14 +1619,197 @@ var JAFilter = Java.type("se.datadosen.jalbum.JAFilter"),
 					if (shopSuccessUrl) {
 						shop.put('successUrl', shopSuccessUrl);
 					}
+					if (shopSendAlbumName) {
+						shop.put('sendAlbumName', shopSendAlbumName);
+					}
+					if (shopAskPermissionToEmpty) {
+						shop.put('shopAskPermissionToEmpty', shopAskPermissionToEmpty);
+					}
 					if (shopInstructions) {
 						shop.put('instructions', shopInstructions);
 					}
-					
+					if (usePriceAsSingleOption) {
+						shop.put('usePrice', true);
+					}
+						
 					vars.put('shop', shop);
 				}
 							
-			};
+			},
 		
+		// Reading table data into Object
+		
+		getTableData = function(d) {
+				if (typeof d === 'undefined') {
+					return null;
+				}
+				
+				var data = {};
+					
+				d = d.split('\n');
+				
+				for (var i = 0, s; i < d.length; i++) {
+					if ((s = d[i]).length) {
+						s = s.split('\t');
+						if (s.length > 1 && s[1].length) {
+							if (s[1].startsWith('meta.')) {
+								data['meta_' + toCamelCase(s[1].substring(5))] = {
+									label:		s[0],
+									type:		(s[2] || 'numeric').toLowerCase(),
+									meta:		s[1].substring(5)
+								};
+							} else {
+								data[s[1]] = {
+									label:		s[0],
+									type:		(s[2] || 'numeric').toLowerCase()
+								};
+							}
+						}
+					}
+				}
+				
+				//print(JSON.stringify(data));
+				
+				return (Object.getOwnPropertyNames(data)).length? data : null;
+			},
+					
+		// Returns variable names read from a Filters or Sort table 
+		
+		getObjectProperties = function(o) {
+				var vars = [];
+				
+				for (var v in o) {
+					vars.push(v);
+				}
+				
+				return vars;
+			},
+			
+		// Returns only meta variables
+		
+		getExtraMeta = function(o) {
+			
+				for (var v in o) {
+					if (o[v]['meta']) {
+						extraMeta[v] = o[v];
+					}
+				}
+				//print('Extra meta: ' + extraMeta.join(','));
+			},
+			
+		// Removing native jAlbum variables
+		
+		removeJalbumVars = function(a, ext) {
+				var remove = jsonFields.concat(jsonCameraFields),
+					r = [];
+				
+				if (typeof ext !== UNDEF) {
+					remove = remove.concat(ext);
+				}
+					
+				for (var i = 0; i < a.length; i++) {
+					if (remove.indexOf(a[i]) === -1) {
+						r.push(a[i]);
+					}
+				}
+				
+				return r;
+			},
+			
+		// Adding new variables to JSON processor
+		
+		initJSON = function() {
+			
+			// Adding custom variables 
+			if (_useFilters || _useSort || _useTagCloud || _useSearch) {
+				
+				var jm = null,
+					v = [],
+					d;
+				
+				try {
+					
+					jm = engine.getJSONMaker();
+					
+					if (jm) {
+						
+						if (_useFilters) {
+							d = getTableData(filterData);
+							if (d) {
+								v = getObjectProperties(d);
+								v.push('filters');
+								getExtraMeta(d);
+							}
+						}
+						
+						if (_useSort) {
+							d = getTableData(sortData);
+							if (d) {
+								v = v.concat(getObjectProperties(d));
+								v.push('sort');
+								getExtraMeta(d);
+							}
+						}
+						
+						if (_useTagCloud) {
+							v = v.concat(tagCloudFields.split(/,\s*/));
+						}
+						
+						if (_useSearch) {
+							v = v.concat(searchFields.split(/,\s*/));
+						}
+						
+						var inc = jm.getIncludes();
+						
+						if (inc === null || inc.length === 0) {
+							inc =	[
+										"imageCaption",
+										"thumbCaption",
+										"photodata",
+										"regions",
+										"mostphotos",
+										"fotomotoCollection",
+										"location",
+										"shop",
+										"dates",
+										"epochDate",
+										"epochDateRange",
+										"external",
+										"projectionType",
+										"soundClip",
+										"panorama",
+										"originalFile"
+									];
+						} else if (typeof inc === 'object') {
+							
+							for (var i = 0, tmp = []; i < inc.length; i++) {
+								if (jsonCameraFields.indexOf(inc[i]) === -1) {
+									tmp.push(inc[i]);
+								}
+							}
+							
+							inc = tmp;
+						}
+						
+						v = removeJalbumVars(v, inc);
+						//print('Include extra variables: ' + removeDuplicates(inc.concat(v)).join(' | '));
+						//print('var inc = jm.getIncludes();\ninc[0] = ' + inc[0] + '\ninc.length = ' + inc.length + /*'\ninc.getClass().toString() = ' + inc.getClass().toString() + */ '\ntypeof inc = "' + (typeof inc) + '"\n(inc == null)? ' + (inc === null) + '\nArray.isArray(inc)? ' + Array.isArray(inc) + '\nJSON.stringify(inc) = ' + JSON.stringify(inc));
+						jm.setIncludes(removeDuplicates(inc.concat(v)));
+					}
+					
+				} catch(e) {
+					print('engine.getJSONMaker() returned error: ', e);
+				}
+				
+			}
+		};
+	
+	
+	initJSON();
+	
 	initAlbum();
 	
+	if (typeof writeSitemapXml !== 'undefined' && writeSitemapXml) {
+		//System.out.println('writeSitemap = ' + writeSitemapXml);
+		createSitemap();
+	}

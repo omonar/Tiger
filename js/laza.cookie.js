@@ -13,129 +13,133 @@
  *		cookie( key ) :: returns cookie or null
  *		cookie( key, null ) :: deletes cookie
  *		cookie( key, value, [expire]) :: saves cookie, expire in # seconds - default expiry is 1 hour
+ *
+ *	If DIR_PATH is defined it will use that directory to store and retrieve cookies,
+ *	otherwise the cookies will be global
  */
  
 (function($) {
 	'use strict';
 				
 	var LOCALSTORAGE = (function(){
-			try {
-				localStorage.setItem('_t', VER);
-				localStorage.removeItem('_t');
-				return true;
-			} catch(e) {
-				return false;
-			}
-		}());
+				try {
+					localStorage.setItem('_t', VER);
+					localStorage.removeItem('_t');
+					return true;
+				} catch(e) {
+					return false;
+				}
+			}()),
+		PATH = DIR_PATH || '/';
 	
 	$.cookie = function(key, value, expire) { 
 		
-		var cookie_sep = '; @',
-			
-			getVal = function(v) {
-					return (/^(true|yes)$/).test(v)? true : 
-						((/^(false|no)$/).test(v)? false : ((/^([\d.]+)$/).test(v)? parseFloat(v) : v));
-				},
+			var cookie_sep = '; @',
 				
-			cookie_val = function(v) {
+				getVal = function(v) {
+						return (/^(true|yes)$/).test(v)? true : 
+							((/^(false|no)$/).test(v)? false : ((/^([\d.]+)$/).test(v)? parseFloat(v) : v));
+					},
 					
-					if (typeof v !== 'string') {
-						return v;
-					}
-					
-					if (v[0] === '[' || v[0] === '{') {
-						v = JSON.parse(v);
+				cookie_val = function(v) {
 						
-						for (var o in v) {
-							if (typeof o[v] === 'string') {
-								o[v] = getVal(o[v]);
+						if (typeof v !== 'string') {
+							return v;
+						}
+						
+						if (v[0] === '[' || v[0] === '{') {
+							v = JSON.parse(v);
+							
+							for (var o in v) {
+								if (typeof o[v] === 'string') {
+									o[v] = getVal(o[v]);
+								}
 							}
+							return v;
 						}
-						return v;
-					}
+						
+						return getVal(v);
+					};
+			
+			if (arguments.length > 1) { 
+				
+				// write
+				var d = new Date();
+				
+				if (value === null) {
 					
-					return getVal(v);
-				};
-		
-		if (arguments.length > 1) { 
-			
-			// write
-			var d = new Date();
-			
-			if (value === null) {
-				
-				// remove
-				if (LOCALSTORAGE) {
-					localStorage.removeItem(key);
-				} else {
-					document.cookie = encodeURIComponent(key) + '=' + '; expires=' + d.toGMTString() + "; path=/";
-				}
-				
-			} else {
-				
-				if (typeof value === 'object') {
-					value = JSON.stringify(value);
-				} else {
-					value = String(value);
-				}
-				
-				// store
-				d.setTime(d.getTime() + (((typeof expire !== 'number')? 3600 : expire) * 1000));
-				
-				if (LOCALSTORAGE) {
-					localStorage.setItem(key, value + cookie_sep + String(d.getTime()));
-				} else {
-					document.cookie = encodeURIComponent(key) + '=' + value + '; expires=' + d.toGMTString() + "; path=/";
-				}
-			}
-			
-			return value;
-		
-		} else if (key) { 
-			
-			// read
-			if (LOCALSTORAGE) {
-				
-				var v = localStorage.getItem(key);
-				
-				if (v) {
-					v = v.split(cookie_sep);
-					
-					if (v.length === 1) {
-						v = v[0].split('; ');
-					}
-					
-					if (v.length > 1) {
-						var d = new Date();
-						if (d.getTime() < parseInt(v[1], 10)) {
-							// not yet expired 
-							return cookie_val(v[0]);
-						} else {
-							// remove expired cookie
-							localStorage.removeItem(key);
-						}
+					// remove
+					if (LOCALSTORAGE) {
+						localStorage.removeItem(PATH + key);
 					} else {
-						// no expiration was set
-						return cookie_val(v);
+						document.cookie = encodeURIComponent(key) + '=' + '; expires=' + d.toGMTString() + '; path=' + PATH + ' SameSite=Strict';
+					}
+					
+				} else {
+					
+					if (typeof value === 'object') {
+						value = JSON.stringify(value);
+					} else {
+						value = String(value);
+					}
+					
+					// store
+					d.setTime(d.getTime() + (((typeof expire !== 'number')? 3600 : expire) * 1000));
+					
+					if (LOCALSTORAGE) {
+						localStorage.setItem(PATH + key, value + cookie_sep + String(d.getTime()));
+					} else {
+						document.cookie = encodeURIComponent(key) + '=' + value + '; expires=' + d.toGMTString() + '; path=' + PATH + ' SameSite=Strict';
 					}
 				}
 				
-			} else {
+				return value;
+			
+			} else if (key) { 
 				
-				var c = document.cookie.split(/;\s*/),
-					v;
+				// read
+				if (LOCALSTORAGE) {
 					
-				key += '=';
-				
-				for (var i = 0; i < c.length; i++) {
-					if (c[i].substring(0, key.length) === key) {
-						return cookie_val(c[i].substring(key.length));
+					var v = localStorage.getItem(PATH + key);
+					
+					if (v) {
+						v = v.split(cookie_sep);
+						
+						if (v.length === 1) {
+							v = v[0].split('; ');
+						}
+						
+						if (v.length > 1) {
+							var d = new Date();
+							if (d.getTime() < parseInt(v[1], 10)) {
+								// not yet expired 
+								return cookie_val(v[0]);
+							} else {
+								// remove expired cookie
+								localStorage.removeItem(PATH + key);
+							}
+						} else {
+							// no expiration was set
+							return cookie_val(v);
+						}
+					}
+					
+				} else {
+					
+					var c = document.cookie.split(/;\s*/),
+						v;
+						
+					key += '=';
+					
+					for (var i = 0; i < c.length; i++) {
+						if (c[i].substring(0, key.length) === key) {
+							return cookie_val(c[i].substring(key.length));
+						}
 					}
 				}
 			}
-		}
-		
-		return null;
-	};
+			
+			return null;
+		};
 	
 })(jQuery);

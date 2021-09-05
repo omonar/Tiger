@@ -1,7 +1,8 @@
 <ja:ui>
+	/* User Interface */
 	class SitemapUI extends JWebPageUI {
 		JCheckBox showSitemapDescriptions = new JCheckBox("Show descriptions", true);
-		JCheckBox showSitemapThumbs = new JCheckBox("Show thumbnails", false);
+		JCheckBox showSitemapThumbs = new JCheckBox("Show thumbnails", true);
 		{
 			showSitemapDescriptions.setOpaque(false);
 			showSitemapThumbs.setOpaque(false);
@@ -13,16 +14,5 @@
 	}
 </ja:ui>
 <ja:include page="page-header.inc" /> <%-- Keep this --%>
-
-	<div id="sitemap-page">
-		<ja:if exists="caption"><div class="caption">${caption}</div></ja:if>
-		<div class="sitemap<ja:if test="${showSitemapThumbs}"> showthumbs</ja:if>">
-			<div class="title">
-				<a href="${rootPath}/${indexName}" class="icon-home">${albumTitle}</a>
-				<ja:if test="${showSitemapDescriptions}"><small>${albumDescription}</small></ja:if>
-			</div>
-			<ja:include page="templates/Sitemap.inc" />
-		</div>
-	</div>
-
+<ja:include page="templates/Sitemap.inc" />
 <ja:include page="page-footer.inc" /> <%-- Keep this --%>

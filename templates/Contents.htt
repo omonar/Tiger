@@ -1,11 +1,18 @@
 <ja:ui>
+	/* User Interface */
 	class SitemapUI extends JWebPageUI {
+		JCheckBox showContentsPages = new JCheckBox("Show pages", false);
+		JCheckBox showContentsWeblocations = new JCheckBox("Show web locations", false);
 		JCheckBox showContentsDescriptions = new JCheckBox("Show descriptions", true);
-		JCheckBox showContentsThumbs = new JCheckBox("Show thumbnails", false);
+		JCheckBox showContentsThumbs = new JCheckBox("Show thumbnails", true);
 		{
+			showContentsPages.setOpaque(false);
+			showContentsWeblocations.setOpaque(false);
 			showContentsDescriptions.setOpaque(false);
 			showContentsThumbs.setOpaque(false);
-			add(showContentsDescriptions);
+			add(showContentsPages);
+			add("br", showContentsWeblocations);
+			add("br", showContentsDescriptions);
 			add("br", showContentsThumbs);
 			add("br", new JLabel("The contents is automatically generated. Put it in the root of your album!"));
 			add("br", new JLabel("The comment added below will be displayed above the content."));
@@ -13,11 +20,5 @@
 	}
 </ja:ui>
 <ja:include page="page-header.inc" /> <%-- Keep this --%>
-
-	<div id="contents-page"<ja:if test="${showContentsThumbs}"> class="showthumbs"</ja:if>>
-		<ja:if exists="caption"><div class="caption">${caption}</div></ja:if>
-		<ja:else><div>${comment}</div></ja:else>
-		<ja:include page="templates/Contents.inc" />
-	</div>
-
+<ja:include page="templates/Contents.inc" />
 <ja:include page="page-footer.inc" /> <%-- Keep this --%>

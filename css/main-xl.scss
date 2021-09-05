@@ -1,0 +1,104 @@
+@charset "UTF-8";
+/* user.scss :: User defined styles */
+@import 'defaults';
+
+.medium-column,
+.cont.medium-column {
+	flex-direction: row;
+}
+
+.folders {
+	.cont {
+		.card {
+			width: _(folderWidthXL);
+		}
+	}
+}
+
+.thumbnails {
+	.cont {
+		&.fixgrid,
+		&.grid,
+		&.flexgrid {
+			.card {
+				width: _(thumbWidthXL);
+			}
+		}
+	}
+}
+
+.page-wide {
+	.hero {
+		.cont {
+			padding-left: 0;
+			border-radius: 0 0 _U(brl,px) _U(brl,px);
+		}
+	}
+	.footer {
+		.cont {
+			border-radius: _U(brl,px) _U(brl,px) 0 0;
+		}
+	}
+	.transparent + .hero {
+		.cont {
+			border-radius: _U(brl,px);
+		}
+	}
+}
+
+.full-width {
+	.hero {
+		&.title-top {
+			.title {
+				border-bottom-left-radius: _U(brl,px);
+			}
+		}
+		&.title-middle {
+			.title {
+				border-top-left-radius: _U(brl,px);
+				border-bottom-left-radius: _U(brl,px);
+			}
+		}
+		&.title-bottom {
+			.title {
+				border-top-left-radius: _U(brl,px);
+			}
+		}
+		.controls {
+			margin-right: 0;
+		}
+	}
+}
+
+.content section {
+	.cont {
+		padding: $gap2 0;
+	}
+	&.thumbnails,
+	&.folders,
+	&.pages {
+		.cont:not(.title) {
+			max-width: _B('"calc(" + maxPageWidth + " + " + 2 * cardGap + "rem)"');
+			padding-left: 0;
+			padding-right: 0;
+		}
+	}
+}
+
+.help-card {
+	&:first-child {
+		.caption ol li:first-child {
+			padding-right: 40px;
+		}
+	}
+	.fig {
+		min-width: 240px;
+		max-width: 45%;
+		margin: 0;
+	}
+	.caption {
+		margin: 0 40px 0 0;
+		flex: 1;
+	}
+}
+

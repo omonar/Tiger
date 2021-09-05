@@ -1,0 +1,25 @@
+<ja:ui>
+	/* User Interface */
+	class CalendarUI extends JWebPageUI {
+		
+		JCheckBox calendarSubfolders = new JCheckBox("Include subfolders", true);
+		JSpinner calendarThumbs = new JSpinner(new SpinnerNumberModel(4, 1, 10, 1));
+		JComboBox calendarDateSource = new JComboBox(new Object[] {
+			new Item("dateTaken", "Camera date"),
+			new Item("fileModified", "Last modified date"),
+			new Item("added", "Added to album")
+		});
+		
+		{		
+			calendarDateSource.setSelectedIndex(0);
+			add(calendarSubfolders);
+			add("br", new JLabel("Max. number of thumbs on a day"));
+			add("tab", calendarThumbs);
+			add("br", new JLabel("Date source"));
+			add("tab", calendarDateSource);
+		}
+	}
+</ja:ui>
+<ja:include page="page-header.inc" /> <%-- Keep this --%>
+<ja:include page="templates/Calendar.inc" />
+<ja:include page="page-footer.inc" /> <%-- Keep this --%>

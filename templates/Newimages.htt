@@ -1,0 +1,45 @@
+<%-- User interface for editing this page from within jAlbum --%>
+<ja:ui>
+	class NewimagesUI extends JWebPageUI {
+		
+		JSpinner newImagesDays = new JSpinner(new SpinnerNumberModel(30, 1, 3655, 1));
+		
+		JComboBox newImagesDepth = new JComboBox(new Object[] {
+			new Item("tree", "The whole album"),
+			new Item("current", "The current folder"),
+			new Item("subfolders", "Current folder and below")
+		});
+		
+		JComboBox newImagesSource = new JComboBox(new Object[] {
+			new Item("dateTaken", "Camera date"),
+			new Item("fileModified", "Last modified date"),
+			new Item("added", "Added to album")
+		});
+		
+		JComboBox newImagesSort = new JComboBox(new Object[] {
+			new Item("original", "None"),
+			new Item("random", "Random"),
+			new Item("date", "Date")
+		});
+		
+		JCheckBox newImagesReverse = new JCheckBox("Reverse order");
+		
+		{	
+			//newImagesDays.setEditable(true);
+			
+			add(new JLabel("Include only images less than"));
+			add(newImagesDays);
+			add(new JLabel("days old."));
+			add("br", new JLabel("Depth"));
+			add("tab", newImagesDepth);
+			add("br", new JLabel("Date source"));
+			add("tab", newImagesSource);
+			add("br", new JLabel("Sort results"));
+			add("tab", newImagesSort);
+			add("tab", newImagesReverse);
+		}
+	}
+</ja:ui>
+<ja:include page="page-header.inc" /> <%-- Keep this --%>
+<ja:include page="templates/Newimages.inc" />
+<ja:include page="page-footer.inc" /> <%-- Keep this --%>

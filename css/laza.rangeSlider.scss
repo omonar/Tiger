@@ -1,0 +1,112 @@
+@charset "UTF-8";
+/* laza.rangeSlider.scss */
+
+@import 'defaults';
+	
+	$btnSize: 			32;
+	$railHeight:		4;
+	
+	$mono:				Consolas, "Lucida Console", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+
+input[type=range] {
+	width: 100%;
+	line-height: $btnSize;
+}
+
+.rangeslider {
+	display: block;
+	width: 100%;
+	overflow: visible;
+	position: relative;
+	padding: $btnSize+px $btnSize+px $btnSize/2+px $btnSize+px;
+	.min-val,
+	.max-val {
+		position: absolute;
+		top: -2px;
+		height: 12px;
+		font-family: $mono;
+		font-size: 75%;
+		opacity: 0.3;
+		z-index: 1;
+	}
+	.min-val {
+		left: $btnSize+px;
+		transform: translateX(-50%);
+	}
+	.max-val {
+		right: $btnSize+px;
+		transform: translateX(50%);
+	}
+	&.focus {
+		// Framework focus default
+		.rail {
+			outline: 1px solid #8a8a8a;
+			-webkit-box-shadow: 0 0 5px #cacaca;
+			box-shadow: 0 0 5px #cacaca;
+		}
+	}
+	.rail {
+		position: relative;
+		height: $railHeight+px;
+		background-color: rgba(31,31,31,0.2);
+		.range-bar {
+			position: absolute;
+			left: 0;
+			top: 0;
+			right: 0;
+			height: $railHeight+px;
+			overflow: visible;
+			background-color: _(buttonBgColor);
+			z-index: 2;
+		}
+		button {
+			display: inline-block;
+			position: absolute;
+			border-radius: 10%;
+			width: $btnSize+px;
+			height: $btnSize+px;
+			transform: translate((-$btnSize/2)+px,(-($btnSize - $railHeight)/2)+px);
+			background-color: rgba(255,255,255,0.8);
+			border: 1px solid #222;
+			cursor: e-resize;
+			&.low {
+				left: 0;
+				z-index: 4;
+			}
+			&.high {
+				left: 100%;
+				z-index: 3;
+			}
+			.number {
+				position: absolute;
+				left: 50%;
+				top: -4px;
+				padding: .2rem;
+				font-family: $mono;
+				font-size: 75%;
+				transform: translate(-50%,-100%);
+				background-color: #fff;
+				color: #111;
+			}
+			&.moving {
+				.number {
+					color: #fff;
+					background-color: _(buttonBgColor);
+				}
+			}
+			&.last-touch {
+				z-index: 5;
+			}
+			&:after {
+				width: 4px;
+				height: 8px;
+				content: '';
+				position: absolute;
+				left: 13px;
+				top: 11px;
+				border-left: 1px solid rgba(0,0,0,0.2);
+				border-right: 1px solid rgba(0,0,0,0.2);
+			}
+		}
+	}
+}

@@ -1,0 +1,60 @@
+/******************************************* Cookie policy */
+#cookiepolicy {
+  position: absolute;
+  position: fixed;
+  display: none;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 0.625rem;
+  background-color: rgba(0, 0, 0, 0.8);
+  font-size: 0.75em;
+  z-index: 999999; }
+  #cookiepolicy .close {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: #666;
+    width: 2rem;
+    height: 2rem;
+    text-align: center;
+    line-height: 2rem;
+    font-size: 1rem;
+    cursor: pointer; }
+    #cookiepolicy .close:hover {
+      color: #fff; }
+  #cookiepolicy p {
+    margin: 0;
+    color: ${lightText};
+    text-align: center; }
+    #cookiepolicy p a.btn {
+      margin: 0 0.15625rem;
+      padding: 0.15625rem 0.3125rem 0.3125rem;
+      color: ${buttonTextColor};
+      background-color: ${buttonBgColor};
+      cursor: pointer;
+      border-radius: .25rem; }
+      #cookiepolicy p a.btn:before {
+        font-size: 13.5px;
+        vertical-align: -3px; }
+    #cookiepolicy p span {
+      margin: 0 1em;
+      cursor: pointer;
+      position: relative;
+      padding-left: 1.25rem; }
+      #cookiepolicy p span.checkbox:before, #cookiepolicy p span.checkbox:after {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 16px;
+        height: 100%; }
+      #cookiepolicy p span.checkbox:before {
+        z-index: 1;
+        color: ${lighterText};
+        font-size: 13.5px; }
+      #cookiepolicy p span.checkbox:after {
+        content: '';
+        border: 1px solid ${transparentText}; }
+
+/*# sourceMappingURL=cookiepolicy.css.map */

@@ -1,0 +1,16 @@
+@charset "UTF-8";
+/* laza.rangeSlider.dark.scss */
+
+@import 'defaults';
+
+.rangeslider {
+	.rail {
+		background-color: rgba(241,241,241,0.2);
+		button {
+			.number {
+				background-color: #000;
+				color: #eee;
+			}
+		}
+	}
+}

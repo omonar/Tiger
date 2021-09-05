@@ -1,5 +1,5 @@
-<%-- User interface for editing this page from within jAlbum --%>
 <ja:ui>
+	/* User Interface */
 	class AboutUI extends JWebPageUI {
 		
 		JTextField tumblrId = new JTextField(16);
@@ -12,12 +12,6 @@
 		}
 	}
 </ja:ui>
-
 <ja:include page="page-header.inc" /> <%-- Keep this --%>
-
-				<div id="tumblr-page" class="clearfix">
-					<script src='https://${tumblrId}.tumblr.com/js<ja:if exists="tumblrPostCnt">?num=${tumblrPostCnt}</ja:if>'></script>
-				</div>
-
+<ja:include page="templates/TumblrFeed.inc" />
 <ja:include page="page-footer.inc" /> <%-- Keep this --%>
-

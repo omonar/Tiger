@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Lightbox Preview</title>
+	{googleFontsLink}
+	<style>
+	* { 
+		box-sizing: border-box; 
+	}
+	body { 
+		display: block; 
+		margin: 0; 
+		padding: 0; 
+		width: 100%;
+		height: 100vh; 
+		overflow: hidden; 
+		font-family: {fontFamily};
+		font-weight: {fontWeight};
+		font-size: 1rem;
+		line-height: 1.5;
+		color: {textColor};
+		background-color: {mainBgColor};
+		background-image: {backgroundImage};
+		background-position: {backgroundPosition};
+		background-repeat: {backgroundRepeat};
+		background-size: {backgroundSize};
+		background-attachment: fixed;
+	}
+	a {	
+		color: {linkColor};
+		text-decoration: none; 
+	}
+	a:hover { 
+		color: {hoverColor}; 
+	}
+	b, strong { 
+		font-weight: {boldWeight};
+	}
+	.thumbs-visible .thumb-strip {
+		display: flex;
+	}
+	.thumb-strip {
+		display: none;
+		position: absolute;
+		max-width: 100%;
+		transform: translateX(-50%);
+		left: 50%;
+		top: 0;
+		height: {thumbstripHeight}px;
+		background-color: {lightboxBoxBg};
+		border-radius: 0 0 {brm}px {brm}px;
+		box-shadow: {boxShadow};
+		z-index: 10;
+	}
+	.thumb-strip .left,
+	.thumb-strip .right {
+		display: flex;
+		align-items: center;
+	}
+	.thumb-strip .left polygon,
+	.thumb-strip .right polygon {
+		fill: {textColor};
+	}
+	.thumbs {
+		display: flex;
+		justify-content: stretch;
+		margin-top: 4px;
+		white-space: nowrap;
+	}
+	.thumbs a {
+		display: block;
+		height: 100%;
+		vertical-align: top;
+		margin: 0 1px 0 0;
+		padding: 0 0 4px 0;
+	}
+	.thumbs img {
+		height: calc({thumbstripHeight}px - 8px);
+	}
+	.controls {
+		position: absolute;
+		display: flex;
+		overflow: hidden;
+		left: 50%;
+		top: 0;
+		transform: translateX(-50%);
+		background-color: {lightboxBoxBg};
+		border-radius: 0 0 {brm}px {brm}px;
+		box-shadow: {boxShadow};
+		z-index: 11;
+		opacity: 1;
+		line-height: 2.5rem;
+	}
+	.thumbs-visible .controls {
+		top: {thumbstripHeight}px;
+	}
+	.controls a {
+		display: flex;
+		flex-direction: column;
+		min-width: 2.5rem;
+		color: {textColor};
+		height: 2.5rem;
+		background-color: transparent;
+	}
+	.controls a span {
+		display: none;
+		text-align: center;
+		padding: 0 2px;
+		line-height: 12px;
+		font-size: 10px;
+		white-space: nowrap;
+	}
+	.controls.show-label a span {
+		display: block;
+	}
+	.controls .previous svg,
+	.controls .next svg {
+		width: 22.5px;
+		height: 22.5px;
+	}
+	.controls .zoom-in, 
+	.controls .zoom-level,
+	.controls .show-thumbs, 
+	.controls .hide-thumbs,
+	.controls .play,
+	.controls .fullscreen,
+	.caption-visible .controls .show-caption,
+	body:not(.caption-visible) .controls .hide-caption {
+		display: none;
+	}
+	.controls.show-fit-toggle:not(.use-slider) .zoom-in,
+	.controls.show-fit-toggle.use-slider .zoom-level,
+	.use-thumbstrip:not(.thumbs-visible) .controls .show-thumbs,
+	.use-thumbstrip.thumbs-visible .controls .hide-thumbs,
+	.controls.show-start-stop .play,
+	.controls.show-fullscreen .fullscreen {
+		display: flex;
+	}
+	.controls a:hover {
+		background-color: {lightboxBoxHoverBg};
+	}
+	.controls svg {
+		margin: auto;
+	}
+	.controls svg path,
+	.controls svg polygon {
+		fill: {textColor};
+	}
+	.lightbox-main {
+		display: flex;
+		position: absolute;
+		z-index: 1;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+	}
+	.lightbox-main .image {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%,-50%);
+		max-height: 96%;
+		padding: {lightboxBorderWidth}px;
+		background-color: {lightboxBorderColor};
+		box-shadow: {boxShadow};
+		border-radius: {imgCornerRadius}px;
+	}
+	.lightbox-main .image img {
+		display: block;
+		margin: auto;
+		width: {maxImageWidth}px;
+		border-radius: calc({imgCornerRadius}px - 0.667 * {lightboxBorderWidth}px);
+	}
+	.lightbox-main.fit .image img {
+		max-width: calc(100vw - 2 * {fitPadding}px - 2 * {lightboxBorderWidth}px);
+	}
+	.lightbox-caption {
+		display: none;
+		flex-direction: row;
+		position: absolute;
+		left: 5%;
+		width: 90%;
+		bottom: 0;
+		padding: 4px 4px 4px 8px;
+		background-color: {lightboxBoxBg};
+		border-radius: {brm}px {brm}px 0 0;
+		box-shadow: {boxShadow};
+		z-index: 12;
+	}
+	.caption-visible .lightbox-caption {
+		display: flex;
+	}
+	.lightbox-caption .buttons {
+		display: flex;
+		flex-wrap: wrap;
+		margin-left: auto;
+		justify-content: flex-end;
+	}
+	.lightbox-caption .buttons > * {
+		display: none;
+	}
+	.lightbox-caption .buttons > .show {
+		display: flex;
+	}
+	.lightbox-caption .buttons a {
+		padding: 3px 5px;
+		color: {textColor};
+		font-size: 12px;
+		margin-right: 1px;
+		white-space: nowrap;
+		background-color: {lightboxBoxBg};
+		cursor: pointer;
+	}
+	.lightbox-caption .buttons a:hover {
+		color: {buttonHoverTextColor};
+		background-color: {buttonHoverBgColor};		
+	}
+	.lightbox-caption .buttons a span {
+		display: none;
+	}
+	.lightbox-caption .buttons.labels a span {
+		display: block;
+	}
+	.lightbox-caption .buttons a:first-of-type {
+		border-radius: {brs}px 0 0 {brs}px;
+	}
+	.lightbox-caption .buttons a:last-of-type {
+		border-radius: 0 {brs}px {brs}px 0;
+		margin-right: 0;
+	}
+	.lightbox-caption .buttons svg {
+		width: 16px;
+		height: 16px;
+		margin-right: 3px;
+		vertical-align: middle;
+	}
+	.lightbox-caption > b,
+	.lightbox-caption .numbers {
+		font-size: 14px;
+		margin-right: 6px;
+	}
+	.lightbox-caption svg path {
+		fill: {textColor};
+	}
+	</style>
+</head>
+<body class="lightbox {captionVisible} {thumbsVisible} {useThumbstrip}">
+	<div class="thumb-strip">
+		<a class="left"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>caret-left</title><polygon points="10.27 5.26 10.97 5.96 7.44 9.5 10.97 13.04 10.27 13.74 6.03 9.5 10.27 5.26" fill="#333333"/></svg></a>
+		<div class="thumbs">
+			<a><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTYwIiB2aWV3Qm94PSIwIDAgMjAwIDE2MCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTYwIiBmaWxsPSIjOWFlYmZmIi8+PHBvbHlnb24gcG9pbnRzPSIyMDAgNTkgMCA4OSAwIDAgMjAwIDAgMjAwIDU5IiBmaWxsPSIjODZjY2RlIi8+PHBhdGggZD0iTTcwLDMwQTM1LDM1LDAsMCwwLDQwLDgzbDY0LTkuNkEzNSwzNSwwLDAsMCw3MCwzMFoiIGZpbGw9IiNjN2Y0ZmYiLz48L3N2Zz4="></a>
+			<a><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjYiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTY2IDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIxNjYiIGhlaWdodD0iMjAwIiBmaWxsPSIjYWJjY2ZmIi8+PHBvbHlnb24gcG9pbnRzPSIxNjYgMjAwIDAgMjAwIDc2IDkwIDkwIDkwIDE2NiAyMDAiIGZpbGw9IiNiZmQ4ZmYiLz48cmVjdCB3aWR0aD0iMTY2IiBoZWlnaHQ9IjkwIiBmaWxsPSIjOTBhZWRlIi8+PC9zdmc+"></a>
+			<a><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNzgiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTc4IDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIxNzgiIGhlaWdodD0iMjAwIiBmaWxsPSIjN2NlNGU2Ii8+PHBvbHlnb24gcG9pbnRzPSI1NCAxMTggMCAxNTIgMCAwIDU0IDAgNTQgMTE4IiBmaWxsPSIjNmZjZGNmIi8+PHBvbHlnb24gcG9pbnRzPSIxNzggMTUyIDEyNCAxMTggMTI0IDAgMTc4IDAgMTc4IDE1MiIgZmlsbD0iIzlhZjNmNSIvPjwvc3ZnPg=="></a>
+			<a><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiB2aWV3Qm94PSIwIDAgMjAwIDE1MCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjOGZkYmZmIi8+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSI2OSIgZmlsbD0iIzc3YmVlMCIvPjxwb2x5Z29uIHBvaW50cz0iNzYgNTggNzYgNDQgNjIgNDQgNjIgNTggNTIgNTggNTcgNzUgOTQgNzUgMTA5IDU4IDc2IDU4IiBmaWxsPSIjYThlM2ZmIi8+PC9zdmc+"></a>
+			<a><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjN2RkYmZhIi8+PHBvbHlnb24gcG9pbnRzPSIyMDAgODcgMTAwIDEyMiAwIDcgMCAwIDIwMCAwIDIwMCA4NyIgZmlsbD0iIzcwYzVlMCIvPjxjaXJjbGUgY3g9IjE0NSIgY3k9IjM4IiByPSIyMSIgZmlsbD0iIzliZTNmYSIvPjwvc3ZnPg=="></a>
+			<a><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDgiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTQ4IDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIxNDgiIGhlaWdodD0iMjAwIiBmaWxsPSIjOTRmNWUwIi8+PHBvbHlnb24gcG9pbnRzPSIxNDggNzkgMCAxMDAgMCAwIDE0OCAwIDE0OCA3OSIgZmlsbD0iIzgxZDZjNCIvPjxwYXRoIGQ9Ik0xNDgsNTAuNTZhMjgsMjgsMCwwLDAtMzguNjcsMi41NkEzMi41LDMyLjUsMCwxLDAsOTIsMTE0djE2aDRWMTEzLjlhMzIuNSwzMi41LDAsMCwwLDI1LjE2LTE1LjMzQTI4LjEyLDI4LjEyLDAsMCwwLDEyOCw5OS45MlYxMDloNFY5OS45MmEyNy44OCwyNy44OCwwLDAsMCwxNi02LjQ4WiIgZmlsbD0iIzc1YzJiMyIvPjwvc3ZnPg=="></a>
+		</div>
+		<a class="right"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>caret-right</title><polygon points="7.73 5.26 7.03 5.96 10.56 9.5 7.03 13.04 7.73 13.74 11.97 9.5 7.73 5.26" fill="#333333"/></svg></a>
+	</div>
+	<div class="controls {controlsText} {showFitToggle} {useSlider} {showStartStop} {showFullscreen}">
+		<a class="previous" title="Previous picture"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>arrow-left</title><polygon points="16 9 4.05 9 9.21 3.84 8.5 3.14 2.14 9.5 8.5 15.86 9.21 15.16 4.05 10 16 10 16 9" fill="#333333" fill-rule="evenodd"/></svg><span>Prev</span></a>
+		<a class="up" title="Up one level"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>arrow-up</title><polygon points="9 16 9 4.05 14.16 9.21 14.86 8.5 8.5 2.14 2.14 8.5 2.84 9.21 8 4.05 8 16 9 16" fill="#333333" fill-rule="evenodd"/></svg><span>Back</span></a>
+		<a class="zoom-in" title="1:1 size"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>expand</title><path d="M3.71,15H8v1H2V10H3v4.29L7.47,9.82l.71.7ZM9.82,7.48l.71.7L15,3.71V8h1V2H10V3h4.29Z" fill="#333333" fill-rule="evenodd"/></svg><span>Zoom in</span></a>
+		<a class="zoom-level" title="Zoom level"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>zoom-level</title><path d="M18,17.27l-3.83-3.84a7.52,7.52,0,1,0-.71.71L17.27,18ZM2,8.5A6.5,6.5,0,1,1,8.5,15,6.5,6.5,0,0,1,2,8.5ZM9,5.41v6.18L10.62,10l.71.71L8.5,13.5,5.67,10.67,6.38,10,8,11.59V5.41L6.38,7l-.71-.71L8.5,3.5l2.83,2.83L10.62,7Z" fill="#333333"/></svg><span>Zoom out</span></a>
+		<a class="show-thumbs" title="Show thumbnails"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>show-top-panel</title><path d="M0,1V2H1V4H16V2h1V1ZM15,3H2V2H15ZM8,6H9v6.84l2.41-2.42.71.71L8.5,14.75,4.88,11.13l.71-.71L8,12.84Z" fill="#333333"/></svg><span>Thumbs</span></a>
+		<a class="hide-thumbs" title="Hide thumbnails"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>hide-top-panel</title><path d="M0,1V2H1V7H16V2h1V1ZM15,6H2V2H15ZM8,10.16,5.59,12.58l-.71-.71L8.5,8.25l3.62,3.62-.71.71L9,10.16V17H8Z" fill="#333333"/></svg><span>Hide thumbs</span></a>
+		<a class="show-caption" title="Show caption / info"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>show-bottom-panel</title><path d="M17,17V16H16V14H1v2H0v1Zm-2-1H2V15H15ZM8,5.16,5.59,7.58l-.71-.71L8.5,3.25l3.62,3.62-.71.71L9,5.16V12H8Z" fill="#333333"/></svg><span>Info</span></a>
+		<a class="hide-caption" title="Hide caption / info"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>hide-bottom-panel</title><path d="M17,17V16H16V11H1v5H0v1Zm-2-1H2V12H15ZM8,1H9V7.84l2.41-2.42.71.71L8.5,9.75,4.88,6.13l.71-.71L8,7.84Z" fill="#333333"/></svg><span>Hide info</span></a>
+		<a class="play" title="Start slideshow"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>play</title><path d="M5,3.8,14,9,5,14.2V3.8M4,2.07V15.93L16,9,4,2.07Z" fill="#333333"/></svg><span>Slideshow</span></a>
+		<a class="fullscreen" title="Full screen"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>fullscreen</title><path d="M6,1H1V6H2V2H6Zm6,1h4V6h1V1H12ZM6,16H2V12H1v5H6Zm6,1h5V12H16v4H12Z" fill="#333333"/></svg><span>Fullscr</span></a>
+		<a class="next" title="Next picture"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>arrow-right</title><polygon points="2 9 13.95 9 8.79 3.84 9.5 3.14 15.86 9.5 9.5 15.86 8.79 15.16 13.95 10 2 10 2 9" fill="#333333" fill-rule="evenodd"/></svg><span>Next</span></a>
+	</div>
+	<div class="lightbox-main {fitImage}">
+		<div class="image"><img src="data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 448 280' style='enable-background:new 0 0 448 280;' xml:space='preserve'%3E%3Cstyle type='text/css'%3E .st0%7Bfill:url(%23SVGID_1_);%7D .st1%7Bfill:%23B2C6D9;%7D .st2%7Bfill:%236A85A1;%7D .st3%7Bfill:%2387A1BD;%7D .st4%7Bfill:%23AAC8E6;%7D%0A%3C/style%3E%3Ctitle%3EArtboard 1%3C/title%3E%3ClinearGradient id='SVGID_1_' gradientUnits='userSpaceOnUse' x1='224' y1='22.2' x2='224' y2='200' gradientTransform='matrix(1 0 0 -1 0 200)'%3E%3Cstop offset='0' style='stop-color:%2398B8D9'/%3E%3Cstop offset='1' style='stop-color:%235E7387'/%3E%3C/linearGradient%3E%3Crect class='st0' width='448' height='177.8'/%3E%3Ccircle class='st1' cx='315' cy='140' r='44.8'/%3E%3Cpath class='st2' d='M0,280h448V121.8c0,0-28-5.8-61,0.2s-60.8,40.4-122.4,32S0,54.6,0,54.6V280z'/%3E%3Cpath class='st3' d='M448,280H0V116.2c0,0,35.6-47.5,117.6-37.8c88.4,10.5,152.6,76.3,231,78.4c71.4,1.2,99.4-14,99.4-14V280z'/%3E%3Cpath class='st4' d='M448,280H0V88.9c0,0,50.9,1.9,95,24.1s87.4,59.2,143,74.6c65.8,18.2,108.8-39.5,150.3-46.1c38.8-6.2,59.7,1.3,59.7,1.3V280z'/%3E%3C/svg%3E"></div>
+	</div>
+	<div class="lightbox-caption">
+		<div class="caption">
+			<b>Sunset</b>
+		</div>
+		<div class="buttons {showLabels}">
+			<div class="numbers {showNumbers}"><b>6</b>&nbsp;/ 12</div>
+			<a class="button {showDownload}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>download</title><path d="M8,2H9V8.84l3.41-3.42.71.71L8.5,10.75,3.88,6.13l.71-.71L8,8.84Zm7,10v3H2V12H1v4H16V12Z" fill="#333333"/></svg><span>Download</span></a>
+			<a class="button {showCart}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>shopping-cart-add</title><path d="M12,14H5.78l-.5-2H13.5l.5-2H13l-.25,1H5L4,7H9V6H3.78L3,3H0V4H2.25l.5,2,1.5,6,.51,2a2,2,0,1,0,2,1h3.56A2,2,0,1,0,12,14ZM5,17a1,1,0,1,1,1-1A1,1,0,0,1,5,17Zm7,0a1,1,0,1,1,1-1A1,1,0,0,1,12,17ZM18,6H15V9H13V6H10V4h3V1h2V4h3Z" fill="#333333"/></svg><span>Add to cart</span></a>
+			<a class="button {showFeedback}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>email-send</title><path d="M.35,8.48,5,10.81v5.9l3.54-3.54,5.27,4.23L17.19.63Zm2.3,0L14,3.23,5.44,9.91ZM6,10.74l7.74-6.06-5.62,7.5L6,14.29Zm7.16,4.86-4-3.19L15.48,4Z" fill="#333333"/></svg><span>Add comment</span></a>
+			<a class="button {showFacetag}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>facetag</title><path d="M15,1V2h1V3h1V1ZM0,1V3H1V2H2V1ZM12,2h2V1H12ZM9,2h2V1H9ZM6,2H8V1H6ZM3,2H5V1H3ZM3,12H5V11H3Zm9,0h2V11H12ZM0,6H1V4H0ZM16,6h1V4H16ZM0,9H1V7H0ZM16,9h1V7H16ZM1,11V10H0v2H2V11Zm15-1v1H15v1h2V10Zm-2.49,3.61c-.37-.15-.74-.26-1-.35a2.27,2.27,0,0,1-1.66-1.81A6.66,6.66,0,0,0,11.63,10a2,2,0,0,0,1.16-1.58,2,2,0,0,0-.55-1.77C12.3,4.42,11.49,3,8.5,3S4.7,4.42,4.76,6.69a2,2,0,0,0-.55,1.77A2,2,0,0,0,5.37,10a6.66,6.66,0,0,0,.79,1.41A2.27,2.27,0,0,1,4.5,13.26c-.27.09-.64.2-1,.35A1.4,1.4,0,0,0,2.5,15v1a14,14,0,0,0,6,1,14,14,0,0,0,6-1V15A1.4,1.4,0,0,0,13.51,13.61ZM6,8.94H6a.71.71,0,0,1-.76-.64.71.71,0,0,1,.54-.85h0l0-.77a2.83,2.83,0,0,1,.51-2.07A3.11,3.11,0,0,1,8.5,4a3.11,3.11,0,0,1,2.23.62,2.83,2.83,0,0,1,.51,2.07l0,.77h0a.71.71,0,0,1,.54.85A.71.71,0,0,1,11,9h0l-.28.79C10.11,11.1,9.1,12,8.5,12s-1.61-.9-2.19-2.27Zm7.47,6.39a14.47,14.47,0,0,1-5,.67,14.47,14.47,0,0,1-5-.67V15c0-.2,0-.32.37-.46a6.24,6.24,0,0,1,.68-.24l.27-.09A3.2,3.2,0,0,0,6.93,12.3,2.5,2.5,0,0,0,8.5,13a2.5,2.5,0,0,0,1.57-.7,3.2,3.2,0,0,0,2.11,1.91l.27.09a6.24,6.24,0,0,1,.68.24c.35.14.37.26.37.46Z" fill="#333333"/></svg><span>People</span></a>
+			<a class="button {showPrint}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>printer</title><path d="M14,7V2H4V7H1v7H4v2H14V14h3V7ZM5,3h8V7H5Zm8,12H5V13h8Zm3-2H14V12H4v1H2V8H16Z" fill="#333333"/></svg><span>Print</span></a>
+			<a class="button {showMap}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>location</title><path d="M8.5,2a5.51,5.51,0,0,1,4.64,8.46c-.82,1.28-3.35,4.4-4.64,6-1.29-1.57-3.82-4.69-4.64-6A5.51,5.51,0,0,1,8.5,2m0-1A6.5,6.5,0,0,0,3,11c1.16,1.8,5.48,7,5.48,7s4.32-5.2,5.48-7A6.5,6.5,0,0,0,8.5,1Zm0,5A1.5,1.5,0,1,0,10,7.5,1.5,1.5,0,0,0,8.5,6Z" fill="#333333"/></svg><span>Map</span></a>
+			<a class="button {showPhotodata}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>camera</title><path d="M9,14.25A4.25,4.25,0,1,1,13.25,10,4.26,4.26,0,0,1,9,14.25Zm0-7.5A3.25,3.25,0,1,0,12.25,10,3.26,3.26,0,0,0,9,6.75ZM15.5,16H2.5A1.5,1.5,0,0,1,1,14.5v-8A1.5,1.5,0,0,1,2.5,5h2l.36-1.79A1.51,1.51,0,0,1,6.32,2h5.36a1.51,1.51,0,0,1,1.47,1.21L13.51,5h2A1.5,1.5,0,0,1,17,6.5v8A1.5,1.5,0,0,1,15.5,16ZM2.5,6a.5.5,0,0,0-.5.5v8a.5.5,0,0,0,.5.5h13a.5.5,0,0,0,.5-.5v-8a.5.5,0,0,0-.5-.5H12.69l-.52-2.6a.5.5,0,0,0-.49-.4H6.32a.5.5,0,0,0-.49.41L5.31,6Z" fill="#333333"/></svg><span>Photo data</span></a>
+			<a class="button {showShare}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>connect</title><path d="M13,2a2,2,0,1,1-2,2,2,2,0,0,1,2-2m0,10a2,2,0,1,1-2,2,2,2,0,0,1,2-2M4.34,7a2,2,0,1,1-2,2,2,2,0,0,1,2-2M13,11a3,3,0,0,0-2.3,1.09L7.14,10A2.8,2.8,0,0,0,7.14,8l3.56-2A3,3,0,1,0,10,4a3,3,0,0,0,.2,1L6.64,7.09a3,3,0,1,0,0,3.82L10.2,13a3,3,0,0,0-.2,1,3,3,0,1,0,3-3Z" fill="#333333"/></svg><span>Share</span></a>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,7 +1,113 @@
 /* laza.modal.scss */
-/* defaults.scss :: default values, functions and mixins */
+@keyframes fade-and-hide {
+  0% {
+    opacity: 100%;
+    visibility: visible;
+    display: block; }
+  99% {
+    opacity: 0; }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    display: none; } }
+@-webkit-keyframes rotating {
+  0% {
+    -webkit-transform: rotate(0); }
+  100% {
+    -webkit-transform: rotate(360deg); } }
+@-moz-keyframes rotating {
+  0% {
+    -moz-transform: rotate(0); }
+  100% {
+    -moz-transform: rotate(360deg); } }
+@-o-keyframes rotating {
+  0% {
+    -o-transform: rotate(0); }
+  100% {
+    -o-transform: rotate(360deg); } }
+@keyframes rotating {
+  0% {
+    transform: rotate(0); }
+  100% {
+    transform: rotate(360deg); } }
+@-webkit-keyframes appear-up {
+  0% {
+    -webkit-transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    -webkit-transform: translateY(0);
+    opacity: 1; } }
+@-moz-keyframes appear-up {
+  0% {
+    -moz-transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    -moz-transform: translateY(0);
+    opacity: 1; } }
+@-o-keyframes appear-up {
+  0% {
+    -o-transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    -o-transform: translateY(0);
+    opacity: 1; } }
+@keyframes appear-up {
+  0% {
+    transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    transform: translateY(0);
+    opacity: 1; } }
+@-moz-keyframes move-down-bounce {
+  0%,
+		100%,
+		20%,
+		50%,
+		80% {
+    -moz-transform: translateY(0);
+    transform: translateY(0); }
+  40% {
+    -moz-transform: translateY(-16px);
+    transform: translateY(-16px); }
+  60% {
+    -moz-transform: translateY(-7px);
+    transform: translateY(-7px); } }
+@-webkit-keyframes move-down-bounce {
+  0%,
+		100%,
+		20%,
+		50%,
+		80% {
+    -moz-transform: translateY(0);
+    transform: translateY(0); }
+  40% {
+    -moz-transform: translateY(-16px);
+    transform: translateY(-16px); }
+  60% {
+    -moz-transform: translateY(-7px);
+    transform: translateY(-7px); } }
+@keyframes move-down-bounce {
+  0%,
+		100%,
+		20%,
+		50%,
+		80% {
+    -moz-transform: translateY(0);
+    -ms-transform: translateY(0);
+    -webkit-transform: translateY(0);
+    transform: translateY(0); }
+  40% {
+    -moz-transform: translateY(-16px);
+    -ms-transform: translateY(-16px);
+    -webkit-transform: translateY(-16px);
+    transform: translateY(-16px); }
+  60% {
+    -moz-transform: translateY(-7px);
+    -ms-transform: translateY(-7px);
+    -webkit-transform: translateY(-7px);
+    transform: translateY(-7px); } }
 .modal {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.75);
   position: fixed;
   top: 0;
   bottom: 0;
@@ -11,25 +117,24 @@
   .modal .window {
     position: absolute;
     top: 50%;
-    left: 10%;
-    top: 50%;
-    width: 80%;
-    max-height: 98%;
+    left: 50%;
+    min-width: auto;
+    max-width: 96%;
+    width: fit-content;
     padding: 0;
     color: ${modalColor};
     background-color: ${modalBgColor};
-    -moz-transform: translate(0, -50%);
-    -ms-transform: translate(0, -50%);
-    -webkit-transform: translate(0, -50%);
-    transform: translate(0, -50%);
-    box-shadow: ${boxShadow};
-    overflow: auto; }
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    border-radius: ${brl}px;
+    box-shadow: ${boxShadow}; }
     .modal .window.small {
-      left: 15%;
-      width: 70%; }
+      max-width: 70%; }
     .modal .window.large {
-      left: 5%;
-      width: 90%; }
+      min-width: 80%; }
     .modal .window.alert {
       border-left: 4px solid #900; }
     .modal .window.warning {
@@ -42,80 +147,131 @@
       padding: 20px 60px 20px 20px;
       -webkit-overflow-scrolling: touch; }
     .modal .window.has-header .content {
-      padding: 20px; }
+      padding: 1rem; }
     .modal .window.no-padding .content {
       padding: 0; }
     .modal .window header {
       height: 60px;
       line-height: 60px;
       padding-left: 20px;
-      padding-right: 60px;
+      padding-right: 75px;
       text-align: left;
       color: ${modalHeadColor};
       background-color: ${modalHeadBgColor}; }
-    .modal .window .content h1, .modal .window .content h2, .modal .window .content h3, .modal .window .content h4, .modal .window .content h5, .modal .window .content h6 {
-      color: ${modalColor}; }
+    .modal .window .content {
+      max-height: calc(96vh - 4rem);
+      overflow-x: hidden;
+      overflow-y: auto;
+      width: auto;
+      scrollbar-color: dark; }
+      .modal .window .content::-webkit-scrollbar {
+        width: .8rem; }
+      .modal .window .content::-webkit-scrollbar-track {
+        background-color: rgba(0, 0, 0, 0.25); }
+      .modal .window .content::-webkit-scrollbar-thumb {
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        background-color: rgba(255, 255, 255, 0.15); }
+      .modal .window .content .thumbnails .cont .card .caption {
+        scrollbar-color: dark; }
+        .modal .window .content .thumbnails .cont .card .caption::-webkit-scrollbar {
+          width: .8rem; }
+        .modal .window .content .thumbnails .cont .card .caption::-webkit-scrollbar-track {
+          background-color: rgba(0, 0, 0, 0.25); }
+        .modal .window .content .thumbnails .cont .card .caption::-webkit-scrollbar-thumb {
+          border: 1px solid rgba(0, 0, 0, 0.5);
+          background-color: rgba(255, 255, 255, 0.15); }
+      .modal .window .content h1, .modal .window .content h2, .modal .window .content h3, .modal .window .content h4, .modal .window .content h5, .modal .window .content h6 {
+        color: ${modalColor};
+        padding-right: 0.9375rem; }
+      .modal .window .content .text-center {
+        text-align: center; }
+      .modal .window .content > .buttons:first-child {
+        margin-top: 0; }
     .modal .window.map {
       padding: 0 60px 0 0;
       background-color: #000; }
       .modal .window.map img {
         max-width: none; }
-    .modal .window .btn {
-      position: absolute;
-      text-align: left;
-      text-indent: -9999px;
-      background-color: rgba(0, 0, 0, 0.1);
+    .modal .window .close {
+      background-color: rgba(0, 0, 0, 0.2);
       padding: 0;
       position: absolute;
       border: none;
-      width: 60px; }
-      .modal .window .btn:hover, .modal .window .btn:focus {
-        background-color: rgba(0, 0, 0, 0.4);
-        outline: none; }
-      .modal .window .btn:hover:before, .modal .window .btn:hover:after {
-        background-color: #fff; }
-      .modal .window .btn:before, .modal .window .btn:after {
+      width: 60px;
+      height: 60px;
+      z-index: 20;
+      top: 0;
+      right: 0; }
+      .modal .window .close:before, .modal .window .close:after {
         position: absolute;
         margin-left: -0.5px;
         width: 2px;
-        background-color: rgba(255, 255, 255, 0.5);
-        content: ''; }
-      .modal .window .btn.close {
-        height: 60px;
-        z-index: 20;
-        top: 0;
-        right: 0; }
-        .modal .window .btn.close:before, .modal .window .btn.close:after {
-          bottom: 25%;
-          left: 50%;
-          top: 25%; }
-        .modal .window .btn.close:before {
-          -moz-transform: rotate(45deg);
-          -ms-transform: rotate(45deg);
-          -webkit-transform: rotate(45deg);
-          transform: rotate(45deg); }
-        .modal .window .btn.close:after {
-          -moz-transform: rotate(-45deg);
-          -ms-transform: rotate(-45deg);
-          -webkit-transform: rotate(-45deg);
-          transform: rotate(-45deg); }
+        background-color: #ccc;
+        content: '';
+        bottom: 30%;
+        left: 50%;
+        top: 30%; }
+      .modal .window .close:before {
+        -moz-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg); }
+      .modal .window .close:after {
+        -moz-transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+        transform: rotate(-45deg); }
+      .modal .window .close:hover, .modal .window .close:focus {
+        background-color: rgba(0, 0, 0, 0.7);
+        outline: none; }
+      .modal .window .close:hover:before, .modal .window .close:hover:after {
+        background-color: #fff; }
+    .modal .window > .btn.close:first-child {
+      background-color: rgba(0, 0, 0, 0.5);
+      border-bottom-left-radius: ${brl}px; }
     .modal .window .buttons {
-      text-align: center;
-      padding: 0.9375rem 0; }
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      flex-flow: row wrap;
+      margin-top: 0.625rem; }
       .modal .window .buttons .button {
-        display: inline-block;
-        margin: 0.25rem; }
+        display: block;
+        padding: 0.625rem 0.9375rem;
+        margin-right: 1px; }
 
-@media only screen and (min-width: 64em) {
+.light {
+  scrollbar-color: light; }
+  .light::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.2); }
+  .light::-webkit-scrollbar-thumb {
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    background-color: rgba(255, 255, 255, 0.6); }
+  .light .modal .window .content.scrollable {
+    scrollbar-color: light; }
+    .light .modal .window .content.scrollable::-webkit-scrollbar-track {
+      background-color: rgba(0, 0, 0, 0.2); }
+    .light .modal .window .content.scrollable::-webkit-scrollbar-thumb {
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      background-color: rgba(255, 255, 255, 0.6); }
+
+@media only screen and (min-width: 40em) {
   .modal .window {
-    left: 25%;
-    width: 50%; }
+    min-width: auto;
+    max-width: 90%; }
     .modal .window.small {
-      left: 33%;
-      width: 34%; }
+      max-width: 50%; }
     .modal .window.large {
-      left: 15%;
-      width: 70%; } }
+      min-width: 80%;
+      max-width: 96%; } }
+@media only screen and (min-width: 60em) {
+  .modal .window {
+    max-width: ${pageWidth}px; }
+    .modal .window.small {
+      max-width: 40%; }
+    .modal .window.large {
+      min-width: <%=Math.round(pageWidth * .8) + "px"%>;
+      max-width: ${pageWidth}px; } }
 @media print {
   body.has-modal > * {
     display: none; }

@@ -1,0 +1,5 @@
+<ja:include page="page-header.inc" /> <%-- Keep this --%>
+<%-- 	The following include file manages to display the Title and Comment (see Detail view!).
+		You can replace this with your own content. --%>
+<ja:include page="templates/Custom.inc" />
+<ja:include page="page-footer.inc" /> <%-- Keep this --%>

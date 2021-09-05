@@ -1,6 +1,5 @@
 <ja:enter>
 <ja:include page="page-header.inc" />
-<%-- Sections: Folders, pages, thumbnails, etc. --%>
 <ja:include page="sections.inc" />
 <ja:include page="page-footer.inc" />
 </ja:enter>

@@ -11,11 +11,222 @@ window.console = window.console || (function(){
 			log: function(msg) {}
 		};
 	})();
+	
+// Ensuring log function exists
+var log = function() {};
 
+/*
+ *	Constants
+ */
+	 
+var		// Typeof check
+		UNDEF 			= 'undefined',
+		OBJECT			= 'object',
+		FUNCTION		= 'function',
+		STRING			= 'string',
+		NUMBER			= 'number',
+		BOOLEAN			= 'boolean',
+		
+		NOLINK 			= 'javascript:void(0)',
+		
+		LOCAL 			= document.location.protocol === 'file:',
+	
+		ONEDAY_S		= 60 * 60 * 24,
+		ONEDAY_MS		= 60 * 60 * 24 * 1000,
+	
+		STARS			= '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="80" height="16" viewBox="0 0 80 16" xml:space="preserve"><path d="M12,10.094l0.938,5.5L8,13l-4.938,2.594L4,10.094L0,6.219l5.531-0.813l2.469-5l2.469,5L16,6.219L12,10.094z"/><path d="M28,10.094l0.938,5.5L24,13l-4.938,2.594l0.938-5.5l-4-3.875l5.531-0.813l2.469-5l2.469,5L32,6.219L28,10.094z"/><path d="M44,10.094l0.938,5.5L40,13l-4.938,2.594l0.938-5.5l-4-3.875l5.531-0.813l2.469-5l2.469,5L48,6.219L44,10.094z"/><path d="M60,10.094l0.938,5.5L56,13l-4.938,2.594l0.938-5.5l-4-3.875l5.531-0.813l2.469-5l2.469,5L64,6.219L60,10.094z"/><path d="M76,10.094l0.938,5.5L72,13l-4.938,2.594l0.938-5.5l-4-3.875l5.531-0.813l2.469-5l2.469,5L80,6.219L76,10.094z"/></svg>';
+	
+		DIR_PATH 		= (function() {												// Path to current folder on the site
+								let p = window.location.pathname,
+									level = document.getElementsByTagName('html')[0].getAttribute('data-level') || 0;
+								
+								do {
+									p = p.substring(0, p.lastIndexOf('/'));
+								} while (level--) 
+								
+								return p + '/';
+							})(),
+	
+		LOCALSTORAGE 	= (function() {												// Test for local storage
+								try {
+									localStorage.setItem('_t', UNDEF);
+									localStorage.removeItem('_t');
+									return true;
+								} catch(e) {
+									return false;
+								}
+							})(),
+							
+		HISTORY			= (function() {												// Test for history
+								// Taken from Modernizr 3.1
+								let ua = navigator.userAgent;
+						
+								if ((ua.indexOf('Android 2.') !== -1 ||
+									(ua.indexOf('Android 4.0') !== -1)) &&
+									ua.indexOf('Mobile Safari') !== -1 &&
+									ua.indexOf('Chrome') === -1 &&
+									ua.indexOf('Windows Phone') === -1) {
+									return false;
+								}
+						
+								return (window.history && 'pushState' in window.history);
+							})(),
+							
+		VEND 			= (function() {												// Browser vendor test
+								let ua = navigator.userAgent;
+								/*
+									PC:
+										IE 8: 		"Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0)"
+										IE 9: 		"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 2.0.50727; SLCC2; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; Tablet PC 2.0; .NET4.0C)"
+										IE 10: 		"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0; .NET4.0E; .NET4.0C)"
+										Edge:		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299"
+										Opera 12: 	"Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.15"
+										Firefox 21: "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:21.0) Gecko/20100101 Firefox/21.0"
+										Chrome 27: 	"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36"
+									Mac:
+										Chrome 27: 	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36"
+										Firefox 21: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0"
+										Safari 6: 	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/536.26.14 (KHTML, like Gecko) Version/6.0.1 Safari/536.26.14"
+								 */
+								if (ua.indexOf('Trident') > 0 || ua.indexOf('Edge') > 0) {
+									return 'ms';
+								} else if (ua.indexOf('AppleWebKit') > 0) {
+									return 'webkit';
+								} else if (ua.indexOf('Gecko') > 0) {
+									return 'moz';
+								} else if (ua.indexOf('Presto') > 0) {
+									return 'o';
+								} else if (ua.indexOf('Blink') > 0) {
+									return 'webkit';
+								}
+								return '';		
+							})(),
+							
+		JAVAFXBROWSER	= navigator.userAgent.indexOf('JavaFX/14') > 0,
+							
+		BACKFACEBUG		= (navigator.userAgent.indexOf('Edge') > 0) && 
+							(parseInt(navigator.userAgent.match(/Edge\/(\d+\.\d+)/)[1]) <= 16),
+		/*
+		FITCONTENT		= (function() {
+								if (/Trident/.test(navigator.userAgent) || /Edge/.test(navigator.userAgent)) {
+									document.getElementsByTagName('html')[0].classList.add('no-fitcontent');
+									return false;
+								}
+								document.getElementsByTagName('html')[0].classList.add('fitcontent');
+								return true;
+							})(),
+		*/
+		
+		//ISIOSDEVICE		= navigator.userAgent.match(/ipad|iphone|ipod/i),			// IOS device?
+		
+		TOUCH			= (function() {												// Touch event naming
+	
+								if (/Trident|Edge/.test(navigator.userAgent)) {
+									// Setting MS events
+									if (window.navigator.pointerEnabled) {
+										return {
+											'START': 	'pointerdown',
+											'MOVE':		'pointermove',
+											'END':		'pointerup',
+											'CANCEL':	'pointercancel'
+										};
+									}
+									return {
+										'START': 	'MSPointerDown',
+										'MOVE':		'MSPointerMove',
+										'END':		'MSPointerUp',
+										'CANCEL':	'MSPointerCancel'
+									};
+								}
+							
+								return {
+									'START': 	'touchstart',
+									'MOVE':		'touchmove',
+									'END':		'touchend',
+									'CANCEL':	'touchcancel'
+								};
+							})(),
+		
+		TOUCHENABLED	= function() {												// Test for touch support
+		
+								if (/Trident/.test(navigator.userAgent)) {
+									return (typeof navigator['maxTouchPoints'] !== UNDEF && navigator.maxTouchPoints); // || /IEMobile/.test(navigator.userAgent);
+								} else if (/Edge/.test(navigator.userAgent)) {
+									return (scrollbarWidth() == 0);
+								} else if (/(Chrome|CriOS)/.test(navigator.userAgent)) {
+									return /Mobile/.test(navigator.userAgent) || 'ontouchstart' in window; 
+								}
+								return 'ontouchstart' in window;
+							}(),
+							
+		ISIOSDEVICE		= /^iP/.test(navigator.platform) || /^Mac/.test(navigator.platform) && navigator.maxTouchPoints && (navigator.maxTouchPoints > 4),
+							
+		SMALLSCREEN		= window.innerWidth <= 480 || window.innerHeight <= 480 || (window.innerWidth <= 640 && window.innerHeight <= 640),
+		
+		PIXELRATIO		= window.hasOwnProperty('devicePixelRatio')? window.devicePixelRatio : 1,
+		
+		HIDPI			= PIXELRATIO > 1.9,
+							//matchMedia("(-webkit-min-device-pixel-ratio: 2), (min-device-pixel-ratio: 2), (min-resolution: 192dpi)").matches;
+							
+		HASPDFVIEWER	= (function() {												// Test for PDF viewer: https://github.com/featurist/browser-pdf-support/blob/master/index.js
+								var hasAcrobatInstalled = function() {
+											var getActiveXObject = function(name) {
+													try { return new ActiveXObject(name); } catch(e) {}
+												};
+							
+											return getActiveXObject('AcroPDF.PDF') || getActiveXObject('PDF.PdfCtrl');
+										},
+					
+									isIos = function() {
+											return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+										};
+					 
+								return navigator.mimeTypes['application/pdf'] || hasAcrobatInstalled() || isIos();
+							})(),
+							
+		LANGUAGE		= (navigator.hasOwnProperty('languages')? navigator.languages[0] : navigator.language),
+		
+		WEBP_LOSSY		= false,													// WebP support detected asynchronously
+		WEBP_LOSSLESS	= false,
+		checkWebpSupport = function(test, callback) {
+								let img = new Image();
+								
+								img.onload = function () {
+										let result = (img.width > 0) && (img.height > 0);
+										callback(result);
+									};
+									
+								img.onerror = function () {
+										callback(false);
+									};
+									
+								img.src = "data:image/webp;base64," + test;
+							};
+
+// Checking WebP support by loading minimal images 				
+checkWebpSupport('UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA', function(r) { WEBP_LOSSY = r; });
+checkWebpSupport('UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==', function(r) { WEBP_LOSSLESS = r; });
+	
+if (typeof DEBUG === UNDEF) {
+	var	DEBUG = false;
+}
+		
+if (typeof REL_PATH === UNDEF) {
+	var REL_PATH = '';
+}
+
+if (typeof PAGE_NAME === UNDEF) {
+	var	PAGE_NAME = 'index.html';
+}
+
+if (typeof SLIDES_DIR === UNDEF) {
+	var	SLIDES_DIR = 'slides';
+}
 
 /*
  *	Extending prototypes
  */
+ 
 if (!String.prototype.hasOwnProperty('trim')) {
 	
 	String.wsp = [];
@@ -86,7 +297,7 @@ if (!String.prototype.hasOwnProperty('trunc')) {
 if (!String.prototype.hasOwnProperty('startsWith')) {
 
 	String.prototype.startsWith = function( s ) {
-			return (this + '').indexOf( s ) === 0;
+			return (this + '').substring(0, s.length) === s;
 		};
 }
 
@@ -108,7 +319,7 @@ if (!String.prototype.hasOwnProperty('endsWith')) {
 	String.prototype.getExt = function() {
 			var t = this + '', 
 				i = t.lastIndexOf('.');
-			return (i <= 0 || i >= t.length - 1)? '' : t.substring(i + 1).toLowerCase();
+			return (i <= 0 || i >= t.length - 1)? '' : t.substring(i + 1);
 		};
 		
 	String.prototype.stripExt = function() {
@@ -185,19 +396,21 @@ if (!String.prototype.hasOwnProperty('endsWith')) {
 	
 	String.prototype.cleanupHTML = function() {
 			var htmlregex = [
-				[ /<(b|h)r\/?>/gi, '\n' ],
-				[ /\&amp;/g, '&' ],
-				[ /\&nbsp;/g, ' ' ],
-				[ /\&lt;/g, '<' ],
-				[ /\&gt;/g, '>' ],
-				[ /\&(m|n)dash;/g , '-' ],
-				[ /\&apos;/g, '\'' ],
-				[ /\&quot;/g, '"' ]
-			];
-			var t = this + '';
+					[ /<(b|h)r\/?>/gi, '\n' ],
+					[ /\&amp;/g, '&' ],
+					[ /\&nbsp;/g, ' ' ],
+					[ /\&lt;/g, '<' ],
+					[ /\&gt;/g, '>' ],
+					[ /\&(m|n)dash;/g , '-' ],
+					[ /\&apos;/g, '\'' ],
+					[ /\&quot;/g, '"' ]
+				],
+				t = this + '';
+				
 			for (var i = htmlregex.length - 1; i >= 0; i--) {
 				t = t.replace(htmlregex[i][0], htmlregex[i][1]);
 			}
+			
 			return t.replace; 
 		};
 	
@@ -208,7 +421,7 @@ if (!String.prototype.hasOwnProperty('endsWith')) {
 				s = s.cleanupHTML();
 			}
 			
-			return s.replace(/<\/?[^>]+>/g, ''); 
+			return s.replace(/<\/?[^>]+>/g, ' '); 
 		};
 	
 	String.prototype.stripQuote = function() {
@@ -236,7 +449,7 @@ if (!String.prototype.hasOwnProperty('endsWith')) {
 		};
 	
 	String.prototype.template = function(s) {
-			if (typeof s === 'undefined' || !this) {
+			if (typeof s === UNDEF || !this) {
 				return this;
 			}
 			if (!isNaN(parseFloat(s)) && isFinite(s)) {
@@ -282,18 +495,34 @@ if (!String.prototype.hasOwnProperty('endsWith')) {
 		};
 	
 	String.prototype.objectify = function() {
+			
 			if (!this || !this.length) {
 				return this;
 			}
+			
 			var t = this + '';
+			
 			if (t.charAt(0) === '?' || t.charAt(0) === '#') {
 				t = t.substring(1);
 			}
-			var r = {}, o, os = t.split('&');
+			
+			var r = {}, 
+				o, 
+				os = t.split('&');
+				
 			for (var i = 0, l = os.length; i < l; ++i) {
 				o = os[i].split('=');
 				if (o.length > 1) {
-					r[o[0]] = decodeURIComponent(o[1]);
+					// Assing value
+					if (o[0] === 'img') {
+						// No decoding for image name
+						r.img = o[1];
+					} else {
+						r[o[0]] = decodeURIComponent(o[1]);
+					}
+				} else  {
+					// No value provided
+					r[o[0]] = null;
 				}
 			}
 			return r;
@@ -364,28 +593,22 @@ if (!String.prototype.hasOwnProperty('endsWith')) {
 			exact 		= matches word boundaries, 
 			conj		= all terms must match (default: match any)
 	 */
-	String.prototype.searchTerm = function(s, exact, conj) {
+	String.prototype.searchTerm = function(s, exact, conj, caseSensitive) {
 			if (typeof s === UNDEF || !this.length) {
 				return false;
 			}
 			
-			var t = (this + '').toLowerCase(),
+			var cs = (typeof caseSensitive !== UNDEF)? caseSensitive : false,
+				t = (this + ''),
 				exact = (typeof exact !== UNDEF)? exact : false,
 				conj = (typeof conj !== UNDEF)? conj : false,
 				
-				findString = function(t, s) {
-						t = ' ' + t + ' ';
+				_find = function(t, s) {
 						
-						if (s.indexOf('(') >= 0 ||
-							s.indexOf(')') >= 0 ||
-							s.indexOf('.') >= 0 ||
-							s.indexOf('+') >= 0 ||
-							s.indexOf('[') >= 0 ||
-							s.indexOf(']') >= 0) {
-							return (exact? t.indexOf(' ' + s.toLowerCase() + ' ') : t.indexOf(s.toLowerCase())) !== -1;
-						}
-						
-						return t.search(new RegExp('\\W' + s + (exact? '\\W' : ''), 'i')) !== -1;
+						return exact?
+								cs? (t === s) : (t === s.toLowerCase())
+								:
+								(' ' + t).indexOf(' ' + (cs? s : s.toLowerCase())) !== -1;
 					};
 					
 			
@@ -393,14 +616,18 @@ if (!String.prototype.hasOwnProperty('endsWith')) {
 				s = s[0];
 			}
 			
-			if (s.constructor === Array) {
+			if (!cs) {
+				t = t.toLowerCase();
+			}
+			
+			if (Array.isArray(s)) {
 				// Multiple terms
 				var l = s.length,
 					m = 0,
 					i;
 					
 				for (i = 0; i < l; i++) {
-					if (findString(t, s[i])) {
+					if (_find(t, s[i])) {
 						if (conj) {
 							m++;
 						} else {
@@ -414,7 +641,7 @@ if (!String.prototype.hasOwnProperty('endsWith')) {
 				return m === l;
 			}
 			
-			return findString(t, s);
+			return _find(t, s);
 		};
 	
 	// Creating hash code
@@ -450,25 +677,6 @@ if (!String.prototype.hasOwnProperty('endsWith')) {
 			}
 			return i;
 		};
-		
-	// Pushing array into another array
-if (!Array.prototype.hasOwnProperty('pushAll')) {
-
-	Array.prototype.pushAll = function(a) {
-			
-			if (this instanceof Array) {
-				if (a instanceof Array) {
-					for (var i = 0, l = a.length; i < l; i++) {
-						this.push(a[i]);
-					}
-				} else {
-					this.push(a);
-				}
-			}
-			
-			return this;
-		};
-}	
 
 /*
  *	New functions and variables for the global context - no jQuery dependency
@@ -493,14 +701,15 @@ var encodeJ = [];
 	encodeJ[123] 	= '%7B';	// {
 	encodeJ[124]	= '%7C';	// |
 	encodeJ[125]	= '%7D';	// }
-
-var	UNDEF 	= 'undefined',
-	LOCAL 	= document.location.protocol === 'file:',
 	
-	ONEDAY_S	= 60 * 60 * 24,
-	ONEDAY_MS	= 60 * 60 * 24 * 1000,
+	transCodeJ = [];
+	transCodeJ[33] 	= '%21'; 	// !
+	transCodeJ[39] 	= '%27';	// '
+	transCodeJ[40] 	= '%28';	// (
+	transCodeJ[41] 	= '%29';	// )
+	
 
-	isEmpty = function(o) {
+var	isEmpty = function(o) {
 	
 			if (o == null) {
 				return true;
@@ -523,7 +732,11 @@ var	UNDEF 	= 'undefined',
 					ol = op.length; 
 				for (var i = 0; i < ol; i++) {
 					if (o[op[i]] !== null) {
-						s += '&' + op[i] + '=' + encodeURIComponent(o[op[i]]);
+						if (op[i] === 'img') {
+							s += '&img=' + o[op[i]];
+						} else {
+							s += '&' + op[i] + '=' + encodeURIComponent(o[op[i]]);
+						}
 					}
 				}
 				if (s.length) {
@@ -602,13 +815,13 @@ var	UNDEF 	= 'undefined',
 		
 			key = key.trim();
 			
-			if (typeof Texts !== 'undefined') {
+			if (typeof Texts !== UNDEF) {
 				if (Texts.hasOwnProperty(key)) {
 					return Texts[key];
 				}
 			}
 			
-			if (typeof def !== 'undefined') {
+			if (typeof def !== UNDEF) {
 				// Using the default
 				if (DEBUG && console) {
 					console.log('Using default translation: '+key+'='+def);
@@ -679,19 +892,92 @@ var	UNDEF 	= 'undefined',
 			}
 			return o;
 		},
+		
+	/*
+	 *  Nice float numbers
+	 */
 	
+	niceByte = function(val) {
+			var v = parseFloat(val),  
+				va = Math.abs(v),
+				round = function(v) {
+						return (v < 10)? v.toFixed(1) : Math.round(v);
+					};
+					
+			if (va < 0.0001) {
+				return '0';
+			} else if (va < 0.1) {
+				return v.toFixed(3);
+			} else if (va < 1) {
+				return v.toFixed(2);
+			} else if (va < 1000) {
+				return round(v);
+			} else if (va < 1000000) {
+				return round(v / 1000) + 'k';
+			} else if (va < 1000000000) {
+				return round(v / 1000000) + 'M';
+			} else if (va < 1000000000000) {
+				return round(v / 1000000000) + 'G';
+			}
+			
+			return v.toExponential();
+		},
+				
+	/*
+	 *  Nice float numbers
+	 */
+	
+	niceTime = function(val) {
+			var v = parseFloat(val),  
+				va = Math.abs(v),
+				round = function(v) {
+						return (v < 10)? v.toFixed(1) : Math.round(v);
+					};
+					
+			if (va < 0.000001) {
+				// Don't care about smaller
+				return '0s';
+			} else if (va < 0.001) {
+				// microseconds
+				return round(v * 1000000)  + '&#181;s';
+			} else if (va < 1) {
+				// milliseconds
+				return round(v * 1000) + 'ms';
+			} else if (va < 60) {
+				// secoonds
+				return round(v) + 's';
+			}
+			
+			return Math.floor(va / 60) + 'm' + Math.round(va % 60) + 's';  
+		},
+				
+	/*
+	 *	Currency
+	 */
+	 
+	toCurrency = function(n, curr) {
+			var v = parseFloat(n);
+				
+			return v.toLocaleString(LANGUAGE, {
+					style: 		'currency',
+					currency: 	curr || 'EUR',
+				});
+		},
+
 	/*
 	 *  Relative date
 	 */
 	
 	getRelativeDate = function(days) {
 		
-			if (!days)
+			if (!days) {
 				return translate('today');
+			}
 			
-			if (days===1)
+			if (days === 1) {
 				return translate('yesterday');
-				
+			}
+			
 			var s, n;
 			
 			if (days >= 730) {
@@ -737,8 +1023,32 @@ var	UNDEF 	= 'undefined',
 			
 			return s.replace('{0}', n);
 		},
-
+		
+	/*
+	 *  Reads float from a fraction notation
+	 */
 	
+	getFractionValue = function(s) {
+			var val = s.match(/^([\d\.]+)\/([\d\.]+)/);
+
+			if (val && val.length > 1 && val[2] !== 0) {
+				return val[1] / val[2];
+			}
+			
+			return s;
+		},
+		
+	/*
+	 *  Converts exposure text to ms
+	 */
+	
+	getExposure = function(s) {
+		
+			s = s.includes('/')? getFractionValue(s) : parseFloat(s);
+			
+			return s;
+		},
+		
 	/*
 	 *	Relative path:: path/to/folder/ or ../../path/to/folder/
 	 *	always ends with '/' unless current folder
@@ -746,18 +1056,23 @@ var	UNDEF 	= 'undefined',
 	 
 	getRelativePath = function(from, to) {
 		
-			if (typeof to === UNDEF || !to.length || typeof from === UNDEF || !from.length) {
-				// invalid: must be '/' at least
+			if (typeof to === UNDEF || typeof from === UNDEF) {
+				// invalid
 				return '';
+			}
+			
+			if (from === './') {
+				// Current folder
+				from = REL_PATH;
+			}
+			
+			if (to === './') {
+				// Current folder
+				to = REL_PATH;
 			}
 			
 			if (!to.endsWith('/')) {
 				to += '/';
-			}
-			
-			if (from === '/') {
-				// from root
-				return to;
 			}
 			
 			if (!from.endsWith('/')) {
@@ -765,29 +1080,36 @@ var	UNDEF 	= 'undefined',
 			}
 			
 			if (from === to) {
-				// Current folder
+				// Same folder
 				return '';
 			}
 			
-			var up = '../../../../../../../../../../../../../../../../../../../../',
-				fa = from.split('/');
+			if (from === '/') {
+				// From root
+				return to;
+			}
+			
+			var fp = from.split('/').filter(Boolean);
 			
 			if (to === '/') {
-				// back to root
-				return up.substring(0, fa.length * 3);
+				// To root
+				return getParentFolderLink(fp.length);
 			}
 			
-			// crawl the tree
-			var ta = to.split('/');
+			// Generic case
+			var tp = to.split('/').filter(Boolean);
 			
-			while (fa.length && ta.length && fa[0] === ta[0]) {
-				fa.shift();
-				ta.shift();
+			while (fp.length && tp.length && fp[0] === tp[0]) {
+				fp.shift();
+				tp.shift();
 			}
 			
-			return up.substring(0, (fa.length - 1) * 3) + ta.join('/');
+			return getParentFolderLink(fp.length) + (tp.length? (tp.join('/') + '/') : '');
 		},
 
+	getParentFolderLink = function(depth) {
+			return (depth > 0)? '../../../../../../../../../../../../../../../../../../../../'.substring(0, 3 * depth) : '';
+		},
 	
 	/*
 	 *	Encode the same as Java
@@ -805,6 +1127,21 @@ var	UNDEF 	= 'undefined',
 			return r;
 		},
 	
+	/*
+	 *	Encode the same as Java
+	 */
+	
+	transcodeJavaURIComponent = function(s) {
+			var r = '';
+			
+			for (i = 0; i < s.length; i++) {
+				r += transCodeJ[s.charCodeAt(i)] || s.charAt(i);
+			}
+			
+			return r;
+		},
+		
+
 	/* 
 	 *	Pure JS extend function
 	 */
@@ -835,7 +1172,7 @@ var	UNDEF 	= 'undefined',
 	passDefaults = function(src, dst, props) {
 		
 			if (src && dst) {
-				if (typeof props !== 'undefined') {
+				if (typeof props !== UNDEF) {
 					// Copy the requested properties
 					props = props.split(',');
 					
@@ -859,7 +1196,7 @@ var	UNDEF 	= 'undefined',
 	 
 	readUserPrefs = function(dst, props) {
 		
-			if (typeof props !== 'undefined' && dst) {
+			if (typeof props !== UNDEF && dst) {
 				props = props.split(',');
 				
 				var p;
@@ -884,17 +1221,24 @@ var	UNDEF 	= 'undefined',
 				var hash = window.location.hash;
 				
 				if (hash) {
-					// Already has hash
-					if (hash.charAt(0) === '#') {
-						hash = hash.substring(1);
+					// Already has hash, adding to params
+					if (history.state) {
+						if (history.state.hasOwnProperty('img')) {
+							history.state.img = encodeURIComponent(history.state.img);
+						}
+						params = extend(history.state, params);
+					} else {
+						if (hash.charAt(0) === '#') {
+							hash = hash.substring(1);
+						}
+						params = extend(hash.objectify(), params);
 					}
-					params = extend(history.state || hash.objectify(), params);
 				}
 				
 				hash = '#' + paramize(params);
 				
 				if (hash !== window.location.hash) {
-					history.pushState(params, (typeof title === 'undefined')? '' : title, (hash.length > 1)? hash : (indexName || 'index.html'));
+					history.pushState(params, (typeof title === UNDEF)? '' : title, (hash.length > 1)? hash : (indexName || 'index.html'));
 				}
 			}
 		},
@@ -907,7 +1251,7 @@ var	UNDEF 	= 'undefined',
 				var hash = '#' + paramize(params);
 				
 				if (hash !== window.location.hash) {
-					history.pushState(params, (typeof title === 'undefined')? '' : title, (hash.length > 1)? hash : (indexName || 'index.html'));
+					history.pushState(params, (typeof title === UNDEF)? '' : title, (hash.length > 1)? hash : (indexName || 'index.html'));
 				}
 			}
 		},
@@ -921,19 +1265,19 @@ var	UNDEF 	= 'undefined',
 					params;
 				
 				if (hash) {
-					if (typeof param === 'undefined') {
+					if (typeof param === UNDEF) {
 						hash = '';
 						history.pushState('', '', indexName || 'index.html');
 					} else {
 						if (hash.charAt(0) === '#') {
 							hash = hash.substring(1);
 						}
-						params = history.state || hash.objectify();
+						params = hash.objectify();
 						if (params.hasOwnProperty(param)) {
 							delete params[param];
 							hash = '#' + paramize(params);
 						}
-						history.pushState(params, (typeof title === 'undefined')? '' : title, (hash.length > 1)? hash : (indexName || 'index.html'));
+						history.pushState(params, (typeof title === UNDEF)? '' : title, (hash.length > 1)? hash : (indexName || 'index.html'));
 					}
 				}
 			}
@@ -944,7 +1288,42 @@ var	UNDEF 	= 'undefined',
 	removeSearch = function(title) {
 		
 			if (HISTORY) {
-				history.replaceState(history.state, (typeof title === 'undefined')? '' : title, window.location.href.replace(window.location.search, ''));
+				history.replaceState(history.state, (typeof title === UNDEF)? '' : title, window.location.href.replace(window.location.search, ''));
+			}
+		},
+				
+	// Restoring scroll position
+	
+	restoreScrollPosition = function() {
+		
+			if (LOCALSTORAGE) {
+				var lt = $.cookie('last-touch'),
+					dt = (new Date()).valueOf(),
+					p = $.cookie(REL_PATH + PAGE_NAME + ':scroll-pos'),
+					setTop = function(p, tries) {
+							if ($('html').height() >= p) {
+								$('html').scrollTop(p);
+							} else if (tries) {
+								setTimeout(setTop, 1000, p, tries - 1);
+							}
+						};
+				
+				if (lt && ((dt - lt) < 2000) && p) {
+					// Restore only if within 2 secs of leaving another page in the same album
+					 setTop(p, 6);
+				}
+			}
+		},
+		
+	// Saving scroll position
+	
+	saveScrollPosition = function() {
+			
+			if (LOCALSTORAGE) {
+				var p = $('html').scrollTop();
+				
+				$.cookie(REL_PATH + PAGE_NAME + ':scroll-pos', p? p : null);
+				$.cookie('last-touch', (new Date()).valueOf());
 			}
 		},
 	
@@ -954,6 +1333,9 @@ var	UNDEF 	= 'undefined',
 		
 			if (HISTORY) {
 				if (history.state) {
+					if (history.state.hasOwnProperty('img')) {
+						history.state.img = encodeURIComponent(history.state.img);
+					}
 					return history.state;
 				}
 				
@@ -961,10 +1343,135 @@ var	UNDEF 	= 'undefined',
 				if (hash.charAt(0) === '#') {
 					hash = hash.substring(1);
 				}
-				return  hash.objectify();
+				return hash.objectify();
 			}
 			
 			return null;
+		},
+	
+	// Push all elements of an array into another array
+	
+	pushAll = function(a, b) {
+			if (a instanceof Array) {
+				if (b instanceof Array) {
+					for (var i = 0, l = b.length; i < l; i++) {
+						a.push(b[i]);
+					}
+				} else {
+					a.push(b);
+				}
+			}
+		},
+		
+	// Push only elements of an array into another array which are absent
+	
+	pushNew = function(a, b) {
+			if (a instanceof Array) {
+				if (b instanceof Array) {
+					for (var i = 0, l = b.length; i < l; i++) {
+						if (!a.includes(b[i])) {
+							a.push(b[i]);
+						}
+					}
+				} else {
+					if (!a.includes(b)) {
+						a.push(b);
+					}
+				}
+			}
+		},
+		
+	// Video duration in ms
+	
+	videoDurationMs = function(d) {
+			var a = d.match(/(\d{2})\:(\d{2})\:(\d{2})\.(\d+)/);
+			
+			if (a) {
+				return parseInt(a[4]) + parseInt(a[3]) * 1000 + parseInt(a[2]) * 60000 + parseInt(a[1]) * 3600000;
+			}
+			
+			return null;
+		},
+		
+	// Guess width / height from HTML code
+	
+	guessDimensions = function(c) {
+			var mw,
+				mh,
+				d;
+			
+			if (!c) {
+				return null;
+			}
+			
+			mw = c.match(/<\w+\s[^>]*\swidth="([\d\.]+)(r?em|px)"/i) ||
+				c.match(/<\w+\s[^>]*\sstyle=".*width:\s?([\d\.]+)(r?em|px)"/i);
+		
+			mh = c.match(/<\w+\s[^>]*\sheight="([\d\.]+)(r?em|px)"/i) ||
+				c.match(/<\w+\s[^>]*\sstyle=".*height:\s?([\d\.]+)(r?em|px)"/i);
+		
+			if (mw) {
+				d[0] = parseFloat(mw[1]);
+				if (mw[2] !== 'px') {
+					d[0] *= 16;
+				}
+				
+				if (mh) {
+					d[1] = parseFloat(mh[1]);
+					if (mh[2] !== 'px') {
+						d[1] *= 16;
+					}
+				} else {
+					d[1] = .75 * d[0];
+				}
+				
+				return d;
+			}
+			
+			return null;
+				
+		},
+				
+	// Currency codes
+	
+	currencyToHtml = {
+			'USD': 	'US$',
+			'EUR': 	'&euro;',
+			'GBP': 	'GB&pound;',
+			'JPY': 	'&yen;',
+			'HUF': 	'Ft',
+			'CAD':	'CAN$',
+			'AUD':	'AU$',
+			'RUB':	'&#8381;'
+		},
+		
+	codeToCurrency = function(code) {
+			
+			if (currencyToHtml.hasOwnProperty(code)) {
+				return currencyToHtml[code];
+			}
+			
+			return code;
+		},
+	
+	currencyToHtmlShort = {
+			'USD': 	'$',
+			'EUR': 	'&euro;',
+			'GBP': 	'&pound;',
+			'JPY': 	'&yen;',
+			'HUF': 	'Ft',
+			'CAD':	'$',
+			'AUD':	'$',
+			'RUB':	'&#8381;'
+		},
+		
+	codeToShortCurrency = function(code) {
+			
+			if (currencyToHtmlShort.hasOwnProperty(code)) {
+				return currencyToHtmlShort[code];
+			}
+			
+			return code;
 		},
 	
 	// Printing an image with caption
@@ -986,12 +1493,63 @@ var	UNDEF 	= 'undefined',
 				'</body>\n</html>');
 			pw.document.close();
 		},
+		
+	// Getting file size asynchronously and executing the passed function when ready
 	
+	getFileSize = function(url, doneFn, args) {
+			var http = new XMLHttpRequest();
+				
+			// Opening HEAD, asynchronous way
+			http.open('HEAD', url, true); 
+			
+			// Handling ready state
+			http.onreadystatechange = function() {
+					if (this.readyState == this.DONE) {
+						if (this.status === 200) {
+							if (typeof doneFn === FUNCTION) {
+								if (typeof args !== UNDEF) {
+									doneFn.call(this, [ this.getResponseHeader('content-length') ], args);
+								} else {
+									doneFn.call(this, [ this.getResponseHeader('content-length') ]);
+								}
+							}
+						}
+					}
+				};
+				
+			// Submitting request
+			http.send(); 
+		},
+	
+	// Scroll body or html element so el (the target element) get in view
+	
+	moveInView = function(el) {
+			var te = $(el);
+			
+			if (te.length && te.is(':visible')) {
+				var to = te.offset().top,
+					target = navigator.userAgent.match(/(iPod|iPhone|iPad)/)? $('body') : $('html'),
+					st = target.scrollTop();
+				
+				if (to < st || to > (st + window.outerHeight - 80)) {
+					if (navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
+						window.scrollTo(0, to);
+					} else {
+						target.animate({ 
+								scrollTop: 		 to
+							}, 500, function() {
+								target.clearQueue();
+							});
+					}
+				}
+			}
+		},
+		
 	// Simple decryption
 
 	xDecrypt = function(c) {
 		
-			if (!typeof this === 'String') {
+			if (typeof c !== 'string') {
 				return '';
 			}
 			
@@ -1045,10 +1603,12 @@ var	UNDEF 	= 'undefined',
 	
 	getStyle = function(el, style) {
 		
-			if (document.defaultView && document.defaultView.getComputedStyle) {
-				return document.defaultView.getComputedStyle(el, '').getPropertyValue(style.unCamelCase());
-			} else if (el.currentStyle) {
-				return e.currentStyle[style];
+			if (el instanceof Element) {
+				if (document.defaultView && document.defaultView.getComputedStyle) {
+					return document.defaultView.getComputedStyle(el, '').getPropertyValue(style.unCamelCase());
+				} else if (el.currentStyle) {
+					return e.currentStyle[style];
+				}
 			}
 			
 			return null;
@@ -1058,148 +1618,150 @@ var	UNDEF 	= 'undefined',
 	
 	scrollbarWidth = function() {
 		
-			var div = document.createElement("div");
+			var div = document.createElement("div"),
+				sw = 0;
+				
 			div.style.cssText = 'width:100px;height:100px;overflow:scroll !important;position:absolute;top:-9999px';
-			document.body.appendChild(div);
+			if (document.body) {
+				document.body.appendChild(div);
+				sw = div.offsetWidth - div.clientWidth;
+				document.body.removeChild(div);
+			}
 			
-			var result = div.offsetWidth - div.clientWidth;
-			document.body.removeChild(div);
-			
-			return result;
+			return sw;
 		},
 		
-	// Test for touch support
-	
-	isTouchEnabled = function() {
-		
-			if (/Trident/.test(navigator.userAgent)) {
-				return (typeof navigator['maxTouchPoints'] !== 'undefined' && navigator.maxTouchPoints); // || /IEMobile/.test(navigator.userAgent);
-			} else if (/Edge/.test(navigator.userAgent)) {
-				return (scrollbarWidth() == 0);
-			} else if (/(Chrome|CriOS)/.test(navigator.userAgent)) {
-				return /Mobile/.test(navigator.userAgent) || 'ontouchstart' in window; 
-			}
-			return 'ontouchstart' in window;
-		},
-	
-	getTouch = function() {
-	
-			if (/Trident|Edge/.test(navigator.userAgent)) {
-				// Setting MS events
-				if (window.navigator.pointerEnabled) {
-					return {
-						'START': 	'pointerdown',
-						'MOVE':		'pointermove',
-						'END':		'pointerup',
-						'CANCEL':	'pointercancel'
-					};
-				}
-				return {
-					'START': 	'MSPointerDown',
-					'MOVE':		'MSPointerMove',
-					'END':		'MSPointerUp',
-					'CANCEL':	'MSPointerCancel'
-				};
-			}
-		
-			return {
-				'START': 	'touchstart',
-				'MOVE':		'touchmove',
-				'END':		'touchend',
-				'CANCEL':	'touchcancel'
-			};
-		},
-	
-	// Test for localStorage
-	
-	hasLocalStorage = function() {
-			try {
-				localStorage.setItem('_t', 'undefined');
-				localStorage.removeItem('_t');
-				return true;
-			} catch(e) {
-				return false;
-			}
-		},
-	
-	// Test for history
-	
-	hasHistory = function() {
-			// Taken from Modernizr 3.1
-			var ua = navigator.userAgent;
-	
-			if ((ua.indexOf('Android 2.') !== -1 ||
-				(ua.indexOf('Android 4.0') !== -1)) &&
-				ua.indexOf('Mobile Safari') !== -1 &&
-				ua.indexOf('Chrome') === -1 &&
-				ua.indexOf('Windows Phone') === -1) {
-			  return false;
-			}
-	
-			return (window.history && 'pushState' in window.history);
-		},
-	
-	// Test for PDF viewer
-	// from: https://github.com/featurist/browser-pdf-support/blob/master/index.js
-	
-	hasPDFViewer = function() {
-			var hasAcrobatInstalled = function() {
-						var getActiveXObject = function(name) {
-								try { return new ActiveXObject(name); } catch(e) {}
-							};
-		
-						return getActiveXObject('AcroPDF.PDF') || getActiveXObject('PDF.PdfCtrl');
-					},
-
-				isIos = function() {
-						return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-					};
- 
-			return navigator.mimeTypes['application/pdf'] || hasAcrobatInstalled() || isIos();
-		},
-
-	
 	// Adding class without jQuery (can be used anytime)
 	
 	addClass = function(el, className) {
-			if (el.classList)
+			if (el.classList) {
 				el.classList.add(className);
-			else
+			} else {
 				el.className += ' ' + className;
-		},
-
-	// Returns browser vendor
-	
-	getVendor = function() {
-			var ua = navigator.userAgent;
-			/*
-				PC:
-					IE 8: "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0)"
-					IE 9: "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 2.0.50727; SLCC2; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; Tablet PC 2.0; .NET4.0C)"
-					IE 10: "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0; .NET4.0E; .NET4.0C)"
-					Opera 12: "Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.15"
-					Firefox 21: "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:21.0) Gecko/20100101 Firefox/21.0"
-					Chrome 27: "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36"
-				Mac:
-					Chrome 27: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36"
-					Firefox 21: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0"
-					Safari 6: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/536.26.14 (KHTML, like Gecko) Version/6.0.1 Safari/536.26.14"
-			 */
-			if (ua.indexOf('Trident') > 0 || ua.indexOf('Edge') > 0) {
-				return 'ms';
-			} else if (ua.indexOf('AppleWebKit') > 0) {
-				return 'webkit';
-			} else if (ua.indexOf('Gecko') > 0) {
-				return 'moz';
-			} else if (ua.indexOf('Presto') > 0) {
-				return 'o';
-			} else if (ua.indexOf('Blink') > 0) {
-				return 'webkit';
 			}
-			return '';		
+		},
+		
+	// Saving the last full screen change date
+	
+	fullscreenChanged = 0,
+
+	// Querying the last full screen change in MS from now
+	
+	fullscreenChangedSince = function() {
+			return new Date() - fullscreenChanged;
+		},
+		
+	// Fill screen API
+	
+	hasFullscreen = function() {
+			// Has Fullscreen API? (iPhone doesn't) 
+			return ISIOSDEVICE? false : Modernizr.fullscreen;
+		},
+	
+	isFullscreen = function() {
+			// Checking state
+			return !!(	document.fullscreenElement || 
+						document.mozFullScreenElement ||
+						document.webkitFullscreenElement || 
+						document.msFullscreenElement);
+		},
+		
+	// Requesting full screen
+	
+	requestFullscreen = function(success, fail) {
+			
+			if (	document.fullscreenEnabled || 
+					document.mozFullScreenEnabled ||
+					document.webkitFullscreenEnabled || 
+					document.msFullscreenEnabled
+				) {
+				let fse = 	document.fullscreenElement || 
+							document.mozFullScreenElement ||
+							document.webkitFullscreenElement || 
+							document.msFullscreenElement;
+							
+				if (fse) {
+					// Already in fullscreen
+					if (typeof success === FUNCTION) {
+						success.call();
+					}
+					
+				} else {
+					// Not yet
+					let	de = document.documentElement;
+					
+					if (typeof success !== FUNCTION) {
+						let success = function() {};
+					}
+					
+					if (typeof fail !== FUNCTION) {
+						let fail = function(err) { console.log('Full-screen error: ' + err.message + ' (' + err.name + ')'); };
+					}
+							
+					if (de.requestFullscreen) {
+						de.requestFullscreen().then(success).catch(fail);
+					} else if (de.mozRequestFullscreen) {
+						de.mozRequestFullscreen().then(success).catch(fail);
+					} else if (de.webkitRequestFullscreen) {
+						// Safari fails with promises
+						de.webkitRequestFullscreen();
+						success.call();
+					} else if (de.msRequestFullscreen) {
+						de.msRequestFullscreen().then(success).catch(fail);
+					}
+					fullscreenChanged = new Date();
+				}
+			}
+		},
+		
+	// Requesting exit full screen
+	
+	exitFullscreen = function(success, fail) {
+			
+			if (document.fullscreenEnabled || 
+				document.mozFullScreenEnabled ||
+				document.webkitFullscreenEnabled || 
+				document.msFullscreenEnabled
+			) {
+				let fse = 	document.fullscreenElement || 
+							document.mozFullScreenElement ||
+							document.webkitFullscreenElement || 
+							document.msFullscreenElement;
+				
+				if (!fse) {
+					// Not in fullscreen
+					if (typeof success === FUNCTION) {
+						success.call();
+					}
+					
+				} else {
+					// In fullscreen -> Exit
+					if (typeof success !== FUNCTION) {
+						let success = function() {};
+					}
+					
+					if (typeof fail !== FUNCTION) {
+						let fail = function(err) { console.log('Full-screen error: ' + err.message + ' (' + err.name + ')'); };
+					}
+							
+					if (document.exitFullscreen) {
+						document.exitFullscreen().then(success).catch(fail);
+					} else if (document.mozExitFullscreen) {
+						document.mozExitFullscreen().then(success).catch(fail);
+					} else if (document.webkitExitFullscreen) {
+						// Safari fails with promises
+						document.webkitExitFullscreen();
+						success.call();
+					} else if (document.msExitFullscreen) {
+						document.msExitFullscreen().then(success).catch(fail);
+					}
+					fullscreenChanged = new Date();
+				}
+			}
 		},
 		
 	// Loading Google Analytics
+	
 	loadGoogleAnalytics = function(siteID, type, supportDoubleclick) {
 			
 			if (LOCAL) {
@@ -1241,6 +1803,7 @@ var	UNDEF 	= 'undefined',
 		},
 		
 	// Loading Google API
+	
 	loadGoogleAPI = function(badgeId, boxType) {
 			if (LOCAL) {
 				return;
@@ -1257,7 +1820,7 @@ var	UNDEF 	= 'undefined',
 			var la = 30,
 				// Multiple try if ready
 				launch = function() {
-						if (typeof gapi === 'undefined') {
+						if (typeof gapi === UNDEF) {
 							if (la--) {
 								setTimeout(launch, 200);
 							} else if ('console' in window) {
@@ -1276,6 +1839,7 @@ var	UNDEF 	= 'undefined',
 		},
 		
 	// Loading Facebook API
+	
 	loadFacebookAPI = function(appId,locale) {
 			if (LOCAL) {
 				return;
@@ -1297,6 +1861,7 @@ var	UNDEF 	= 'undefined',
 		},
 		
 	// Loading Disqus API
+	
 	loadDisqusAPI = function(appId) {
 			if (LOCAL) {
 				return;
@@ -1311,6 +1876,7 @@ var	UNDEF 	= 'undefined',
 		},
 		
 	// Loading Pinterest API
+	
 	loadPinterestAPI = function() {
 			if (LOCAL) {
 				return;
@@ -1324,6 +1890,7 @@ var	UNDEF 	= 'undefined',
 		},
 	
 	// Loading all APIs
+	
 	loadAPIs = function(apis, allowed) {
 		
 			if (apis && !isEmpty(apis)) {
@@ -1364,6 +1931,12 @@ var	UNDEF 	= 'undefined',
 	askTrackingConsent = function(settings, apis) {
 		
 			if ((!apis || isEmpty(apis)) && !settings['cookiePolicy']) {
+				// No API's and no Cookie Policy
+				return;
+			}
+			
+			if (LOCAL) {
+				// Don't ask for API's locally
 				return;
 			}
 			
@@ -1382,18 +1955,17 @@ var	UNDEF 	= 'undefined',
 						denyAll:				'Deny all',
 						allowSelected:			'Allow selected'
 					}),
-				tc = $.cookie('trackingConsent'),
+				consent = $.cookie('trackingConsent'),
 				showApis = false,
 				showCp = false,
-				oncl = 'icon-checkbox-checked',
-				offcl = 'icon-checkbox-unchecked',
+				oncl = 'icon-checkmark',
 				
 				// Toggle one button
 				toggleApi = function(e) {
 						var b = $(e.target),
 							sel = b.hasClass(oncl);
 					
-						b.toggleClass(oncl, !sel).toggleClass(offcl, sel);
+						b.toggleClass(oncl, !sel);
 						
 						setButtons();
 					},
@@ -1416,12 +1988,12 @@ var	UNDEF 	= 'undefined',
 						
 						if (this.id === 'allow') {
 							btns.each(function() {
-								$(this).removeClass(offcl).addClass(oncl);
+								$(this).addClass(oncl);
 								allowed[$(this).attr('id')] = 1;
 							});
 						} else if (this.id === 'deny') {
 							btns.each(function() {
-								$(this).removeClass(oncl).addClass(offcl);
+								$(this).removeClass(oncl);
 								allowed[$(this).attr('id')] = 0;
 							});
 						} else if (this.id === 'allowsel') {
@@ -1443,7 +2015,7 @@ var	UNDEF 	= 'undefined',
 				matchApis = function() {
 						
 						for (var a in apis) {
-							if (!tc.hasOwnProperty(a)) {
+							if (!consent.hasOwnProperty(a)) {
 								return false;
 							}
 						}
@@ -1457,20 +2029,22 @@ var	UNDEF 	= 'undefined',
 						});
 					};
 			
-			if (!tc) {
-				showApis = showCp = true;
+			if (!consent) {
+				// No consent asked before
+				showApis = !isEmpty(apis);
+				showCp = settings.hasOwnProperty('cookiePolicy');
 			} else {
-				// Checking for changes
-				showApis = !matchApis(tc, apis);
-				showCp = settings.cookiePolicy && !tc.hasOwnProperty('cookie');
+				// Consent found: checking for changes
+				showApis = !matchApis(consent, apis);
+				showCp = settings.cookiePolicy && !consent.hasOwnProperty('cookie');
 			}
 		
-			if (!showApis) {
-				// Already allowed
-				loadAPIs(apis, tc);
-			} 
-			
-			if (showApis || showCp) {
+			if (!showApis && !showCp) {
+				// Already allowed: load immediately
+				loadAPIs(apis, consent);
+				
+			} else {
+				// Ask consent
 				
 				// Container
 				var	el = $('<div>', { 
@@ -1485,7 +2059,9 @@ var	UNDEF 	= 'undefined',
 					}).on('click', removePopup));
 				
 				if (showCp) {
+					
 					// Showing cookie policy text 
+					
 					p = $('<p>', {
 							id:			'cookiePolicy',
 							html: 		text.cookiePolicyText 
@@ -1495,21 +2071,15 @@ var	UNDEF 	= 'undefined',
 						// Only Cookie policy: add Agree button + readmore
 						p.append($('<a>', {
 								id:			'agree',
-								'class': 	'btn',
-								text: 		text.cookiePolicyAgree 
+								'class': 	'btn icon-ok',
+								text: 		' ' + text.cookiePolicyAgree 
 							}).on('click', saveCookie));
 						
-						if (settings.cookiePolicyUrl) {
-							p.append(' ').append($('<a>', { 
-									text: 		text.cookiePolicyLearnMore, 
-									target: 	'_blank', 
-									href: 		settings.cookiePolicyUrl 
-								}));
-						}
 					}
 				}
 				
 				if (showApis) {
+					
 					// Show APIs
 					
 					p = $('<p>', { 
@@ -1520,7 +2090,7 @@ var	UNDEF 	= 'undefined',
 					for (var a in apis) {
 						p.append($('<span>', {
 								id:			a,
-								'class':	(tc && tc[a])? oncl : offcl,
+								'class':	'checkbox' + ((consent && consent[a])? (' ' + oncl) : ''),
 								html:		'&nbsp;' + a.capitalize()
 							})
 							.on('click', toggleApi));
@@ -1528,31 +2098,32 @@ var	UNDEF 	= 'undefined',
 					
 					p.append($('<a>', {
 							id:			'allow',
-							'class': 	'btn',
-							text: 		text.allowAll 
+							'class': 	'btn icon-ok',
+							text: 		' ' + text.allowAll 
 						}).on('click', saveCookie));
 					
 					p.append($('<a>', {
 							id:			'deny',
-							'class': 	'btn',
-							text: 		text.denyAll 
+							'class': 	'btn icon-close',
+							text: 		' ' + text.denyAll 
 						}).on('click', saveCookie));
 					
 					p.append($('<a>', {
 							id:			'allowsel',
-							'class': 	'btn',
-							text: 		text.allowSelected 
+							'class': 	'btn icon-ok',
+							text: 		' ' + text.allowSelected 
 						}).on('click', saveCookie));
 				
 					setButtons();
 				
-					if (settings.cookiePolicyUrl) {
-						p.append(' ').append($('<a>', { 
-								text: 		text.cookiePolicyLearnMore, 
-								target: 	'_blank', 
-								href: 		settings.cookiePolicyUrl 
-							}));
-					}
+				}
+				
+				if (settings.cookiePolicyUrl) {
+					p.append(' ').append($('<a>', { 
+							text: 		text.cookiePolicyLearnMore, 
+							target: 	'_blank', 
+							href: 		settings.cookiePolicyUrl 
+						}));
 				}
 				
 				el.fadeIn(500);
@@ -1564,43 +2135,17 @@ var	UNDEF 	= 'undefined',
 					}, settings.stay * 1000);
 			
 			}
-		},
-		
-	/*
-	 *	New constants
-	 */
+		};
 
-	NOLINK 			= 'javascript:void(0)',
-	LOCALSTORAGE 	= hasLocalStorage(),
-	HISTORY			= hasHistory(),
-	VEND 			= getVendor(),
-	BACKFACEBUG		= (navigator.userAgent.indexOf('Edge') > 0) && (parseInt(navigator.userAgent.match(/Edge\/(\d+\.\d+)/)[1]) <= 16),
-	FITCONTENT		= (function() {
-							if (/Trident/.test(navigator.userAgent) || /Edge/.test(navigator.userAgent)) {
-								document.getElementsByTagName('html')[0].classList.add('no-fitcontent');
-								return false;
-							}
-							document.getElementsByTagName('html')[0].classList.add('fitcontent');
-							return true;
-						})(),
-	ISIOSDEVICE		= (navigator.userAgent.match(/ipad|iphone|ipod/i)),
-	TOUCH			= getTouch(),
-	TOUCHENABLED	= isTouchEnabled(),
-	HIDPI			= matchMedia("(-webkit-min-device-pixel-ratio: 2), (min-device-pixel-ratio: 2), (min-resolution: 192dpi)").matches;
- 	HASPDFVIEWER	= hasPDFViewer(),
-	
-	// Adding 'touch' : 'no-touch' classes
-	addClass(document.getElementsByTagName('html')[0], (TOUCHENABLED? '' : 'no-') + 'touch');
-	// Adding 'hidpi' : 'no-hdpi' classes
-	addClass(document.getElementsByTagName('html')[0], (HIDPI? '' : 'no-') + 'hidpi');
-	
-	
+
+// Adding 'touch' : 'no-touch' classes
+addClass(document.getElementsByTagName('html')[0], (TOUCHENABLED? '' : 'no-') + 'touch');
+// Adding 'hidpi' : 'no-hdpi' classes
+addClass(document.getElementsByTagName('html')[0], (HIDPI? '' : 'no-') + 'hidpi');
+
 /*	
  *	Debugging functions
  */
-
-var log = function() {},
-	DEBUG = (typeof DEBUG === 'undefined')? false : DEBUG;
 
 // Waiting for jQuery loaded
 
@@ -1616,7 +2161,7 @@ var log = function() {},
 	log = function(c) {
 		
 			var resolveObject = function(c) {
-				if ($.isArray(c)) {
+				if (Array.isArray(c)) {
 					var s = '';
 					for (var i = 0; i < c.length; i++) {
 						s += resolveObject(c[i]) + ', ';
@@ -1666,7 +2211,7 @@ var log = function() {},
 	
 			return this.each(function() {
 				$(this).on(events, function(e) {
-					if (typeof e === 'undefined') {
+					if (typeof e === UNDEF) {
 						log('Undefined event');
 					} else if (e.target) {
 						if (e.target.id !== 'log') { 
@@ -1703,7 +2248,7 @@ var log = function() {},
 				};
 				
 				var iv = setInterval(function() {
-					if ( $.isArray(p) ) {
+					if ( Array.isArray(p) ) {
 						for (var i = 0; i < p.length; i++) {
 							show(p[i]);
 						}
@@ -1713,6 +2258,19 @@ var log = function() {},
 					}
 				}, step);
 			});
+		},
+		
+	// Focus an element
+	
+	$.fn.setFocus = function( options ) {
+			
+			if (this.length) {
+				if (typeof options !== UNDEF) {
+					this[0].focus(options);
+				} else {
+					this[0].focus();
+				}
+			}
 		};
 		
 	// Deserialize a serialized string
@@ -1730,8 +2288,12 @@ var log = function() {},
 				$.each(values, function(i, pair) {
 					var val = pair.split('='),
 						name = decodeURIComponent(val[0]),
-						value = decodeURIComponent(val[1]),
+						value = (val[1] !== null)? decodeURIComponent(val[1]) : '',
 						field = self.find('[name=' + name + ']');
+					
+					if (!field.length) {
+						return true;
+					}
 					
 					if (field[0].type === 'radio' || field[0].type === 'checkbox') {
 						
@@ -1771,6 +2333,40 @@ var log = function() {},
 			};
 	}
 	
+	// Get rotation angle in degrees
+	
+	$.fn.getRotate = function(el) {
+			if (el && el.length) {
+				var st = window.getComputedStyle(el[0], null),
+					mx = st.getPropertyValue('transform') || st.getPropertyValue('-ms-transform') || st.getPropertyValue('-webkit-transform'),
+					a;
+					
+				if (mx && (a = mx.match(/matrix3d\(([^\)]+)\)/))) {
+					a = a.split(/\s*,/);
+					return Math.round(Math.atan2(a[1], a[0]) * (180 / Math.PI));
+				}
+			}
+			return 0;
+		};
+	
+	// Get 3D matrix as float numbers
+	
+	$.fn.getMatrix = function(el) {
+			if (el && el.length) {
+				var st = window.getComputedStyle(el[0], null),
+					mx = st.getPropertyValue('transform') || st.getPropertyValue('-ms-transform') || st.getPropertyValue('-webkit-transform'),
+					v,
+					m = [];
+					
+				if (mx && (v = mx.match(/matrix3d\(([^\)]+)\)/))) {
+					v = v.split(/\s*,/);
+					v.forEach(function(i) { m.push(parseFloat(s)); });
+				}
+			}
+			return m;
+		};
+		
+	// Waiting for all images
 	
 	$.fn.waitAllImg = function(doneFn, successFn, failFn) {
 		
@@ -1784,28 +2380,47 @@ var log = function() {},
 				
 				loadImage = function(image) {
 					var deferred = new $.Deferred(),
-						img = new Image();
+						el = new Image();
 						
-					img.onload = function() {
-						deferred.resolve(image);
-					};
+					el.onload = function() {
+							deferred.resolve(image);
+						};
 					
-					img.onerror = function() {
-						deferred.reject(new Error('Image not found: ' + image.src));
-					};
+					el.onerror = function() {
+							deferred.reject(new Error('Image not found: ' + image.src));
+						};
 					
-					img.src = image.src;
+					el.src = image.src;
 					
 					return deferred;
 				},
 				
-				loadImages = function(imgs) {
+				loadVideo = function(video) {
+					var deferred = new $.Deferred(),
+						el = document.createElement("VIDEO");
+						
+					el.addEventListener('loadedmetadata', function() {
+							deferred.resolve(video);
+						});
 					
-					imgs = imgs.filter('img[src!=""]');
+					el.addEventListener('error', function() {
+							deferred.reject(new Error('Video not found: ' + video.src));
+						});
 					
-					imgs.each(function() {
-						deferreds.push(loadImage(this));
-					});
+					el.src = video.src;
+					
+					return deferred;
+				},
+				
+				loadImages = function(items) {
+					
+					items.filter('img[src]').not('[src=""]').each(function() {
+							deferreds.push(loadImage(this));
+						});
+					
+					items.filter('video[src]').not('[src=""]').each(function() {
+							deferreds.push(loadVideo(this));
+						});
 					
 					return $.when.all(deferreds);
 				};
@@ -1813,19 +2428,19 @@ var log = function() {},
 			loadImages(self).then(
 				
 				function(self) {
-					if ($.isFunction(successFn)) {
+					if (typeof successFn === FUNCTION && successFn !== doneFn) {
 						successFn.call(self);
 					}
 				},
 				
 				function(err) {
-					if ($.isFunction(failFn)) {
+					if (typeof failFn === FUNCTION) {
 						failFn.call(err);
 					}
 				}
 				
 			).then(function() {
-				if ($.isFunction(doneFn)) {
+				if (typeof doneFn === FUNCTION) {
 					doneFn.call(self);
 				}
 			});
@@ -1833,64 +2448,80 @@ var log = function() {},
 			return this;
 		};
 	
+	// Asking permission before following a link
 	
-	var isFullscreen = function() {
-				return document.fullscreenElement ||
-					document.webkitFullscreenElement ||
-					document.mozFullScreenElement ||
-					document.msFullscreenElement;
-			},
-	
-		requestFullscreen = function( e ) {
-				if (!isFullscreen()) {
-					if (e.requestFullscreen) {
-						e.requestFullscreen();
-					} else if (e.webkitRequestFullscreen) {
-						e.webkitRequestFullscreen();
-					} else if (e.mozRequestFullScreen) {
-						e.mozRequestFullScreen();
-					} else if (e.msRequestFullscreen) {
-						document.body.msRequestFullscreen();
-						// Works only on body :(
-						// e.msRequestFullscreen();
-					}
-				}
-			},
+	$.fn.askPermission = function(data) {
 		
-		exitFullscreen = function() {
-				if (isFullscreen()) {
-					if (document.exitFullscreen) {
-						document.exitFullscreen();
-					} else if (document.webkitExitFullscreen) {
-						document.webkitExitFullscreen();
-					} else if (document.mozCancelFullScreen) {
-						document.mozCancelFullScreen();
-					} else if (document.msExitFullscreen) {
-						document.msExitFullscreen();
-					}
-				}
-			};
-	
-	$.fn.fullScreen = function(v) {
-		
-			if (document.fullscreenEnabled || 
-				document.webkitFullscreenEnabled || 
-				document.mozFullScreenEnabled ||
-				document.msFullscreenEnabled
-			) {
-				// no state supplied :: returning the fullscreen status
-				if (typeof v === 'undefined') {
-					return isFullscreen();
-				} else if (v) {
-					requestFullscreen(this[0]);
-				} else {
-					exitFullscreen();
-				}
-				
-			} else {
-				return false;
-			}
+			var text = getTranslations({		// Translated texts
+								restrictedLinkTitle:		'Restricted material',
+								restrictedLinkQuestion:		'Please verify your age to proceed!',
+								restrictedLinkYes:			'I´m over 18',
+								restrictedLinkNo:			'I´m below 18'
+							}),
 			
+				ns = '_lap_',
+			
+				getOptions = function(el) {
+						var opt = {},
+							o = el.data('ask-permission');
+							
+						if (o) {
+							o = o.split('::');
+							if (o[0] !== null) {
+								opt.restrictedLinkTitle = o[0];
+								if (o[1] !== null) {
+									opt.restrictedLinkQuestion = o[1];
+									if (o[2] !== null) {
+										opt.restrictedLinkYes = o[2];
+										if (o[3] !== null) {
+											opt.restrictedLinkNo = o[3];
+										}
+									}
+								}
+							}
+						}
+						
+						return opt;
+					};
+						
+			return $(this).filter('[href]').each(function() {
+					
+					$(this).data('href', $(this).attr('href'));
+					$(this).attr('href', null);
+					
+					$(this).on('click.' + ns, function(e) {
+							var opt = $.extend({}, text, getOptions($(this)));
+							
+							e.preventDefault();
+							opt.link = $(this).data('href');
+							
+							$('body').modal($('<div class="text-center">' + opt.restrictedLinkQuestion + '</div>'), 
+									[
+										{	
+											t:		opt.restrictedLinkYes,
+											c:		'icon-checkmark',
+											h:		function() {
+															window.location.href = opt.link;
+														}
+										},
+										{
+											t:		opt.restrictedLinkNo,
+											c:		'icon-close alert',
+											h:		function() {
+															// do nothing: close dialog
+															return true;
+														}
+										}
+									],
+									{
+										'class':	'small warning',
+										title:		opt.restrictedLinkTitle
+									}
+								);
+							
+							return false;
+					});
+				});
 		};
-	
+		
 })(jQuery);

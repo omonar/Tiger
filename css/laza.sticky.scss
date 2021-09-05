@@ -1,0 +1,45 @@
+@charset "UTF-8";
+/* laza.sticky.scss */
+
+@import 'defaults';
+
+.sticky {
+	position: fixed !important;
+    width: 100% !important;
+    z-index: 99999 !important;
+    background-color: _(stickyBgColor) !important;
+    transition: background-color $transTime2;
+    .cont.box {
+    	background-color: _(stickyBoxBgColor) !important;
+    }
+    &.st-top {
+    	top: 0;
+    	bottom: auto !important;
+    	> *:first-child {
+    		margin-top: 0 !important;
+    	}
+    	&.st-first {
+    		> *:first-child {
+				border-top-left-radius: 0;
+				border-top-right-radius: 0;
+			}
+    	}
+    }	
+    &.st-bottom {
+    	bottom: 0;
+    	top: auto !important;
+    	> *:first-child {
+    		margin-bottom: 0 !important;
+    	}
+    	&.st-first {
+    		> *:first-child {
+				border-bottom-left-radius: 0;
+				border-bottom-right-radius: 0;
+			}
+    	}
+    }	
+}
+
+.st-placeholder {
+	position: static !important;
+}

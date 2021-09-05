@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Index Preview</title>
+	{googleFontsLink}
+	<style>
+	* { 
+		box-sizing: border-box; 
+	}
+	html { 
+		background-color: {htmlColor}; 
+	}
+	body { 
+		display: flex; 
+		flex-direction: column;
+		margin: 0; 
+		padding: 0; 
+		min-height: 100vh; 
+		overflow-x: hidden; 
+		font-family: {fontFamily};
+		font-weight: {fontWeight};
+		font-size: 1rem;
+		line-height: 1.5;
+		color: {textColor};
+		background-color: {mainBgColor};
+		background-image: {backgroundImage};
+		background-position: {backgroundPosition};
+		background-repeat: {backgroundRepeat};
+		background-size: {backgroundSize};
+		background-attachment: fixed;
+	}
+	a {	
+		color: {linkColor};
+		text-decoration: none; 
+	}
+	a:hover { 
+		color: {hoverColor}; 
+	}
+	b, strong { 
+		font-weight: {boldWeight};
+	}
+	h1, h2, h3, h4 { 
+		font-family: {headlineFont};
+		font-weight: {headlineWeight};
+		line-height: 1.25;
+		margin-top: 4px;
+		margin-bottom: 4px;
+	}
+	h5, h6 {
+		font-size: .75rem;
+		font-weight: {boldWeight};
+		margin: 0;
+	}
+	input {
+		appearance: none;
+		border: none;
+	}
+	.hidden {
+		display: none;
+	}
+	.button {
+		padding: 8px;
+		display: inline-block;
+		line-height: 1.125rem;
+		color: {buttonTextColor};
+		background-color: {buttonBgColor};
+		border: none;
+		border-radius: {brs}px;
+		cursor: pointer;
+		transition: all 500ms;
+	}
+	.button:hover {
+		color: {buttonHoverTextColor};
+		background-color: {buttonHoverBgColor};
+	}
+	.button svg {
+		display: inline-block;
+		vertical-align: -2px;
+	}
+	section {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.button svg path {
+		fill: {buttonTextColor};
+	}
+	.cont {
+		display: flex;
+		flex-flow: row wrap;
+		width: 100%;
+		max-width: 560px;
+	}
+	.cont.column {
+		flex-direction: column;
+	}
+	.page-wrap {
+		padding: 8px 12px;
+	}
+	.top-bar .cont {
+		justify-content: space-between;
+	}
+	.full-width .top-bar.opaque,
+	.page-wide .top-bar.opaque .cont {
+		background-color: {topmenuBgColor};
+		box-shadow: {boxShadow};
+	}
+	.top-bar .left-column,
+	.top-bar .right-column {
+		display: flex;
+		align-items: flex-end;
+	}
+	.top-bar .left-column + .right-column {
+		align-self: flex-end;
+		margin-left: auto;
+	}
+	.top-bar .right-column {
+		line-height: 2rem;
+	}
+	.topnav {
+		display: flex;
+		font-size: 14px;
+	}
+	.topnav a {
+		display: block;
+		position: relative;
+		line-height: 2rem;
+		padding: 0 8px;
+		white-space: nowrap;
+		color: {topmenuTextColor};
+		transition: background-color 500ms ease-out;
+	}
+	.topnav a:hover,
+	.top-bar .button:hover {
+		color: {buttonTextColor} !important; 
+		background-color: {buttonBgColor} !important;
+	}
+	.topnav ul {
+		display: flex;
+		flex-flow: row wrap;
+		justify-items: stretch;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+	}
+	.search-top .top-bar .search {
+		display: flex;
+	}		
+	.search-hero .hero .search-hero {
+		display: flex;
+	}		
+	.top-bar .search {
+		display: none;
+		flex-direction: row;
+	}
+	.top-bar .search input {
+		width: 7rem;
+		height: 1.6rem;
+		padding: 2px;
+		border-radius: {brs}px;
+	}
+	.top-bar .button {
+		color: {topmenuTextColor};
+		background-color: transparent;
+		border-radius: 0;
+		line-height: 2rem;
+		padding: 0 8px;
+	}
+	.icon-home path, .icon-search path {
+		fill: {topmenuTextColor};
+	}
+	article {
+		width: 100%;
+		padding-top: 4px;
+		padding-bottom: 4px;
+	}
+	.content section {
+		flex-direction: column;
+		padding: 0 8px;
+	}
+	.content .cont {
+		padding: 8px 0;
+	}
+	.folders .card,
+	.thumbnails .card,
+	.cont.box {
+		background-color: {boxBgColor};
+		box-shadow: {boxShadow};
+		background-image: {boxBackgroundImage};
+		background-position: center center;
+	}
+	.cont.box {
+		margin: 8px;
+		padding: 8px;
+		border-radius: {brl}px;
+	}
+	.cont.box .title {
+		margin: 6px 8px 4px 4px;
+	}
+	.cont.box svg path {
+		fill: {boxTextColor};
+	}
+	.cont.thumbnails,
+	.cont.folders,
+	.cont.pages {
+		padding: 0;
+	}
+	.hero {
+		flex-direction: column;
+		min-height: {folderImageHeight}px;
+	}
+	.hero .cont {
+		display: flex;
+		flex-flow: row nowrap;
+		flex: 1;
+		overflow: hidden;
+		padding-left: 0;
+		background-size: cover;
+		background-position: center center;
+	}
+	.hero.page-wide .cont {
+		border-radius: 0 0 {brl}px {brl}px; 
+	}
+	.hero header {
+		display: flex;
+		flex: 1;
+	}
+	.hero .title {
+		color: #fff;
+		display: flex;
+		padding: 8px 16px 8px 12px;
+		margin-right: 12px;
+		background: linear-gradient(90deg, rgba(17, 17, 17, 0.7) 0%, rgba(17, 17, 17, 0.45) 60%, rgba(17, 17, 17, 0.2) 100%);
+	}
+	.hero .title .button {
+		background-color: rgba(0,0,0,.6);
+	}
+	.hero .title .button svg path {
+		fill: #eee;
+	}
+	.hero .title .button:hover {
+		background-color: {buttonHoverBgColor};
+	}
+	.hero .title .button:hover svg path {
+		fill: {buttonHoverTextColor};
+	}
+	.hero .title h1 {
+		font-size: 2rem;
+	}
+	.hero .title .date,
+	.hero .title .description {
+		display: block;
+		font-size: .75rem;
+	}
+	.hero .search-hero {
+		display: none;
+	}
+	.hero .search-hero input {
+		max-width: 8rem;
+		padding: 8px 4px;
+	}
+	.hero.title-top header {
+		align-items: flex-start;
+	}
+	.hero.title-top .title {
+		border-bottom-right-radius: {brl}px;
+		border-bottom-left-radius: {brl}px;
+	}
+	.hero.title-middle header {
+		align-items: center;
+	}
+	.hero.title-middle .title {
+		border-radius: 0 {brl}px {brl}px 0;
+	}
+	.hero.title-bottom header {
+		align-items: flex-end;
+	}
+	.hero.title-bottom .title {
+		border-top-left-radius: {brl}px;
+		border-top-right-radius: {brl}px;
+	}
+	.page-wide.hero:not(.title-center) .title {
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+	}
+	.hero.title-center header {
+		align-items: flex-end;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+	.hero.title-center .title {
+		margin: 8px;
+		text-align: center;
+		background-image: none;
+		background-color: rgba(0,0,0,.6);
+		border-radius: {brl}px;
+	}
+	.hero .title .back-btn {
+		align-self: flex-start;
+		margin-right: 8px;
+		margin-top: 4px;
+	}
+	.hero.full-width.bg-image, 
+	.hero.page-wide.bg-image > .cont { 
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='320' height='200' viewBox='0 0 320 200'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='160' y1='127' x2='160' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%2398b8d9'/%3E%3Cstop offset='1' stop-color='%235e7387'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctitle%3EArtboard 1%3C/title%3E%3Crect width='320' height='127' fill='url(%23a)'/%3E%3Ccircle cx='225' cy='100' r='32' fill='%23b2c6d9'/%3E%3Cpath d='M0,200H320V87s-8.36-2.13-44,5c-35,7-43,24-87,18S0,39,0,39Z' fill='%237694b3'/%3E%3Cpath d='M320,200H0V83S25,56,84,56s110.5,48.57,165,56c44,6,71-10,71-10Z' fill='%2391afcc'/%3E%3Cpath d='M320,200H0V74s28-1,68,11c43.48,13,62.3,38,102,49,47,13,78.89-23.86,113-25,30-1,37,8,37,8Z' fill='%23aac8e6'/%3E%3C/svg%3E%0A"); 
+		background-size: cover;
+		background-position: center center;
+	}
+	.hero .controls {
+		flex: none;
+		margin: 8px;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+	}
+	.hero .buttons {
+		display: flex;
+		align-self: flex-end;
+	}
+	.hero .buttons > a {
+		border-radius: 0;
+	}
+	.hero .buttons > a:first-child {
+		border-radius: {brs}px 0 0 {brs}px;
+	}
+	.hero .buttons > a:last-child {
+		border-radius: 0 {brs}px {brs}px 0;
+	}
+	.hero .start-show {
+		position: relative;
+		margin-top: auto;
+		align-self: flex-end;
+	}
+	.start-show .button {
+		width: 48px;
+		height: 48px;
+		padding: 14px;
+	}
+	.folders .cont,
+	.thumbnails .cont {
+		justify-content: stretch;
+		max-width: calc(560px + 2 * {cardGap}px);
+	}
+	.folders .card,
+	.thumbnails .card {
+		position: relative;
+		margin: {cardGap}px;
+		padding: {thumbPad}px;
+		overflow: hidden;
+	}
+	.folders .card {
+		width: calc({folderWidth}% - 2 * {cardGap}px);
+		border-radius: {brl}px;
+	}
+	.folders .thumb {
+		display: flex;
+		justify-content: center;
+		overflow: hidden;
+		border-radius: {brlth}px {brlth}px 0 0;
+	}
+	.folders .thumbs-fit .thumb {
+		flex: 1;
+		align-items: center;
+	}
+	.folders .thumbs-fit .thumb img {
+		display: inline-block;
+		vertical-align: middle;
+		max-width: 100%;
+		height: auto;
+	}
+	.folders .thumbs-fill .thumb {
+		justify-content: center;
+	}
+	.folders .thumbs-fill .thumb img {
+		object-fit: cover;
+		min-width: 100%;
+		min-height: 100%;
+		height: {folderThumbHeight}px;
+	}
+	.folders .caption > * {
+		color: {boxTextColor};
+	}
+	.folders .caption-below .card {
+		display: flex;
+		flex-direction: column;
+	}
+	.folders .caption-below .thumb {
+		flex: 1;
+		width: 100%;
+	}
+	.folders .caption-below .caption {
+		padding: 4px 8px 0 8px;
+		margin-top: auto;
+		text-align: center;
+	}
+	.folders .caption-beside .card {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.folders .caption-beside .thumb {
+		flex: 1;
+		align-self: stretch;
+		border-radius: {brlth}px {brlth}px 0 0;
+	}
+	.folders .caption-beside .caption {
+		padding: 8px;
+		overflow-x: hidden;
+		overflow-y: auto;
+		max-height: 100%;
+		width: 40%;
+	}
+	.folders .caption-over .thumb {
+		width: 100%;
+		border-radius: {brlth}px;
+		overflow: hidden;
+	}
+	.folders .caption-over .caption {
+		padding: 4px 8px;
+		position: absolute;
+		left: {thumbPad}rem;
+		bottom: {thumbPad}rem;
+		text-align: left;
+		max-width: 90%;
+		border-radius: 0 {brlth}px 0 0;
+		background: linear-gradient(90deg, rgba(17,17,17,0.7) 0%, rgba(17,17,17,0.45) 60%, rgba(17,17,17,0.2) 100%);
+	}
+	.thumbnails .caption {
+		padding: 4px 8px;
+		text-align: center;
+		font-size: .75rem;
+	}
+	.thumbnails .card {
+		border-radius: {brm}px;
+	}
+	.thumbnails img {
+		display: block;
+	}
+	.thumbnails .fixgrid .card,
+	.thumbnails .grid .card {
+		width: {thumbWidth}px;
+	}
+	.thumbnails .caption {
+		color: {boxTextColor};
+	}
+	.thumbnails .caption-below .card {
+		display: flex;
+		flex-direction: column;
+	}
+	.thumbnails .caption-over .card {
+		position: relative;
+	}
+	.thumbnails .caption-over .caption {
+	    position: absolute;
+		left: 50%;
+		bottom: 0;
+		max-height: 40%;
+		background-color: rgba(0,0,0,.8);
+		transform: translateX(-50%);
+		border-radius: 3px 3px 0 0;
+	}
+	.thumbnails .thumb {
+		border-radius: {brth}px {brth}px 0 0;
+		overflow: hidden;
+	}
+	.thumbnails .grid .thumb,
+	.thumbnails .fixgrid .thumb {
+		display: flex;
+		height: {thumbHeight}px;
+	}
+	.thumbnails .grid .thumb {
+		justify-content: center;
+		align-items: center;
+	}
+	.thumbnails .grid img {
+		max-width: 100%;
+		max-height: 100%;
+	}
+	.thumbnails .fixgrid img {
+		margin: auto;
+		width: 100%;
+		min-width: 100%;
+		min-height: 100%;
+	}
+	.thumbnails .flexgrid .thumb {
+		display: flex;
+		flex: 1;
+		width: {thumbWidth}px;
+	}
+	.thumbnails .flexgrid img {
+		margin: auto;
+		max-width: 100%;
+		max-height: {thumbWidth}px;
+		object-fit: contain;
+	}
+	.thumbnails .horizontal .card {
+		flex: 2 1 auto;
+	}
+	.thumbnails .horizontal .thumb {
+		flex: 1;
+	}
+	.thumbnails .horizontal img {
+		margin: auto;
+		min-width: 100%;
+		max-height: calc({thumbWidth}px * 0.75);
+	}
+	.thumbnails .horizontal .caption {
+		max-height: 40%;
+	}
+	.thumbnails .horizontal:after {
+		flex: 50;
+		content: '';
+	}
+	.tag-cloud-cont {
+		flex: 3;
+		padding: 3px;
+	}
+	.tag-cloud .tag {
+		display: inline-block;
+		margin: 1px;
+		color: {boxTextColor};
+		padding: 1px 6px;
+		cursor: pointer;
+		font-size: .7rem;
+	}
+	.tag-cloud .tag em {
+		padding: 0 3px;
+		font-size: .6em;
+		border-radius: .4em;
+		background-color: {boxTextColor};
+		font-style: normal;
+	}
+	.tag-cloud .tag sup {
+		opacity: 0.5;
+		font-size: 0.5rem;
+	}
+	.footer {
+		margin-top: auto;
+		color: {footerColor};
+	}
+	.footer .cont {
+		justify-content: center;
+		align-items: center;
+		padding: 8px 0;
+	}
+	.page-wide .footer .cont {
+		border-radius: {brl}px {brl}px 0 0;
+	}
+	.footer a {
+		color: {footerLinkColor};
+	}
+	.footer a:hover {
+		color: {footerHoverColor};
+	}
+	footer {
+		width: 100%;
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: center;
+		align-items: center;
+		padding: 8px 0;
+		text-align: center;
+		font-size: .7rem;
+		color: {footerTextColor};
+	}
+	footer > * {
+		color: {footerTextColor};
+	}
+	.bottom-navigation {
+		margin: 4px 0;
+	}
+	.bottom-navigation div {
+		display: inline-block;
+		margin: 0 auto;			
+		text-align: center;
+		border-top: 1px solid rgba(255,255,255,.2);
+		border-bottom: 1px solid rgba(255,255,255,.2);
+	}
+	.bottom-navigation a {
+		display: inline-block;
+		margin: 4px 4px 4px 0;
+	}
+	.folder-info {
+		text-align: center;
+		margin: 4px 8px;
+	}
+	.folder-info > * {
+		display: inline-block;
+		margin-left: 4px;
+	}
+	.modifieddate em {
+		font-style: normal;
+		opacity: 0.5;
+	}
+	.full-width .footer.opaque,
+	.page-wide .footer.opaque .cont {
+		background-color: {footerBgColor};
+		box-shadow: {boxShadow};
+	}
+	</style>
+</head>
+<body id="index" class="index scrollable {fullWidth} {searchPosition}">
+	<section class="top-bar {topmenuOpaque}">
+		<div class="cont">
+			<div class="left-column topnav">
+				<ul class="dropdown menu"><li><a class="icon-home"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14,16H4V10H2L9,3l7,7H14Zm-1-1V9h.59L9,4.41,4.41,9H5v6Z" fill="#333333"/></svg></a></li><li><a>Landscape</a></li><li><a>People</a></li><li><a>Nature</a><li><a>Objects</a></li></ul>
+			</div>
+			<div class="right-column search">
+				<div class="search-input {searchVisible}"><input type="text" placeholder="Search..."></div><a class="icon-search button"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M17,14.88,13.16,11A5.93,5.93,0,0,0,14,8a6,6,0,1,0-6,6,5.93,5.93,0,0,0,3-.84L14.88,17ZM3,8a5,5,0,1,1,5,5A5,5,0,0,1,3,8Zm9.58,3.87,3,3-.71.71-3-3A6,6,0,0,0,12.58,11.87Z" fill="#333333" fill-rule="evenodd"/></svg></a>
+			</div>
+		</div>
+	</section>
+	<section class="hero title-{titlePosition} {fullWidth} {heroType}">
+		<div class="cont">
+			<header>
+				<div class="title"><a class="back-btn button"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M10.5,13A2.5,2.5,0,0,1,8,10.5V4.91l3.41,3.42.71-.71L7.5,3,2.88,7.62l.71.71L7,4.91V10.5A3.5,3.5,0,0,0,10.5,14H16V13Z" fill="#eee"/></svg></a>
+					<div class="head">
+						<h1>Objects</h1><span class="date">Mar/13/2006&mdash;Aug/04/2013</span>
+						<div class="search-hero"><div class="search-input"><input type="text" placeholder="Search..."></div><a class="icon-search button"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M17,14.88,13.16,11A5.93,5.93,0,0,0,14,8a6,6,0,1,0-6,6,5.93,5.93,0,0,0,3-.84L14.88,17ZM3,8a5,5,0,1,1,5,5A5,5,0,0,1,3,8Zm9.58,3.87,3,3-.71.71-3-3A6,6,0,0,0,12.58,11.87Z" fill="#333333" fill-rule="evenodd"/></svg></a></div>
+					</div>
+				</div>
+			</header>
+			<aside class="controls">
+				<div class="buttons">
+					<a class="button"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>info</title><path d="M9,2a7,7,0,1,0,7,7A7,7,0,0,0,9,2m1,4A1,1,0,0,1,9,7H9A1,1,0,0,1,8,6H8A1,1,0,0,1,9,5H9a1,1,0,0,1,1,1Zm7,3A8,8,0,1,1,9,1,8,8,0,0,1,17,9Zm-7,4H8V8h2Z" fill="#333333"/></svg></a>
+					<a class="button"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>connect</title><path d="M13,2a2,2,0,1,1-2,2,2,2,0,0,1,2-2m0,10a2,2,0,1,1-2,2,2,2,0,0,1,2-2M4.34,7a2,2,0,1,1-2,2,2,2,0,0,1,2-2M13,11a3,3,0,0,0-2.3,1.09L7.14,10A2.8,2.8,0,0,0,7.14,8l3.56-2A3,3,0,1,0,10,4a3,3,0,0,0,.2,1L6.64,7.09a3,3,0,1,0,0,3.82L10.2,13a3,3,0,0,0-.2,1,3,3,0,1,0,3-3Z" fill="#333333"/></svg></a>
+					<a class="button"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><title>help</title><path d="M11.39,6.12a1.92,1.92,0,0,1,.17.81,2.23,2.23,0,0,1-.08.6,1.8,1.8,0,0,1-.22.49,2.83,2.83,0,0,1-.36.43c-.15.14-.32.29-.51.44A4.54,4.54,0,0,0,10,9.2a1.2,1.2,0,0,0-.22.24.82.82,0,0,0-.1.24,3,3,0,0,0,0,.3v.59H8.14V9.9A1.8,1.8,0,0,1,8.49,9a1.57,1.57,0,0,1,.3-.39,3.34,3.34,0,0,1,.43-.39l.38-.31a1.9,1.9,0,0,0,.24-.28A.82.82,0,0,0,10,7.35,1.16,1.16,0,0,0,10,7a.66.66,0,0,0-.21-.5.85.85,0,0,0-.62-.2,2.18,2.18,0,0,0-.79.16,7.8,7.8,0,0,0-.87.37L7,5.67a4.66,4.66,0,0,1,.5-.25,4.48,4.48,0,0,1,.55-.21,5.66,5.66,0,0,1,.59-.15,3.9,3.9,0,0,1,.58,0,3.37,3.37,0,0,1,1,.13,2.11,2.11,0,0,1,.73.38A1.51,1.51,0,0,1,11.39,6.12ZM9.68,11.41a1.08,1.08,0,0,0-.3-.16,1.34,1.34,0,0,0-.35,0,1.5,1.5,0,0,0-.37,0,1.08,1.08,0,0,0-.3.16.75.75,0,0,0-.2.28,1.22,1.22,0,0,0-.07.42,1.25,1.25,0,0,0,.07.41,1,1,0,0,0,.2.28,1.08,1.08,0,0,0,.3.16A1.5,1.5,0,0,0,9,13a1.34,1.34,0,0,0,.35,0,1.08,1.08,0,0,0,.3-.16,1,1,0,0,0,.2-.28,1,1,0,0,0,.07-.41,1,1,0,0,0-.07-.42A.75.75,0,0,0,9.68,11.41ZM17,9A8,8,0,1,1,9,1,8,8,0,0,1,17,9ZM16,9a7,7,0,1,0-7,7A7,7,0,0,0,16,9Z" fill="#333333"/></svg></a>
+				</div>
+				<div class="start-show"><a class="button"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M5,3.8,14,9,5,14.2V3.8M4,2.07V15.93L16,9,4,2.07Z" fill="#333333"/></svg></a></div>
+			</aside>
+		</div>
+	</section>
+
+	<section id="main" class="content">
+		<article id="main-cont">
+			<section class="folders">
+				<div class="cont caption-{folderCaptionPlacement} thumbs-{folderThumbFit}">
+					<div class="card folder"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDgiIGhlaWdodD0iMTc4IiB2aWV3Qm94PSIwIDAgMjA4IDE3OCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDgiIGhlaWdodD0iMTc4IiBmaWxsPSIjNmY4YmFkIi8+PHBhdGggZD0iTTE1MCw4OWE0Niw0NiwwLDEsMS00Ni00NkE0Niw0NiwwLDAsMSwxNTAsODlaTTQxLDE0MFYzNGEzLDMsMCwwLDAtMy0zaC0xLjVhMywzLDAsMCwwLTIuOTQsMi40OGwtOC4xMyw0N2EzLDMsMCwwLDAsMiwzLjM0bDEuNTIuNTFhMywzLDAsMCwxLDIsMi44M1YxNDBhMywzLDAsMCwwLDMsM2g0QTMsMywwLDAsMCw0MSwxNDBaTTE5MCw0OS41YzAtMTEuODctNy44NC0yMS41LTE3LjUtMjEuNVMxNTUsMzcuNjMsMTU1LDQ5LjVjMCw4LjcyLDQuMjMsMTYuMjEsMTAuMywxOS41OWEzLjM5LDMuMzksMCwwLDEsMS43LDN2NjcuNTVhMy4zOCwzLjM4LDAsMCwwLDMuMzgsMy4zOGgzLjI0YTMuMzgsMy4zOCwwLDAsMCwzLjM4LTMuMzhWNzIuNTNhMy4zMiwzLjMyLDAsMCwxLDEuODMtM0MxODUuMzYsNjYuNDEsMTkwLDU4LjYzLDE5MCw0OS41WiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40Ii8+PC9zdmc+"></a><div class="caption"><h3>Food &amp; drink</h3></div></div>
+					<div class="card folder"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODQiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTg0IDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIxODQiIGhlaWdodD0iMjAwIiBmaWxsPSIjNmY4YmFkIi8+PHBhdGggZD0iTTEwOS43OCw4MS43OGMtMS40LTEwLjQ3LDUuNy0zMC4yNSw4LjgxLTM4LjI3QTIuNTgsMi41OCwwLDAsMCwxMTYuMTgsNDBINjcuODJhMi41OCwyLjU4LDAsMCwwLTIuNDEsMy41MWMzLjExLDgsMTAuMjEsMjcuOCw4LjgxLDM4LjI3LTEuNzgsMTMuMzMtMjQuODksMTIuNTUtMjQuODksMzMsMCwxOC4xLDE3LDM5LjYxLDIwLjg4LDQ0LjI5YTIuNiwyLjYsMCwwLDAsMiwuOTNoMzkuNmEyLjYsMi42LDAsMCwwLDItLjkzYzMuODgtNC42OCwyMC44OC0yNi4xOSwyMC44OC00NC4yOUMxMzQuNjcsOTQuMzMsMTExLjU2LDk1LjExLDEwOS43OCw4MS43OFoiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNCIvPjwvc3ZnPg=="></a><div class="caption"><h3>Art</h3></div></div>
+					<div class="card folder"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjNmY4YmFkIi8+PHBhdGggZD0iTTMyLDcyVjk2SDhWODhIMjRWNzJabTI0LDMydjE2SDQwdjhINjRWMTA0Wm0zMiwzMnYxNkg3MnY4SDk2VjEzNlpNNDAsMjRWNDBIMjR2OEg0OFYyNFpNMCwxNkgxNlYwSDhWOEgwWk03Miw1NlY3Mkg1NnY4SDgwVjU2Wm0zMiwzMnYxNkg4OHY4aDI0Vjg4Wm0zMiwzMnYxNkgxMjB2OGgyNFYxMjBaTTg4LDhWMjRINzJ2OEg5NlY4Wm0zMiwzMlY1NkgxMDR2OGgyNFY0MFptMzIsMzJWODhIMTM2djhoMjRWNzJaIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQiLz48L3N2Zz4="></a><div class="caption"><h3>Pattern</h3></div></div>
+				</div>
+			</section>
+			<section class="thumbnails">
+				<div class="cont caption-{captionPlacement} {thumbLayout}">
+					<div class="card"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTYwIiB2aWV3Qm94PSIwIDAgMjAwIDE2MCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTYwIiBmaWxsPSIjOWFlYmZmIi8+PHBvbHlnb24gcG9pbnRzPSIyMDAgNTkgMCA4OSAwIDAgMjAwIDAgMjAwIDU5IiBmaWxsPSIjODZjY2RlIi8+PHBhdGggZD0iTTcwLDMwQTM1LDM1LDAsMCwwLDQwLDgzbDY0LTkuNkEzNSwzNSwwLDAsMCw3MCwzMFoiIGZpbGw9IiNjN2Y0ZmYiLz48L3N2Zz4="></a><div class="caption"><h6>Sunset</h6></div></div>
+					<div class="card"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNzQiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTc0IDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIxNzQiIGhlaWdodD0iMjAwIiBmaWxsPSIjOGZjZmVkIi8+PHBvbHlnb24gcG9pbnRzPSIxNzQgMTQzIDAgNzAgMCAwIDE3NCAwIDE3NCAxNDMiIGZpbGw9IiNjMWUzZjUiLz48cG9seWdvbiBwb2ludHM9IjE3NCAxNDMgMTc0IDcwLjcxIDEwMi43MyAxMTMuMSAxNzQgMTQzIiBmaWxsPSIjODFiYWQ2Ii8+PC9zdmc+"></a><div class="caption"><h6>Mountain</h6></div></div>
+					<div class="card"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjYzNmNmY3Ii8+PHBvbHlnb24gcG9pbnRzPSIyMDAgOTIgMCAxMDkgMCAwIDIwMCAwIDIwMCA5MiIgZmlsbD0iIzg5ZTFlMyIvPjxwYXRoIGQ9Ik00MiwyNEE0Niw0NiwwLDAsMCw4MCw2OS4yOVYxMDIuMmwxNi0xLjM2VjY5LjI5QTQ2LDQ2LDAsMCwwLDEyNy4yNSwwSDQ4Ljc1QTQ1Ljc5LDQ1Ljc5LDAsMCwwLDQyLDI0WiIgZmlsbD0iI2FkZjVmNyIvPjwvc3ZnPg=="></a><div class="caption"><h6>Trees</h6></div></div>
+					<div class="card"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjYiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTY2IDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIxNjYiIGhlaWdodD0iMjAwIiBmaWxsPSIjYWJjY2ZmIi8+PHBvbHlnb24gcG9pbnRzPSIxNjYgMjAwIDAgMjAwIDc2IDkwIDkwIDkwIDE2NiAyMDAiIGZpbGw9IiNiZmQ4ZmYiLz48cmVjdCB3aWR0aD0iMTY2IiBoZWlnaHQ9IjkwIiBmaWxsPSIjOTBhZWRlIi8+PC9zdmc+"></a><div class="caption"><h6>Highway</h6></div></div>
+					<div class="card"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMjAwIDE4MCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTgwIiBmaWxsPSIjOTRjYmY1Ii8+PHBvbHlnb24gcG9pbnRzPSIyMDAgOTYgMCA4MSAwIDAgMjAwIDAgMjAwIDk2IiBmaWxsPSIjYmFlMWZmIi8+PHBvbHlnb24gcG9pbnRzPSIyMDAgMTA1IDY1IDk1IDc4IDY4IDIwMCA3NyAyMDAgMTA1IiBmaWxsPSIjZGJlZmZmIi8+PC9zdmc+"></a><div class="caption"><h6>Travel</h6></div></div>
+					<div class="card"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDgiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTQ4IDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIxNDgiIGhlaWdodD0iMjAwIiBmaWxsPSIjOTRmNWUwIi8+PHBvbHlnb24gcG9pbnRzPSIxNDggNzkgMCAxMDAgMCAwIDE0OCAwIDE0OCA3OSIgZmlsbD0iIzgxZDZjNCIvPjxwYXRoIGQ9Ik0xNDgsNTAuNTZhMjgsMjgsMCwwLDAtMzguNjcsMi41NkEzMi41LDMyLjUsMCwxLDAsOTIsMTE0djE2aDRWMTEzLjlhMzIuNSwzMi41LDAsMCwwLDI1LjE2LTE1LjMzQTI4LjEyLDI4LjEyLDAsMCwwLDEyOCw5OS45MlYxMDloNFY5OS45MmEyNy44OCwyNy44OCwwLDAsMCwxNi02LjQ4WiIgZmlsbD0iIzc1YzJiMyIvPjwvc3ZnPg=="></a><div class="caption"><h6>Park</h6></div></div>
+					<div class="card"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTY0IiB2aWV3Qm94PSIwIDAgMjAwIDE2NCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTY0IiBmaWxsPSIjNzZjZWViIi8+PHJlY3QgeD0iMjYiIHdpZHRoPSI3MiIgaGVpZ2h0PSI4MiIgZmlsbD0iIzlhZTFmNyIvPjxyZWN0IHg9IjEwMiIgd2lkdGg9IjcyIiBoZWlnaHQ9IjgyIiBmaWxsPSIjOWFlMWY3Ii8+PC9zdmc+"></a><div class="caption"><h6>Window</h6></div></div>
+					<div class="card"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTcyIiB2aWV3Qm94PSIwIDAgMjAwIDE3MiIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTcyIiBmaWxsPSIjYjBlZmZmIi8+PHBvbHlnb24gcG9pbnRzPSIyMDAgMzIgMCAxMzcgMCAwIDIwMCAwIDIwMCAzMiIgZmlsbD0iI2E1ZGJlOCIvPjxwb2x5Z29uIHBvaW50cz0iMjAwIDE3MiAyMDAgNTMuOSA0OC41OSAxNzIgMjAwIDE3MiIgZmlsbD0iIzhiY2ZlMCIvPjwvc3ZnPg=="></a><div class="caption"><h6>Fields</h6></div></div>
+					<div class="card"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNzgiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMTc4IDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIxNzgiIGhlaWdodD0iMjAwIiBmaWxsPSIjN2NlNGU2Ii8+PHBvbHlnb24gcG9pbnRzPSI1NCAxMTggMCAxNTIgMCAwIDU0IDAgNTQgMTE4IiBmaWxsPSIjNmZjZGNmIi8+PHBvbHlnb24gcG9pbnRzPSIxNzggMTUyIDEyNCAxMTggMTI0IDAgMTc4IDAgMTc4IDE1MiIgZmlsbD0iIzlhZjNmNSIvPjwvc3ZnPg=="></a><div class="caption"><h6>City</h6></div></div>
+					<div class="card"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiB2aWV3Qm94PSIwIDAgMjAwIDE1MCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjOGZkYmZmIi8+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSI2OSIgZmlsbD0iIzc3YmVlMCIvPjxwb2x5Z29uIHBvaW50cz0iNzYgNTggNzYgNDQgNjIgNDQgNjIgNTggNTIgNTggNTcgNzUgOTQgNzUgMTA5IDU4IDc2IDU4IiBmaWxsPSIjYThlM2ZmIi8+PC9zdmc+"></a><div class="caption"><h6>Horizon</h6></div></div>
+					<div class="card"><a class="thumb"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjN2RkYmZhIi8+PHBvbHlnb24gcG9pbnRzPSIyMDAgODcgMTAwIDEyMiAwIDcgMCAwIDIwMCAwIDIwMCA4NyIgZmlsbD0iIzcwYzVlMCIvPjxjaXJjbGUgY3g9IjE0NSIgY3k9IjM4IiByPSIyMSIgZmlsbD0iIzliZTNmYSIvPjwvc3ZnPg=="></a><div class="caption"><h6>The Moon</h6></div></div>
+				</div>
+			</section>
+			<section id="tag-cloud">
+				<div class="cont box">
+					<h4 class="icon-tag"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M3.4,2H7.6a3.4,3.4,0,0,1,1.28.29A3.47,3.47,0,0,1,10,3l6.6,6.6a1.34,1.34,0,0,1,.41,1,1.47,1.47,0,0,1-.41,1l-5,5a1.47,1.47,0,0,1-1,.41,1.34,1.34,0,0,1-1-.41L3,10a3.47,3.47,0,0,1-.7-1.11A3.4,3.4,0,0,1,2,7.6V3.4A1.4,1.4,0,0,1,3.4,2Zm0,1a.36.36,0,0,0-.29.12A.36.36,0,0,0,3,3.4V7.6a2.46,2.46,0,0,0,.21.9,2.62,2.62,0,0,0,.49.79l6.6,6.59c.15.16.3.26.59,0l5-5a.39.39,0,0,0,.12-.3.31.31,0,0,0-.12-.27L9.28,3.7a2.44,2.44,0,0,0-.78-.49A2.46,2.46,0,0,0,7.6,3ZM5,4A1,1,0,1,0,6,5,1,1,0,0,0,5,4Z" fill="#333333"/></svg> Labels</h4>
+					<div class="tag-cloud-cont">
+						<div class="tag-cloud-cont"><div class="tag-cloud"><a class="tag"><span>Apples</span></a><a class="tag size-1"><span>Art</span>&nbsp;<sup>3</sup></a><a class="tag"><span>Bokeh</span></a><a class="tag"><span>Bubbles</span></a><a class="tag"><span>building</span></a><a class="tag"><span>Butterflies</span></a><a class="tag"><span>Chess</span></a><a class="tag"><span>Clock</span></a><a class="tag"><span>drink</span></a><a class="tag"><span>Food</span></a><a class="tag"><span>Grapes</span></a><a class="tag"><span>Guitar</span></a><a class="tag"><span>Jaguar</span></a><a class="tag"><span>Leaf</span></a><a class="tag"><span>Leopard skin</span></a><a class="tag"><span>objects</span></a><a class="tag"><span>Old gauge</span></a><a class="tag"><span>Pattern</span></a><a class="tag"><span>photo</span></a><a class="tag"><span>Porcelain Sheep</span></a><a class="tag"><span>Rust</span></a><a class="tag"><span>Sculpture</span></a><a class="tag"><span>Soap carvings</span></a><a class="tag"><span>Tomatoes</span></a><a class="tag"><span>Waterpaint</span></a><a class="tag"><span>Zebra</span></a></div></div>
+					</div>
+				</div>
+			</section>
+		</article>
+	</section>
+	<section class="footer {topmenuOpaque}">
+		<div class="cont">
+			<footer>
+				<div class="bottom-navigation"><div><a>Landscape</a> &middot; <a>People</a> &middot; <a>Nature</a> &middot; <a>Objects</a> &middot; <a>Urban</a> &middot; <a>Media</a></div></div>
+				<div class="folder-info"><div class="modifieddate"><span>Modified</span> May/17/2021</div> &middot; <div class="counts"><span>30&nbsp;images</span></div></div>
+				<div class="credits">Made with <a>jAlbum</a> &amp; <a>Tiger</a></div>
+			</footer>
+		</div>
+	</section>
+</body>
+</html>

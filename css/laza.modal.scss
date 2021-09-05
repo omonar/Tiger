@@ -8,7 +8,7 @@ $icon-arrow-translate-y: $icon-stroke-width / 2 * 0.7071;
 @import 'defaults';
 
 .modal {
-	background: rgba(0,0,0,.5);
+	background: rgba(0,0,0,.75);
 	position: fixed;
 	top: 0;
 	bottom: 0;
@@ -18,23 +18,22 @@ $icon-arrow-translate-y: $icon-stroke-width / 2 * 0.7071;
 	.window {
 		position: absolute;
 		top: 50%;
-		left: 10%;
-		top: 50%;
-		width: 80%;
-		max-height: 98%;
+		left: 50%;
+		min-width: auto;
+		max-width: 96%;
+		width: fit-content;
 		padding: 0;
 		color: _(modalColor);
 		background-color: _(modalBgColor);
-		@include translate(0, -50%);
+		@include translate(-50%, -50%);
+		overflow: hidden;
+		border-radius: _U(brl,px);
 		box-shadow: _(boxShadow);
-		overflow: auto;
 		&.small {
-			left: 15%;
-			width: 70%;
+			max-width: 70%;
 		}
 		&.large {
-			left: 5%;
-			width: 90%;
+			min-width: 80%;
 		}
 		&.alert {
 			border-left: 4px solid #900;
@@ -54,7 +53,7 @@ $icon-arrow-translate-y: $icon-stroke-width / 2 * 0.7071;
 		}
 		&.has-header {
 			.content {
-				padding: 20px;	
+				padding: 1rem;	
 			}
 		}
 		&.no-padding {
@@ -66,14 +65,29 @@ $icon-arrow-translate-y: $icon-stroke-width / 2 * 0.7071;
 			height: ($button-size)+px;
 			line-height: ($button-size)+px;
 			padding-left: 20px;
-			padding-right: 60px;
+			padding-right: 75px;
 			text-align: left;
 			color: _(modalHeadColor);
 			background-color: _(modalHeadBgColor);
 		}
 		.content {
+			max-height: calc(96vh - 4rem);
+			overflow-x: hidden;
+			overflow-y: auto;
+			width: auto;
+			@include niceWebkitScroll();
+			.thumbnails .cont .card .caption {
+				@include niceWebkitScroll();
+			}
 			h1, h2, h3, h4, h5, h6 {
 				color: _(modalColor);
+				padding-right: $gap3;
+			}
+			.text-center {
+				text-align: center;
+			}
+			> .buttons:first-child {
+				margin-top: 0;
 			}
 		}
 		&.map {
@@ -83,17 +97,35 @@ $icon-arrow-translate-y: $icon-stroke-width / 2 * 0.7071;
 				max-width: none;
 			}
 		}
-		.btn {
-			position: absolute;
-			text-align: left;
-			text-indent: -9999px;
-			background-color: rgba(0,0,0,.1);
+		.close {
+			background-color: $darken20;
 			padding: 0;
 			position: absolute;
 			border: none;
 			width: ($button-size)+px;
+			height: ($button-size)+px;
+			z-index: 20;
+			top: 0;
+			right: 0;
+			&:before,
+			&:after {
+				position: absolute;
+				margin-left: -0.5px;
+				width: ($icon-stroke-width)+px;
+				background-color: #ccc;
+				content: '';
+				bottom: 30%;
+				left: 50%;
+				top: 30%;
+			}	
+			&:before {
+				@include rotate(45);
+			}
+			&:after {
+				@include rotate(-45);
+			}
 			&:hover, &:focus {
-				background-color: rgba(0,0,0,.4);
+				background-color: $darken70;
 				outline: none;
 			}
 			&:hover {
@@ -102,40 +134,44 @@ $icon-arrow-translate-y: $icon-stroke-width / 2 * 0.7071;
 					background-color: #fff;
 				}
 			}
-			&:before,
-			&:after {
-				position: absolute;
-				margin-left: -0.5px;
-				width: ($icon-stroke-width)+px;
-				background-color: rgba(255,255,255,.5);
-				content: '';
-			}
-			// Close button
-			&.close {
-				height: ($button-size)+px;
-				z-index: 20;
-				top: 0;
-				right: 0;
-				&:before,
-				&:after {
-					bottom: 25%;
-					left: 50%;
-					top: 25%;
-				}	
-				&:before {
-					@include rotate(45);
-				}
-				&:after {
-					@include rotate(-45);
-				}
-			}
+		}
+		> .btn.close:first-child {
+			background-color: $darken50;
+			border-bottom-left-radius: _U(brl,px);
 		}
 		.buttons {
-			text-align: center;
-			padding: $gap3 0;
+			display: flex;
+			justify-content: center;
+			align-items: stretch;
+			flex-flow: row wrap;
+			margin-top: $gap2;
 			.button {
-				display: inline-block;
-				margin: 0.25rem;
+				display: block;
+				padding: $gap2 $gap3;
+				margin-right: 1px;
+			}
+		}
+	}
+}
+
+.light {
+	@include niceWebkitScrollLight();
+	.modal .window .content.scrollable {
+		@include niceWebkitScrollLight();
+	}
+}
+
+@media only screen and (min-width: $bp_medium) {
+	.modal {
+		.window {
+			min-width: auto;
+			max-width: 90%;
+			&.small {
+				max-width: 50%;
+			}
+			&.large {
+				min-width: 80%;
+				max-width: 96%;
 			}
 		}
 	}
@@ -144,15 +180,14 @@ $icon-arrow-translate-y: $icon-stroke-width / 2 * 0.7071;
 @media only screen and (min-width: $bp_large) {
 	.modal {
 		.window {
-			left: 25%;
-			width: 50%;
+			//min-width: _B('Math.round(pageWidth * .7) + "px"');
+			max-width: _U(pageWidth,px);
 			&.small {
-				left: 33%;
-				width: 34%;
+				max-width: 40%;
 			}
 			&.large {
-				left: 15%;
-				width: 70%;
+				min-width: _B('Math.round(pageWidth * .8) + "px"');
+				max-width: _U(pageWidth,px);
 			}
 		}
 	}

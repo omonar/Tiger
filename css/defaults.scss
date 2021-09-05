@@ -1,12 +1,14 @@
 @charset "UTF-8";
-/* defaults.scss :: default values, functions and mixins */
+	// defaults.scss :: default values, functions and mixins
 	
 	//-------------------- Constants
 	
 	// Gaps
 	$gap0: 			0.15625rem;
 	$gap1: 			0.3125rem;
+	$gap15:			0.46875rem;
 	$gap2: 			0.625rem;
+	$gap25:			0.78125rem;
 	$gap3: 			0.9375rem;
 	$gap4: 			1.25rem;
 	$gap5: 			1.5625rem;
@@ -41,21 +43,25 @@
 	$fontXS:		.75em;
 	$fontS:			.875em;
 	$fontM:			1em;
-	$fontL:			1.143em;
-	$fontXL:		1.333em;
-	$fontXXL:		1.455em;
+	$fontL:			1.125em;
+	$fontXL:		1.25em;
+	$fontXXL:		1.375em;
+	$fontXXXL:		1.5em;
+	$font4XL:		1.75em;
+	$font5XL:		2em;
 	
 	// Transitions
 	$transTime:		500ms;
 	$transTime2:	1s;
 	
-	// Breakpoints: must be in sync with foundation breakpoints
+	// Breakpoints
 	$bp_small: 		30em;
 	$bp_medium: 	40em;
-	$bp_large: 		64em;
+	$bp_large: 		60em;
 	$bp_xlarge: 	75em;
 	$bp_xxlarge: 	90em;
 
+	$button-size: 	60;
 	
 	//-------------------- SCSS Functions to pass-through jAlbum variables
 
@@ -201,3 +207,186 @@
 		background: -webkit-linear-gradient(legacy-direction($direction), $color-stops);
 		background: linear-gradient($direction, $color-stops);
 	}
+	
+	@mixin flexbox() {
+		display: -webkit-box;
+		display: -moz-box;
+		display: -ms-flexbox;
+		display: -webkit-flex;
+		display: flex;
+	}
+
+	@mixin flex($values) {
+		-webkit-box-flex: $values;
+		-moz-box-flex:  $values;
+		-webkit-flex:  $values;
+		-ms-flex:  $values;
+		flex:  $values;
+	}
+
+	@mixin order($val) {
+		-webkit-box-ordinal-group: $val;  
+		-moz-box-ordinal-group: $val;     
+		-ms-flex-order: $val;     
+		-webkit-order: $val;  
+		order: $val;
+	}
+
+	@mixin niceWebkitScroll() {
+		&::-webkit-scrollbar {
+			width: .8rem;
+		}
+		&::-webkit-scrollbar-track {
+			background-color: rgba(0,0,0,.25);
+		}
+		&::-webkit-scrollbar-thumb {
+			border: 1px solid rgba(0,0,0,.5);
+			background-color: rgba(255,255,255,.15);
+		}
+		scrollbar-color: dark;
+	}
+	
+	@mixin niceWebkitScrollLight() {
+		&::-webkit-scrollbar-track {
+			background-color: rgba(0,0,0,.2);
+		}
+		&::-webkit-scrollbar-thumb {
+			border: 1px solid rgba(0,0,0,.25);
+			background-color: rgba(255,255,255,.6);
+		}
+		scrollbar-color: light;
+	}
+	
+	// Fade and hide
+	
+	@keyframes fade-and-hide {
+		0% {
+			opacity: 100%;
+			visibility: visible;
+			display: block;
+		}
+		99% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 0;
+			visibility: hidden;
+			display: none;
+		}
+	}
+
+	@mixin fadeAndHide {
+		-moz-animation: fade-and-hide $transTime $transTime2 ease-out forwards;
+		-webkit-animation: fade-and-hide $transTime $transTime2 ease-out forwards;
+		animation: fade-and-hide $transTime $transTime2 ease-out forwards;
+	}
+
+	@-webkit-keyframes rotating {
+		0% { -webkit-transform: rotate(0); }
+		100% { -webkit-transform: rotate(360deg); }
+	}
+	
+	@-moz-keyframes rotating {
+		0% { -moz-transform: rotate(0); }
+		100% { -moz-transform: rotate(360deg); }
+	}
+	
+	@-o-keyframes rotating {
+		0% { -o-transform: rotate(0); }
+		100% { -o-transform: rotate(360deg); }
+	}
+	
+	@keyframes rotating {
+		0% { transform: rotate(0); }
+		100% { transform: rotate(360deg); }
+	}
+	
+	@-webkit-keyframes appear-up {
+		0% { -webkit-transform: translateY(32px); opacity: 0; }
+		100% { -webkit-transform: translateY(0); opacity: 1; }
+	}
+	
+	@-moz-keyframes appear-up {
+		0% { -moz-transform: translateY(32px); opacity: 0; }
+		100% { -moz-transform: translateY(0); opacity: 1; }
+	}
+	
+	@-o-keyframes appear-up {
+		0% { -o-transform: translateY(32px); opacity: 0; }
+		100% { -o-transform: translateY(0); opacity: 1; }
+	}
+	
+	@keyframes appear-up {
+		0% { transform: translateY(32px); opacity: 0; }
+		100% { transform: translateY(0); opacity: 1; }
+	}
+	
+	// Move down bounce
+	
+	@-moz-keyframes move-down-bounce {
+		0%,
+		100%,
+		20%,
+		50%,
+		80% {
+			-moz-transform: translateY(0);
+			transform: translateY(0)
+		}
+		40% {
+			-moz-transform: translateY(-16px);
+			transform: translateY(-16px)
+		}
+		60% {
+			-moz-transform: translateY(-7px);
+			transform: translateY(-7px)
+		}
+	}
+	@-webkit-keyframes move-down-bounce {
+		0%,
+		100%,
+		20%,
+		50%,
+		80% {
+			-moz-transform: translateY(0);
+			transform: translateY(0)
+		}
+		40% {
+			-moz-transform: translateY(-16px);
+			transform: translateY(-16px)
+		}
+		60% {
+			-moz-transform: translateY(-7px);
+			transform: translateY(-7px)
+		}
+	}
+	@keyframes move-down-bounce {
+		0%,
+		100%,
+		20%,
+		50%,
+		80% {
+			-moz-transform: translateY(0);
+			-ms-transform: translateY(0);
+			-webkit-transform: translateY(0);
+			transform: translateY(0)
+		}
+		40% {
+			-moz-transform: translateY(-16px);
+			-ms-transform: translateY(-16px);
+			-webkit-transform: translateY(-16px);
+			transform: translateY(-16px)
+		}
+		60% {
+			-moz-transform: translateY(-7px);
+			-ms-transform: translateY(-7px);
+			-webkit-transform: translateY(-7px);
+			transform: translateY(-7px)
+		}
+	}
+	
+	@mixin moveDownBounce {
+		-moz-animation: move-down-bounce 2s 2s 2;
+		-webkit-animation: move-down-bounce 2s 2s 2;
+		animation: move-down-bounce 2s 2s 2;
+	}
+	

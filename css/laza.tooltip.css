@@ -1,0 +1,225 @@
+/******************************************* Tooltip */
+@keyframes fade-and-hide {
+  0% {
+    opacity: 100%;
+    visibility: visible;
+    display: block; }
+  99% {
+    opacity: 0; }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    display: none; } }
+@-webkit-keyframes rotating {
+  0% {
+    -webkit-transform: rotate(0); }
+  100% {
+    -webkit-transform: rotate(360deg); } }
+@-moz-keyframes rotating {
+  0% {
+    -moz-transform: rotate(0); }
+  100% {
+    -moz-transform: rotate(360deg); } }
+@-o-keyframes rotating {
+  0% {
+    -o-transform: rotate(0); }
+  100% {
+    -o-transform: rotate(360deg); } }
+@keyframes rotating {
+  0% {
+    transform: rotate(0); }
+  100% {
+    transform: rotate(360deg); } }
+@-webkit-keyframes appear-up {
+  0% {
+    -webkit-transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    -webkit-transform: translateY(0);
+    opacity: 1; } }
+@-moz-keyframes appear-up {
+  0% {
+    -moz-transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    -moz-transform: translateY(0);
+    opacity: 1; } }
+@-o-keyframes appear-up {
+  0% {
+    -o-transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    -o-transform: translateY(0);
+    opacity: 1; } }
+@keyframes appear-up {
+  0% {
+    transform: translateY(32px);
+    opacity: 0; }
+  100% {
+    transform: translateY(0);
+    opacity: 1; } }
+@-moz-keyframes move-down-bounce {
+  0%,
+		100%,
+		20%,
+		50%,
+		80% {
+    -moz-transform: translateY(0);
+    transform: translateY(0); }
+  40% {
+    -moz-transform: translateY(-16px);
+    transform: translateY(-16px); }
+  60% {
+    -moz-transform: translateY(-7px);
+    transform: translateY(-7px); } }
+@-webkit-keyframes move-down-bounce {
+  0%,
+		100%,
+		20%,
+		50%,
+		80% {
+    -moz-transform: translateY(0);
+    transform: translateY(0); }
+  40% {
+    -moz-transform: translateY(-16px);
+    transform: translateY(-16px); }
+  60% {
+    -moz-transform: translateY(-7px);
+    transform: translateY(-7px); } }
+@keyframes move-down-bounce {
+  0%,
+		100%,
+		20%,
+		50%,
+		80% {
+    -moz-transform: translateY(0);
+    -ms-transform: translateY(0);
+    -webkit-transform: translateY(0);
+    transform: translateY(0); }
+  40% {
+    -moz-transform: translateY(-16px);
+    -ms-transform: translateY(-16px);
+    -webkit-transform: translateY(-16px);
+    transform: translateY(-16px); }
+  60% {
+    -moz-transform: translateY(-7px);
+    -ms-transform: translateY(-7px);
+    -webkit-transform: translateY(-7px);
+    transform: translateY(-7px); } }
+.tooltip {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0.3125rem 0.625rem;
+  max-width: 360px;
+  max-height: 90vh;
+  z-index: 999999;
+  font-size: 0.875em;
+  background-color: ${tooltipBgColor};
+  color: ${tooltipColor};
+  transition: opacity 500ms linear;
+  border-radius: ${brs}px; }
+  .tooltip h1, .tooltip h2, .tooltip h3, .tooltip h4, .tooltip h5, .tooltip h6, .tooltip a {
+    color: ${tooltipColor}; }
+  .tooltip a {
+    text-decoration: underline; }
+  .tooltip form {
+    padding: 0.3125rem; }
+    .tooltip form.copy-url input[name=url] {
+      display: block; }
+    .tooltip form.copy-url button {
+      margin-left: .5rem; }
+  .tooltip label {
+    font-size: 1em;
+    color: ${tooltipColor};
+    text-transform: none; }
+  .tooltip input {
+    margin-bottom: 0.3125rem; }
+    .tooltip input.copied {
+      color: red; }
+  .tooltip > .photodata {
+    margin: -0.3125rem -0.625rem; }
+  .tooltip .button {
+    margin-bottom: 0; }
+  .tooltip .button.small {
+    color: ${tooltipColor}; }
+    .tooltip .button.small:hover {
+      color: ${buttonTextColor}; }
+  .tooltip > .nub {
+    position: absolute;
+    display: block;
+    padding: 0;
+    width: 0;
+    height: 0;
+    border: solid 5px;
+    border-color: transparent transparent ${tooltipBgColor} transparent; }
+  .tooltip.valign-top > .nub {
+    border-color: ${tooltipBgColor} transparent transparent transparent; }
+  .tooltip.valign-middle.align-left > .nub {
+    border-color: transparent transparent transparent ${tooltipBgColor}; }
+  .tooltip.valign-middle.align-right > .nub {
+    border-color: transparent ${tooltipBgColor} transparent transparent; }
+  .tooltip.wide {
+    max-width: 560px; }
+  .tooltip.player {
+    padding: 0.3125rem;
+    width: 280px; }
+    .tooltip.player audio {
+      max-width: 100%; }
+    .tooltip.player .play-list {
+      padding: 0;
+      list-style-type: none;
+      line-height: 2;
+      text-align: center;
+      max-height: 8em;
+      overflow-x: hidden;
+      overflow-y: auto; }
+      .tooltip.player .play-list li {
+        padding: 0;
+        border-radius: ${brm}px; }
+        .tooltip.player .play-list li:hover {
+          background-color: ${buttonShadeColor}; }
+        .tooltip.player .play-list li a {
+          cursor: pointer;
+          text-decoration: none; }
+        .tooltip.player .play-list li:hover, .tooltip.player .play-list li.active {
+          color: ${buttonTextColor};
+          background-color: ${buttonBgColor}; }
+  .tooltip.zoom-panel {
+    padding: 0; }
+    .tooltip.zoom-panel .zoom-control {
+      display: flex;
+      flex-direction: row;
+      padding: 0;
+      border-radius: ${brs}px;
+      overflow: hidden; }
+      .tooltip.zoom-panel .zoom-control input[name=zoom-level] {
+        width: 120px;
+        margin: 0.3125rem; }
+      .tooltip.zoom-panel .zoom-control a {
+        user-select: none;
+        text-decoration: none;
+        display: inline-flex;
+        position: relative;
+        width: 3rem;
+        height: 3rem;
+        content: ' ';
+        background-color: ${buttonBgColor};
+        border-radius: 0; }
+      .tooltip.zoom-panel .zoom-control a::before,
+      .tooltip.zoom-panel .zoom-control a::after {
+        position: absolute;
+        content: '';
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: ${buttonTextColor}; }
+      .tooltip.zoom-panel .zoom-control a::before {
+        width: 1rem;
+        height: .125rem; }
+      .tooltip.zoom-panel .zoom-control a.zoom-in::after {
+        width: .125rem;
+        height: 1rem; }
+
+/*# sourceMappingURL=laza.tooltip.css.map */

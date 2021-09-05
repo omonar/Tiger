@@ -3,3 +3,7 @@
  */
 
 	processFolder(currentFolder);
+
+	if (typeof writeSitemapXml !== 'undefined' && writeSitemapXml) {
+		addFolderToSitemap(currentFolder);
+	}

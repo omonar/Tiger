@@ -1,9 +1,15 @@
 skin.backgroundColor=#51210e
-skin.lightboxBackgroundColor=#51210e
+skin.backgroundImageName=bg.jpg
+skin.backgroundPosition=center middle
+skin.backgroundRepeat=stretch
 skin.topmenuColor=#99111111
+skin.footerColor=#99111111
 skin.boxBackgroundColor=#ccebe7e1
 skin.buttonColor=#cc3300
 skin.textColor=#222222
 skin.linkColor=#cc3300
 skin.hoverColor=#660000
+skin.boxBackgroundImageName=
+skin.lightboxBackgroundColor=#51210e
+skin.lightboxUseMainBg=true
 skin.lightboxBorderColor=#111111
