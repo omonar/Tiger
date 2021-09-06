@@ -929,7 +929,7 @@ var Album = function($, options) {
 						makePath(getPath(o), o[J.ORIGINAL][J.PATH]) 
 						: 
 						((o.hasOwnProperty(J.CATEGORY) && o[J.CATEGORY] === 'image')? 
-							'/s3/photos/' + getFolderPath(o) + getName(o).replace('.webp','.jpg') 
+							'/s3/photos/' + getFolderPath(o) + getName(o) 
 							: 
 							null 
 						) 
