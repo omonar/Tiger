@@ -1076,8 +1076,8 @@ var Album = function($, options) {
 					return p + o[J.ORIGINAL][J.PATH];
 				}
 				
-				if (o[J.CATEGORY] === 'image')
-					return settings.rootPath + '/s3/photos/' + getPath(o[J.PATHREF]) + '/' + o[J.NAME];
+				if (o.hasOwnProperty(J.CATEGORY) && o[J.CATEGORY] === 'image')
+					return '/s3/photos/' + getFolderPath(o) + '/' + getName(o);
 				
 				return null;
 			},
